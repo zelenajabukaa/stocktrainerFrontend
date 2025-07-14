@@ -6,7 +6,7 @@ import styles from '../Game.module.css';
 interface StockChartProps {
     data: StockDataPoint[];
     stockColor: string;
-    currentMonth: string;
+    // currentMonth entfernt - wird nicht mehr benötigt
 }
 
 interface ChartDataPoint extends StockDataPoint {
@@ -22,7 +22,7 @@ interface TooltipProps {
     label?: string;
 }
 
-const StockChart: React.FC<StockChartProps> = ({ data, stockColor, currentMonth }) => {
+const StockChart: React.FC<StockChartProps> = ({ data, stockColor }) => {
     const CustomTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
         if (active && payload && payload.length) {
             const dataPoint = payload[0].payload;
@@ -45,22 +45,6 @@ const StockChart: React.FC<StockChartProps> = ({ data, stockColor, currentMonth 
         return `${value.toFixed(2)}€`;
     };
 
-    const formatMonthDisplay = (monthKey: string): string => {
-        const [year, month] = monthKey.split('-');
-        const date = new Date(parseInt(year), parseInt(month) - 1);
-        return date.toLocaleDateString('de-DE', {
-            year: 'numeric',
-            month: 'long'
-        });
-    };
-
-    // Berechne Trend für Farbkodierung
-    const getTrendColor = (currentValue: number, previousValue: number): string => {
-        if (currentValue > previousValue) return '#10b981'; // Grün für Aufwärtstrend
-        if (currentValue < previousValue) return '#ef4444'; // Rot für Abwärtstrend
-        return stockColor; // Standardfarbe bei gleichem Wert
-    };
-
     const chartData: ChartDataPoint[] = data.map(item => ({
         ...item,
         timestamp: item.date.getTime()
@@ -68,12 +52,7 @@ const StockChart: React.FC<StockChartProps> = ({ data, stockColor, currentMonth 
 
     return (
         <div className={styles.stockChart}>
-            <div className={styles.chartHeader}>
-                <h2 className={styles.chartTitle}>
-                    Kursverlauf - {formatMonthDisplay(currentMonth)}
-                </h2>
-            </div>
-
+            {/* Chart Header entfernt - Monat wird nur in Navigation angezeigt */}
             <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -92,14 +71,12 @@ const StockChart: React.FC<StockChartProps> = ({ data, stockColor, currentMonth 
                     />
                     <Tooltip content={<CustomTooltip />} />
                     <Line
-                        type="linear" // Gerade Linien
+                        type="linear"
                         dataKey="close"
                         stroke={stockColor}
                         strokeWidth={3}
-                        dot={false} // Keine Punkte für saubere Linien
+                        dot={false}
                         activeDot={{ r: 6, stroke: stockColor, strokeWidth: 2 }}
-                    // Segment-basierte Farbkodierung würde hier komplexer sein
-                    // Für jetzt verwenden wir eine einheitliche Farbe pro Aktie
                     />
                 </LineChart>
             </ResponsiveContainer>

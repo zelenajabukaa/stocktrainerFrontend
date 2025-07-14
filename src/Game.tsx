@@ -8,7 +8,14 @@ import type { StockDataPoint, GroupedStockData } from './utils/csvParser';
 import type { StockInfo } from './utils/stockLoader';
 import styles from './Game.module.css';
 
+interface StockHolding {
+  symbol: string;
+  shares: number;
+  averagePrice: number;
+}
+
 const Game: React.FC = () => {
+  // Alle bestehenden State-Variablen bleiben gleich...
   const [availableStocks, setAvailableStocks] = useState<StockInfo[]>([]);
   const [selectedStock, setSelectedStock] = useState<string>('');
   const [stockData, setStockData] = useState<StockDataPoint[]>([]);
@@ -18,7 +25,17 @@ const Game: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
-  // Lade verfügbare Aktien beim Start
+  // Trading-States
+  const [startCapital, setStartCapital] = useState<number>(0);
+  const [currentBalance, setCurrentBalance] = useState<number>(0);
+  const [stockHoldings, setStockHoldings] = useState<StockHolding[]>([]);
+  const [showStartCapitalPopup, setShowStartCapitalPopup] = useState<boolean>(true);
+  const [showBuyPopup, setShowBuyPopup] = useState<boolean>(false);
+  const [showSellPopup, setShowSellPopup] = useState<boolean>(false);
+  const [tempCapitalInput, setTempCapitalInput] = useState<string>('');
+  const [tempShareAmount, setTempShareAmount] = useState<string>('');
+
+  // Alle bestehenden useEffect Hooks bleiben unverändert...
   useEffect(() => {
     const initializeStocks = async (): Promise<void> => {
       try {
@@ -38,7 +55,6 @@ const Game: React.FC = () => {
     initializeStocks();
   }, []);
 
-  // Lade Daten für ausgewählte Aktie
   useEffect(() => {
     if (!selectedStock) return;
 
@@ -71,6 +87,49 @@ const Game: React.FC = () => {
     loadSelectedStockData();
   }, [selectedStock, availableStocks]);
 
+  // Helper Functions
+  const getCurrentStockPrice = (): number => {
+    const currentMonthData = groupedData[currentMonth] || [];
+    if (currentMonthData.length === 0) return 0;
+    return currentMonthData[currentMonthData.length - 1].close;
+  };
+
+  const getCurrentStockHolding = (): StockHolding | undefined => {
+    return stockHoldings.find(holding => holding.symbol === selectedStock);
+  };
+
+  const getTotalInvestedAmount = (): number => {
+    return stockHoldings.reduce((total, holding) => {
+      return total + (holding.shares * holding.averagePrice);
+    }, 0);
+  };
+
+  // KORRIGIERTE calculateTotalValue Funktion
+  const calculateTotalValue = (): number => {
+    let totalValue = currentBalance;
+
+    stockHoldings.forEach(holding => {
+      const stockInfo = availableStocks.find(s => s.symbol === holding.symbol);
+      if (stockInfo) {
+        let currentPrice = 0;
+
+        if (holding.symbol === selectedStock) {
+          // Für die aktuell ausgewählte Aktie verwenden wir den aktuellen Preis
+          currentPrice = getCurrentStockPrice();
+        } else {
+          // Für andere Aktien verwenden wir den Durchschnittspreis (vereinfacht)
+          // In einer echten App würdest du hier die aktuellen Preise aller Aktien laden
+          currentPrice = holding.averagePrice;
+        }
+
+        totalValue += holding.shares * currentPrice;
+      }
+    });
+
+    return totalValue;
+  };
+
+  // Handler Functions
   const handleStockSelect = (symbol: string): void => {
     setSelectedStock(symbol);
     setError('');
@@ -80,10 +139,137 @@ const Game: React.FC = () => {
     setCurrentMonth(month);
   };
 
+  const handleStartCapitalSubmit = (): void => {
+    const capital = parseFloat(tempCapitalInput);
+    if (capital > 0) {
+      setStartCapital(capital);
+      setCurrentBalance(capital);
+      setShowStartCapitalPopup(false);
+      setTempCapitalInput('');
+    }
+  };
+
+  const handleBuyClick = (): void => {
+    setShowBuyPopup(true);
+    setTempShareAmount('');
+  };
+
+  const handleSellClick = (): void => {
+    setShowSellPopup(true);
+    setTempShareAmount('');
+  };
+
+  // NEU: Max-Button Handler
+  const handleMaxBuy = (): void => {
+    const maxShares = getMaxBuyableShares();
+    setTempShareAmount(maxShares.toString());
+  };
+
+  const handleMaxSell = (): void => {
+    const maxShares = getMaxSellableShares();
+    setTempShareAmount(maxShares.toString());
+  };
+
+  const handleBuySubmit = (): void => {
+    const shares = parseInt(tempShareAmount);
+    const currentPrice = getCurrentStockPrice();
+    const totalCost = shares * currentPrice;
+
+    if (shares > 0 && totalCost <= currentBalance) {
+      // Aktualisiere Balance
+      setCurrentBalance(prev => prev - totalCost);
+
+      // Aktualisiere Stock Holdings
+      setStockHoldings(prev => {
+        const existingHolding = prev.find(h => h.symbol === selectedStock);
+
+        if (existingHolding) {
+          // Berechne neuen Durchschnittspreis
+          const totalShares = existingHolding.shares + shares;
+          const totalValue = (existingHolding.shares * existingHolding.averagePrice) + totalCost;
+          const newAveragePrice = totalValue / totalShares;
+
+          return prev.map(h =>
+            h.symbol === selectedStock
+              ? { ...h, shares: totalShares, averagePrice: newAveragePrice }
+              : h
+          );
+        } else {
+          // Neue Aktie hinzufügen
+          return [...prev, { symbol: selectedStock, shares, averagePrice: currentPrice }];
+        }
+      });
+    }
+
+    setShowBuyPopup(false);
+    setTempShareAmount('');
+  };
+
+  const handleSellSubmit = (): void => {
+    const shares = parseInt(tempShareAmount);
+    const currentPrice = getCurrentStockPrice();
+    const currentHolding = getCurrentStockHolding();
+
+    if (shares > 0 && currentHolding && shares <= currentHolding.shares) {
+      const totalRevenue = shares * currentPrice;
+
+      // Aktualisiere Balance
+      setCurrentBalance(prev => prev + totalRevenue);
+
+      // Aktualisiere Stock Holdings
+      setStockHoldings(prev => {
+        return prev.map(h => {
+          if (h.symbol === selectedStock) {
+            const newShares = h.shares - shares;
+            return newShares > 0
+              ? { ...h, shares: newShares }
+              : null; // Entferne Holding wenn keine Aktien mehr
+          }
+          return h;
+        }).filter(Boolean) as StockHolding[];
+      });
+    }
+
+    setShowSellPopup(false);
+    setTempShareAmount('');
+  };
+
   const getCurrentStockInfo = (): StockInfo | undefined => {
     return availableStocks.find(s => s.symbol === selectedStock);
   };
 
+  const formatMonthDisplay = (monthKey: string): string => {
+    const [year, month] = monthKey.split('-');
+    const date = new Date(parseInt(year), parseInt(month) - 1);
+    return date.toLocaleDateString('de-DE', {
+      year: 'numeric',
+      month: 'long'
+    });
+  };
+
+  // Berechnungen für Popups
+  const calculateBuyTotal = (): number => {
+    const shares = parseInt(tempShareAmount) || 0;
+    return shares * getCurrentStockPrice();
+  };
+
+  const calculateSellTotal = (): number => {
+    const shares = parseInt(tempShareAmount) || 0;
+    return shares * getCurrentStockPrice();
+  };
+
+  const getMaxBuyableShares = (): number => {
+    const currentPrice = getCurrentStockPrice();
+    if (currentPrice === 0) return 0;
+    return Math.floor(currentBalance / currentPrice);
+  };
+
+  const getMaxSellableShares = (): number => {
+    const holding = getCurrentStockHolding();
+    return holding ? holding.shares : 0;
+  };
+
+  // Loading und Error States bleiben gleich...
   if (loading) {
     return (
       <div className={styles.gameContainer}>
@@ -102,9 +288,154 @@ const Game: React.FC = () => {
 
   const currentMonthData = groupedData[currentMonth] || [];
   const currentStockInfo = getCurrentStockInfo();
+  const currentPrice = getCurrentStockPrice();
+  const currentHolding = getCurrentStockHolding();
 
   return (
     <div className={styles.gameContainer}>
+      {/* Startkapital Popup bleibt gleich... */}
+      {showStartCapitalPopup && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.popup}>
+            <h2>💰 Startkapital festlegen</h2>
+            <p>Wie viel Geld möchtest du für das Trading verwenden?</p>
+            <input
+              type="number"
+              value={tempCapitalInput}
+              onChange={(e) => setTempCapitalInput(e.target.value)}
+              placeholder="z.B. 10000"
+              className={styles.popupInput}
+              min="1"
+              step="0.01"
+            />
+            <div className={styles.popupButtons}>
+              <button
+                onClick={handleStartCapitalSubmit}
+                className={styles.popupButtonPrimary}
+                disabled={!tempCapitalInput || parseFloat(tempCapitalInput) <= 0}
+              >
+                Bestätigen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ERWEITERTE Buy Popup mit Max-Button */}
+      {showBuyPopup && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.popup}>
+            <h2>📈 Aktien kaufen</h2>
+            <p>Wie viele {currentStockInfo?.name} Aktien möchtest du kaufen?</p>
+            <div className={styles.priceInfo}>
+              <span>Aktueller Preis: <strong>{currentPrice.toFixed(2)}€</strong></span>
+            </div>
+            <div className={styles.inputWithMaxButton}>
+              <input
+                type="number"
+                value={tempShareAmount}
+                onChange={(e) => setTempShareAmount(e.target.value)}
+                placeholder="Anzahl Aktien"
+                className={styles.popupInput}
+                min="1"
+                step="1"
+                max={getMaxBuyableShares()}
+              />
+              <button
+                onClick={handleMaxBuy}
+                className={styles.maxButton}
+                disabled={getMaxBuyableShares() === 0}
+              >
+                Max ({getMaxBuyableShares()})
+              </button>
+            </div>
+            <div className={styles.calculationInfo}>
+              <p>Gesamtkosten: <strong>{calculateBuyTotal().toFixed(2)}€</strong></p>
+              <p>Verfügbares Guthaben: {currentBalance.toFixed(2)}€</p>
+              <p>Max. kaufbare Aktien: {getMaxBuyableShares()}</p>
+            </div>
+            <div className={styles.popupButtons}>
+              <button
+                onClick={() => setShowBuyPopup(false)}
+                className={styles.popupButtonSecondary}
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={handleBuySubmit}
+                className={styles.popupButtonPrimary}
+                disabled={
+                  !tempShareAmount ||
+                  parseInt(tempShareAmount) <= 0 ||
+                  calculateBuyTotal() > currentBalance ||
+                  parseInt(tempShareAmount) > getMaxBuyableShares()
+                }
+              >
+                Kaufen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ERWEITERTE Sell Popup mit Max-Button */}
+      {showSellPopup && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.popup}>
+            <h2>📉 Aktien verkaufen</h2>
+            <p>Wie viele {currentStockInfo?.name} Aktien möchtest du verkaufen?</p>
+            <div className={styles.priceInfo}>
+              <span>Aktueller Preis: <strong>{currentPrice.toFixed(2)}€</strong></span>
+            </div>
+            <div className={styles.inputWithMaxButton}>
+              <input
+                type="number"
+                value={tempShareAmount}
+                onChange={(e) => setTempShareAmount(e.target.value)}
+                placeholder="Anzahl Aktien"
+                className={styles.popupInput}
+                min="1"
+                step="1"
+                max={getMaxSellableShares()}
+              />
+              <button
+                onClick={handleMaxSell}
+                className={styles.maxButton}
+                disabled={getMaxSellableShares() === 0}
+              >
+                Max ({getMaxSellableShares()})
+              </button>
+            </div>
+            <div className={styles.calculationInfo}>
+              <p>Verkaufserlös: <strong>{calculateSellTotal().toFixed(2)}€</strong></p>
+              <p>Besitzt: {currentHolding?.shares || 0} Aktien</p>
+              {currentHolding && (
+                <p>Ø Kaufpreis: {currentHolding.averagePrice.toFixed(2)}€</p>
+              )}
+            </div>
+            <div className={styles.popupButtons}>
+              <button
+                onClick={() => setShowSellPopup(false)}
+                className={styles.popupButtonSecondary}
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={handleSellSubmit}
+                className={styles.popupButtonPrimary}
+                disabled={
+                  !tempShareAmount ||
+                  parseInt(tempShareAmount) <= 0 ||
+                  parseInt(tempShareAmount) > getMaxSellableShares()
+                }
+              >
+                Verkaufen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className={styles.gameLayout}>
         <Sidebar
           availableStocks={availableStocks}
@@ -118,20 +449,63 @@ const Game: React.FC = () => {
             <p>Interaktive Aktienkurs-Analyse mit monatlicher Navigation</p>
           </header>
 
-          <MonthNavigator
-            currentMonth={currentMonth}
-            onMonthChange={handleMonthChange}
-            availableMonths={availableMonths}
-          />
+          {/* Navigation mit KORRIGIERTER Vermögensanzeige */}
+          <div className={styles.navigationContainer}>
+            <MonthNavigator
+              currentMonth={currentMonth}
+              onMonthChange={handleMonthChange}
+              availableMonths={availableMonths}
+            />
+            <div className={styles.balanceDisplay}>
+              <span className={styles.balanceLabel}>Gesamtvermögen:</span>
+              <span className={styles.balanceValue}>{calculateTotalValue().toFixed(2)}€</span>
+            </div>
+          </div>
 
+          {/* Rest der Komponente bleibt gleich... */}
           <div className={styles.chartContainer}>
             <StockChart
               data={currentMonthData}
               stockColor={currentStockInfo?.color || '#2563eb'}
-              currentMonth={currentMonth}
             />
           </div>
 
+          <div className={styles.tradingPanel}>
+            <div className={styles.stockPosition}>
+              <div className={styles.positionInfo}>
+                <span className={styles.positionLabel}>Besitzt:</span>
+                <span className={styles.positionValue}>
+                  {currentHolding?.shares || 0} Aktien
+                </span>
+              </div>
+              <div className={styles.positionInfo}>
+                <span className={styles.positionLabel}>Aktueller Preis:</span>
+                <span className={styles.positionValue}>{currentPrice.toFixed(2)}€</span>
+              </div>
+              <div className={styles.positionInfo}>
+                <span className={styles.positionLabel}>Bargeld:</span>
+                <span className={styles.positionValue}>{currentBalance.toFixed(2)}€</span>
+              </div>
+            </div>
+            <div className={styles.tradingButtons}>
+              <button
+                onClick={handleBuyClick}
+                className={styles.buyButton}
+                disabled={getMaxBuyableShares() === 0}
+              >
+                📈 Kaufen
+              </button>
+              <button
+                onClick={handleSellClick}
+                className={styles.sellButton}
+                disabled={getMaxSellableShares() === 0}
+              >
+                📉 Verkaufen
+              </button>
+            </div>
+          </div>
+
+          {/* Stats bleiben unverändert... */}
           <div className={styles.stats}>
             <div className={styles.statItem}>
               <span className={styles.statLabel}>Datenpunkte im Monat:</span>
@@ -157,62 +531,8 @@ const Game: React.FC = () => {
                     {(currentMonthData.reduce((sum, d) => sum + d.close, 0) / currentMonthData.length).toFixed(2)}€
                   </span>
                 </div>
-                <div className={styles.statItem}>
-                  <span className={styles.statLabel}>Monatliche Entwicklung:</span>
-                  <span className={`${styles.statValue} ${currentMonthData.length > 1 &&
-                    currentMonthData[currentMonthData.length - 1].close > currentMonthData[0].close
-                    ? styles.statValuePositive : styles.statValueNegative
-                    }`}>
-                    {currentMonthData.length > 1 ? (
-                      ((currentMonthData[currentMonthData.length - 1].close - currentMonthData[0].close) / currentMonthData[0].close * 100).toFixed(2)
-                    ) : '0.00'}%
-                  </span>
-                </div>
               </>
             )}
-          </div>
-
-          <div className={styles.tradingInfo}>
-            <div className={styles.infoSection}>
-              <h3 className={styles.infoSectionTitle}>📊 Marktanalyse</h3>
-              <div className={styles.infoGrid}>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>Volatilität:</span>
-                  <span className={styles.infoValue}>
-                    {currentMonthData.length > 1 ? (
-                      (Math.max(...currentMonthData.map(d => d.close)) - Math.min(...currentMonthData.map(d => d.close))).toFixed(2)
-                    ) : '0.00'}€
-                  </span>
-                </div>
-                <div className={styles.infoItem}>
-                  <span className={styles.infoLabel}>Handelstage:</span>
-                  <span className={styles.infoValue}>{currentMonthData.length}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.infoSection}>
-              <h3 className={styles.infoSectionTitle}>🎯 Trading-Hinweise</h3>
-              <div className={styles.tradingTips}>
-                {currentMonthData.length > 0 && (
-                  <>
-                    <div className={styles.tip}>
-                      <strong>Trend:</strong> {
-                        currentMonthData.length > 1 &&
-                          currentMonthData[currentMonthData.length - 1].close > currentMonthData[0].close
-                          ? '📈 Aufwärtstrend' : '📉 Abwärtstrend'
-                      }
-                    </div>
-                    <div className={styles.tip}>
-                      <strong>Support:</strong> {Math.min(...currentMonthData.map(d => d.close)).toFixed(2)}€
-                    </div>
-                    <div className={styles.tip}>
-                      <strong>Resistance:</strong> {Math.max(...currentMonthData.map(d => d.close)).toFixed(2)}€
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
           </div>
         </main>
       </div>

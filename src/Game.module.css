@@ -1,25 +1,42 @@
-/* Game.module.css */
+/* Game.module.css - Vollständiges Trading Dashboard CSS */
+
+/* Container und Layout */
+.gameContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
 .gameLayout {
   display: flex;
   gap: 20px;
   min-height: 100vh;
 }
 
-/* Sidebar Styles */
+/* Sidebar Styles - mit Scroll-Funktionalität */
 .sidebar {
   width: 280px;
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
-  height: fit-content;
   position: sticky;
   top: 20px;
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .sidebarHeader {
   padding: 20px;
   border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  background: white;
+  border-radius: 12px 12px 0 0;
 }
 
 .sidebarHeader h3 {
@@ -31,6 +48,30 @@
 
 .stockList {
   padding: 10px;
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+/* Webkit Scrollbar Styling */
+.stockList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.stockList::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.stockList::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.stockList::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .stockItem {
@@ -45,10 +86,16 @@
   cursor: pointer;
   transition: all 0.2s ease;
   margin-bottom: 4px;
+  flex-shrink: 0;
 }
 
 .stockItem:hover {
   background: #f8fafc;
+}
+
+.stockItem:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }
 
 .stockItemActive {
@@ -68,17 +115,26 @@
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
+  min-width: 0;
 }
 
 .stockSymbol {
   font-weight: 700;
   color: #1e293b;
   font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 .stockName {
   font-size: 12px;
   color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 .sidebarFooter {
@@ -86,6 +142,7 @@
   border-top: 1px solid #e2e8f0;
   background: #f8fafc;
   border-radius: 0 0 12px 12px;
+  flex-shrink: 0;
 }
 
 .stockCount {
@@ -95,7 +152,28 @@
   text-align: center;
 }
 
-/* Main Content angepasst */
+/* Scroll-Indikatoren */
+.stockList::before {
+  content: '';
+  position: sticky;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(to bottom, rgba(226, 232, 240, 0.8), transparent);
+  z-index: 1;
+  margin-bottom: -1px;
+}
+
+.stockList::after {
+  content: '';
+  position: sticky;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(to top, rgba(226, 232, 240, 0.8), transparent);
+  z-index: 1;
+  margin-top: -1px;
+}
+
+/* Main Content */
 .mainContent {
   flex: 1;
   display: flex;
@@ -103,62 +181,7 @@
   gap: 30px;
 }
 
-/* Chart Header */
-.chartHeader {
-  margin-bottom: 20px;
-}
-
-.chartTitle {
-  margin: 0;
-  color: #1e293b;
-  font-size: 1.5rem;
-  font-weight: 700;
-  text-align: center;
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .gameLayout {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    position: static;
-  }
-
-  .stockList {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 10px;
-  }
-}
-
-@media (max-width: 768px) {
-  .stockList {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Bestehende Styles bleiben unverändert */
-.gameContainer {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  background: #f8fafc;
-  min-height: 100vh;
-}
-
-.gameContainer {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-  background: #f8fafc;
-  min-height: 100vh;
-}
-
+/* Header Styles */
 .appHeader {
   text-align: center;
   margin-bottom: 30px;
@@ -169,12 +192,20 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.mainContent {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
+.appHeader h1 {
+  margin-bottom: 10px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+.appHeader p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* Month Navigator */
 .monthNavigator {
   display: flex;
   justify-content: center;
@@ -226,6 +257,7 @@
   border: 2px solid #e2e8f0;
 }
 
+/* Chart Container */
 .chartContainer {
   background: white;
   border-radius: 12px;
@@ -234,6 +266,28 @@
   border: 1px solid #e2e8f0;
 }
 
+.chartContainer:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transition: box-shadow 0.3s ease;
+}
+
+.stockChart {
+  width: 100%;
+}
+
+.chartHeader {
+  margin-bottom: 20px;
+}
+
+.chartTitle {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Custom Tooltip */
 .customTooltip {
   background: white;
   border: 1px solid #e2e8f0;
@@ -257,6 +311,7 @@
   font-size: 16px;
 }
 
+/* Statistics */
 .stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -302,6 +357,7 @@
   color: #dc2626;
 }
 
+/* Trading Info Section */
 .tradingInfo {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -315,6 +371,11 @@
   padding: 25px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
+}
+
+.infoSection:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transition: box-shadow 0.3s ease;
 }
 
 .infoSectionTitle {
@@ -355,6 +416,7 @@
   color: #1e293b;
 }
 
+/* Trading Tips */
 .tradingTips {
   display: flex;
   flex-direction: column;
@@ -376,6 +438,12 @@
   transform: translateX(4px);
 }
 
+.tip strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+/* Loading and Error States */
 .loading {
   text-align: center;
   padding: 60px 20px;
@@ -398,10 +466,54 @@
   box-shadow: 0 4px 6px rgba(220, 38, 38, 0.1);
 }
 
+/* Animationen */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.gameContainer>* {
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Smooth Scrolling */
+.stockList {
+  scroll-behavior: smooth;
+}
+
+/* Hover-Effekt für bessere Scroll-Erfahrung */
+.sidebar:hover .stockList::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .gameContainer {
     padding: 15px;
+  }
+
+  .gameLayout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    position: static;
+    max-height: 300px;
+  }
+
+  .stockList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    max-height: 200px;
   }
 
   .tradingInfo {
@@ -418,6 +530,15 @@
 @media (max-width: 768px) {
   .appHeader h1 {
     font-size: 2rem;
+  }
+
+  .sidebar {
+    max-height: 250px;
+  }
+
+  .stockList {
+    grid-template-columns: 1fr;
+    max-height: 150px;
   }
 
   .monthNavigator {
@@ -448,5 +569,379 @@
 
   .stats {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Popup Styles */
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.popup {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid #e2e8f0;
+  animation: popupSlideIn 0.3s ease-out;
+}
+
+@keyframes popupSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.popup h2 {
+  margin: 0 0 15px 0;
+  color: #1e293b;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.popup p {
+  margin: 0 0 20px 0;
+  color: #64748b;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.popupInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.popupInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.popupInfo {
+  font-size: 14px;
+  color: #64748b;
+  margin: 10px 0;
+  text-align: center;
+  background: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.popupButtons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.popupButtonPrimary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.popupButtonPrimary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+}
+
+.popupButtonPrimary:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.popupButtonSecondary {
+  background: transparent;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.popupButtonSecondary:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+/* Navigation Container */
+.navigationContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.balanceDisplay {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.balanceLabel {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.balanceValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: #059669;
+}
+
+/* Trading Panel */
+.tradingPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 30px;
+}
+
+.investmentInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.investmentLabel {
+  font-size: 16px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.investmentValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.tradingButtons {
+  display: flex;
+  gap: 15px;
+}
+
+.buyButton {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.3);
+}
+
+.buyButton:hover {
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(5, 150, 105, 0.4);
+}
+
+.sellButton {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+}
+
+.sellButton:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.4);
+}
+
+/* Responsive Design für neue Elemente */
+@media (max-width: 768px) {
+  .navigationContainer {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .balanceDisplay {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tradingPanel {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .tradingButtons {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .popup {
+    margin: 20px;
+    padding: 20px;
+  }
+
+  .popupButtons {
+    flex-direction: column;
+  }
+
+  .popupButtonPrimary,
+  .popupButtonSecondary {
+    width: 100%;
+  }
+}
+
+/* Erweiterte Popup-Styles */
+.priceInfo {
+  background: #f0f9ff;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  text-align: center;
+  border: 1px solid #0ea5e9;
+}
+
+.calculationInfo {
+  background: #f8fafc;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+  border: 1px solid #e2e8f0;
+}
+
+.calculationInfo p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #374151;
+}
+
+.calculationInfo strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+/* Erweiterte Trading Panel Styles */
+.stockPosition {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.positionInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.positionLabel {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.positionValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* Button Disabled States */
+.buyButton:disabled,
+.sellButton:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsive Design für neue Elemente */
+@media (max-width: 768px) {
+  .stockPosition {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .positionInfo {
+    width: 100%;
+  }
+
+  .calculationInfo {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gameContainer {
+    padding: 10px;
+  }
+
+  .appHeader {
+    padding: 15px;
+  }
+
+  .appHeader h1 {
+    font-size: 1.8rem;
+  }
+
+  .chartContainer {
+    padding: 15px 10px;
+  }
+
+  .infoSection {
+    padding: 20px 15px;
   }
 }
