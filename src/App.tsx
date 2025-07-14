@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Home from "./Home";
-import Game from "./Game";
+import Game from "./Game.tsx";
 
 const App: React.FC = () => {
   return (

@@ -1,63 +1,79 @@
-import React, { useRef, useEffect } from "react";
+import React from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import type { StockDataPoint } from '../utils/csvParser';
 
-type StockEntry = {
-    date: string;
-    close: number;
-};
+interface StockChartProps {
+    data: StockDataPoint[];
+}
 
-type Props = {
-    data: StockEntry[];
-    symbol: string;
-    month: string;
-};
+interface ChartDataPoint extends StockDataPoint {
+    timestamp: number;
+}
 
-const StockChart: React.FC<Props> = ({ data, symbol, month }) => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+interface TooltipProps {
+    active?: boolean;
+    payload?: Array<{
+        payload: ChartDataPoint;
+        value: number;
+    }>;
+    label?: string;
+}
 
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas || data.length === 0) return;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
+const StockChart: React.FC<StockChartProps> = ({ data }) => {
+    const CustomTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
+        if (active && payload && payload.length) {
+            const dataPoint = payload[0].payload;
+            return (
+                <div className="custom-tooltip">
+                    <p className="tooltip-date">{`Datum: ${dataPoint.dateString}`}</p>
+                    <p className="tooltip-price">{`Kurs: ${dataPoint.closeString}€`}</p>
+                </div>
+            );
+        }
+        return null;
+    };
 
-        const margin = 40;
-        const width = canvas.width - 2 * margin;
-        const height = canvas.height - 2 * margin;
-        const closes = data.map(d => d.close);
-        const max = Math.max(...closes);
-        const min = Math.min(...closes);
+    const formatXAxisLabel = (tickItem: number): string => {
+        const date = new Date(tickItem);
+        return date.getDate().toString();
+    };
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const formatYAxisLabel = (value: number): string => {
+        return `${value.toFixed(2)}€`;
+    };
 
-        // Achsen
-        ctx.strokeStyle = "#333";
-        ctx.beginPath();
-        ctx.moveTo(margin, margin);
-        ctx.lineTo(margin, margin + height);
-        ctx.lineTo(margin + width, margin + height);
-        ctx.stroke();
-
-        // Linie
-        ctx.strokeStyle = "#007bff";
-        ctx.beginPath();
-        data.forEach((d, i) => {
-            const x = margin + (i / (data.length - 1)) * width;
-            const y = margin + height - ((d.close - min) / (max - min)) * height;
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        });
-        ctx.stroke();
-
-        // Beschriftung
-        ctx.fillStyle = "#111";
-        ctx.fillText(`Schlusskurs ${symbol} (${month})`, margin, margin - 10);
-        ctx.fillText(max.toFixed(2), 5, margin + 10);
-        ctx.fillText(min.toFixed(2), 5, margin + height);
-    }, [data, symbol, month]);
+    const chartData: ChartDataPoint[] = data.map(item => ({
+        ...item,
+        timestamp: item.date.getTime()
+    }));
 
     return (
-        <div className="chart-container">
-            <canvas ref={canvasRef} width={800} height={400}></canvas>
+        <div className="stock-chart">
+            <ResponsiveContainer width="100%" height={400}>
+                <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                        dataKey="timestamp"
+                        type="number"
+                        scale="time"
+                        domain={['dataMin', 'dataMax']}
+                        tickFormatter={formatXAxisLabel}
+                    />
+                    <YAxis
+                        domain={['dataMin - 1', 'dataMax + 1']}
+                        tickFormatter={formatYAxisLabel}
+                    />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Line
+                        type="monotone"
+                        dataKey="close"
+                        stroke="#2563eb"
+                        strokeWidth={2}
+                        dot={{ fill: '#2563eb', strokeWidth: 2, r: 3 }}
+                        activeDot={{ r: 6, stroke: '#2563eb', strokeWidth: 2 }}
+                    />
+                </LineChart>
+            </ResponsiveContainer>
         </div>
     );
 };
