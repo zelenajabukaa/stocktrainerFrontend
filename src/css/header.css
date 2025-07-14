@@ -1,0 +1,88 @@
+.header-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 1.2rem 2.5rem;
+  background: transparent;
+  box-sizing: border-box;
+  min-height: 4.5rem;
+  position: relative;
+}
+
+.header-bar .username {
+  flex: 1;
+  text-align: center;
+  font-weight: 800;
+  font-size: 2rem;
+  color: #22223b;
+  letter-spacing: 0.01em;
+}
+
+.header-bar .right-group {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  position: absolute;
+  right: -12rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.header-bar .lvl-badge {
+  position: static;
+  top: unset;
+  right: unset;
+  transform: none;
+  margin-right: 0;
+  align-self: center;
+}
+
+.header-bar .menu-btn {
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1.3rem;
+  box-shadow: 0 2px 12px 0 rgba(99,102,241,0.15);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+
+.header-bar .dropdown-menu {
+  position: absolute;
+  top: 3.5rem;
+  right: 0;
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px 0 rgba(99,102,241,0.10);
+  padding: 1rem 0.5rem;
+  min-width: 10rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  z-index: 10;
+}
+
+.header-bar .dropdown-menu button {
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: background 0.2s;
+}
+
+.header-bar .dropdown-menu button:last-child {
+  color: #ef4444;
+}
