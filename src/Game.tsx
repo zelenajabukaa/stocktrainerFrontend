@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import StockChart from './components/StockChart';
 import MonthNavigator from './components/MonthNavigator';
@@ -53,6 +54,14 @@ const Game: React.FC = () => {
     };
 
     initializeStocks();
+  }, []);
+
+  useEffect(() => {
+    const prevZoom = document.body.style.zoom;
+    document.body.style.zoom = "1.02";
+    return () => {
+      document.body.style.zoom = prevZoom;
+    };
   }, []);
 
   useEffect(() => {
