@@ -6,6 +6,7 @@ import Game from "./Game";
 const App: React.FC = () => {
   return (
     <Routes>
+      <Route path="/" element={<Home />} />
       <Route path="/home" element={<Home />} />
       <Route path="/game" element={<Game />} />
       <Route path="*" element={<Navigate to="/home" replace />} />
