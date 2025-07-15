@@ -1,4 +1,5 @@
 import React from 'react';
+import Header from './components/Header';
 import { useNavigate } from 'react-router-dom';
 import './css/home.css';
 
@@ -20,6 +21,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="main-bg">
+      <Header />
       {/* Header mit Level, Username und Freunde-Button */}
       <div className="header-area">
         <div style={{ position: 'absolute', top: '2.5rem', right: '3rem', display: 'flex', gap: '1.2rem', alignItems: 'center' }}>
@@ -36,10 +38,10 @@ const Home: React.FC = () => {
       <div className="main-content">
         <div className="card card-main">Hauptbereich</div>
         <div className="card card-side card-side-vertical">
-          <div className="sidebar-btns">
-            {['Neues Spiel', 'Levelbelohnungen', 'Quests', 'Abzeichen', 'Auswertungen', 'Einstellungen'].map((label, idx) => (
+          <div className="sidebar-btns sidebar-btns-fill">
+            {['Neues Spiel', 'Levelbelohnungen', 'Quests', 'Abzeichen', 'Auswertungen'].map((label, idx) => (
               <button
-                className="friends-btn friends-btn-large sidebar-btn"
+                className="friends-btn friends-btn-large sidebar-btn sidebar-btn-fill"
                 key={idx}
                 onClick={() => handleButtonClick(label)}
               >
