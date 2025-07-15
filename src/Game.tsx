@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import StockChart from './components/StockChart';
 import MonthNavigator from './components/MonthNavigator';
@@ -15,6 +16,7 @@ interface StockHolding {
 }
 
 const Game: React.FC = () => {
+  // Alle bestehenden State-Variablen bleiben gleich...
   const [availableStocks, setAvailableStocks] = useState<StockInfo[]>([]);
   const [selectedStock, setSelectedStock] = useState<string>('');
   const [stockData, setStockData] = useState<StockDataPoint[]>([]);
@@ -34,7 +36,7 @@ const Game: React.FC = () => {
   const [tempCapitalInput, setTempCapitalInput] = useState<string>('');
   const [tempShareAmount, setTempShareAmount] = useState<string>('');
 
-  // Bestehende useEffect Hooks...
+  // Alle bestehenden useEffect Hooks bleiben unverändert...
   useEffect(() => {
     const initializeStocks = async (): Promise<void> => {
       try {
@@ -52,6 +54,14 @@ const Game: React.FC = () => {
     };
 
     initializeStocks();
+  }, []);
+
+  useEffect(() => {
+    const prevZoom = document.body.style.zoom;
+    document.body.style.zoom = "1.02";
+    return () => {
+      document.body.style.zoom = prevZoom;
+    };
   }, []);
 
   useEffect(() => {
@@ -93,69 +103,39 @@ const Game: React.FC = () => {
     return currentMonthData[currentMonthData.length - 1].close;
   };
 
-  const getCurrentStockInfo = (): StockInfo | undefined => {
-    return availableStocks.find(s => s.symbol === selectedStock);
-  };
-
   const getCurrentStockHolding = (): StockHolding | undefined => {
     return stockHoldings.find(holding => holding.symbol === selectedStock);
   };
 
-  // NEU: Gebühren-Berechnungen
-  const calculateBuyFee = (shares: number): number => {
-    const stockInfo = getCurrentStockInfo();
-    if (!stockInfo) return 0;
-
-    const subtotal = shares * getCurrentStockPrice();
-    return subtotal * (stockInfo.buyFee / 100);
+  const getTotalInvestedAmount = (): number => {
+    return stockHoldings.reduce((total, holding) => {
+      return total + (holding.shares * holding.averagePrice);
+    }, 0);
   };
 
-  const calculateSellFee = (shares: number): number => {
-    const stockInfo = getCurrentStockInfo();
-    if (!stockInfo) return 0;
+  // KORRIGIERTE calculateTotalValue Funktion
+  const calculateTotalValue = (): number => {
+    let totalValue = currentBalance;
 
-    const subtotal = shares * getCurrentStockPrice();
-    return subtotal * (stockInfo.sellFee / 100);
-  };
+    stockHoldings.forEach(holding => {
+      const stockInfo = availableStocks.find(s => s.symbol === holding.symbol);
+      if (stockInfo) {
+        let currentPrice = 0;
 
-  const calculateBuyTotal = (): number => {
-    const shares = parseInt(tempShareAmount) || 0;
-    const subtotal = shares * getCurrentStockPrice();
-    const fee = calculateBuyFee(shares);
-    return subtotal + fee;
-  };
+        if (holding.symbol === selectedStock) {
+          // Für die aktuell ausgewählte Aktie verwenden wir den aktuellen Preis
+          currentPrice = getCurrentStockPrice();
+        } else {
+          // Für andere Aktien verwenden wir den Durchschnittspreis (vereinfacht)
+          // In einer echten App würdest du hier die aktuellen Preise aller Aktien laden
+          currentPrice = holding.averagePrice;
+        }
 
-  const calculateSellTotal = (): number => {
-    const shares = parseInt(tempShareAmount) || 0;
-    const subtotal = shares * getCurrentStockPrice();
-    const fee = calculateSellFee(shares);
-    return subtotal - fee;
-  };
-
-  const getMaxBuyableShares = (): number => {
-    const currentPrice = getCurrentStockPrice();
-    const stockInfo = getCurrentStockInfo();
-    if (currentPrice === 0 || !stockInfo) return 0;
-
-    // Binäre Suche für die maximale Anzahl Aktien unter Berücksichtigung der Gebühren
-    let maxShares = 0;
-    let testShares = Math.floor(currentBalance / currentPrice);
-
-    while (testShares > 0) {
-      const totalCost = testShares * currentPrice + (testShares * currentPrice * (stockInfo.buyFee / 100));
-      if (totalCost <= currentBalance) {
-        maxShares = testShares;
-        break;
+        totalValue += holding.shares * currentPrice;
       }
-      testShares--;
-    }
+    });
 
-    return maxShares;
-  };
-
-  const getMaxSellableShares = (): number => {
-    const holding = getCurrentStockHolding();
-    return holding ? holding.shares : 0;
+    return totalValue;
   };
 
   // Handler Functions
@@ -188,6 +168,7 @@ const Game: React.FC = () => {
     setTempShareAmount('');
   };
 
+  // NEU: Max-Button Handler
   const handleMaxBuy = (): void => {
     const maxShares = getMaxBuyableShares();
     setTempShareAmount(maxShares.toString());
@@ -201,12 +182,10 @@ const Game: React.FC = () => {
   const handleBuySubmit = (): void => {
     const shares = parseInt(tempShareAmount);
     const currentPrice = getCurrentStockPrice();
-    const subtotal = shares * currentPrice;
-    const fee = calculateBuyFee(shares);
-    const totalCost = subtotal + fee;
+    const totalCost = shares * currentPrice;
 
     if (shares > 0 && totalCost <= currentBalance) {
-      // Aktualisiere Balance (mit Gebühren)
+      // Aktualisiere Balance
       setCurrentBalance(prev => prev - totalCost);
 
       // Aktualisiere Stock Holdings
@@ -214,9 +193,9 @@ const Game: React.FC = () => {
         const existingHolding = prev.find(h => h.symbol === selectedStock);
 
         if (existingHolding) {
-          // Berechne neuen Durchschnittspreis (nur Aktienpreis, ohne Gebühren)
+          // Berechne neuen Durchschnittspreis
           const totalShares = existingHolding.shares + shares;
-          const totalValue = (existingHolding.shares * existingHolding.averagePrice) + subtotal;
+          const totalValue = (existingHolding.shares * existingHolding.averagePrice) + totalCost;
           const newAveragePrice = totalValue / totalShares;
 
           return prev.map(h =>
@@ -238,13 +217,12 @@ const Game: React.FC = () => {
   const handleSellSubmit = (): void => {
     const shares = parseInt(tempShareAmount);
     const currentPrice = getCurrentStockPrice();
-    const subtotal = shares * currentPrice;
-    const fee = calculateSellFee(shares);
-    const totalRevenue = subtotal - fee;
     const currentHolding = getCurrentStockHolding();
 
     if (shares > 0 && currentHolding && shares <= currentHolding.shares) {
-      // Aktualisiere Balance (mit Gebühren-Abzug)
+      const totalRevenue = shares * currentPrice;
+
+      // Aktualisiere Balance
       setCurrentBalance(prev => prev + totalRevenue);
 
       // Aktualisiere Stock Holdings
@@ -254,7 +232,7 @@ const Game: React.FC = () => {
             const newShares = h.shares - shares;
             return newShares > 0
               ? { ...h, shares: newShares }
-              : null;
+              : null; // Entferne Holding wenn keine Aktien mehr
           }
           return h;
         }).filter(Boolean) as StockHolding[];
@@ -263,6 +241,10 @@ const Game: React.FC = () => {
 
     setShowSellPopup(false);
     setTempShareAmount('');
+  };
+
+  const getCurrentStockInfo = (): StockInfo | undefined => {
+    return availableStocks.find(s => s.symbol === selectedStock);
   };
 
   const formatMonthDisplay = (monthKey: string): string => {
@@ -274,6 +256,29 @@ const Game: React.FC = () => {
     });
   };
 
+  // Berechnungen für Popups
+  const calculateBuyTotal = (): number => {
+    const shares = parseInt(tempShareAmount) || 0;
+    return shares * getCurrentStockPrice();
+  };
+
+  const calculateSellTotal = (): number => {
+    const shares = parseInt(tempShareAmount) || 0;
+    return shares * getCurrentStockPrice();
+  };
+
+  const getMaxBuyableShares = (): number => {
+    const currentPrice = getCurrentStockPrice();
+    if (currentPrice === 0) return 0;
+    return Math.floor(currentBalance / currentPrice);
+  };
+
+  const getMaxSellableShares = (): number => {
+    const holding = getCurrentStockHolding();
+    return holding ? holding.shares : 0;
+  };
+
+  // Loading und Error States bleiben gleich...
   if (loading) {
     return (
       <div className={styles.gameContainer}>
@@ -297,7 +302,7 @@ const Game: React.FC = () => {
 
   return (
     <div className={styles.gameContainer}>
-      {/* Startkapital Popup */}
+      {/* Startkapital Popup bleibt gleich... */}
       {showStartCapitalPopup && (
         <div className={styles.popupOverlay}>
           <div className={styles.popup}>
@@ -325,7 +330,7 @@ const Game: React.FC = () => {
         </div>
       )}
 
-      {/* ERWEITERTE Buy Popup mit Gebühren-Anzeige */}
+      {/* ERWEITERTE Buy Popup mit Max-Button */}
       {showBuyPopup && (
         <div className={styles.popupOverlay}>
           <div className={styles.popup}>
@@ -333,7 +338,6 @@ const Game: React.FC = () => {
             <p>Wie viele {currentStockInfo?.name} Aktien möchtest du kaufen?</p>
             <div className={styles.priceInfo}>
               <span>Aktueller Preis: <strong>{currentPrice.toFixed(2)}€</strong></span>
-              <span>Kaufgebühr: <strong>{currentStockInfo?.buyFee}%</strong></span>
             </div>
             <div className={styles.inputWithMaxButton}>
               <input
@@ -355,12 +359,9 @@ const Game: React.FC = () => {
               </button>
             </div>
             <div className={styles.calculationInfo}>
-              <div className={styles.feeBreakdown}>
-                <p>Aktienkosten: <strong>{((parseInt(tempShareAmount) || 0) * currentPrice).toFixed(2)}€</strong></p>
-                <p>Kaufgebühr: <strong>{calculateBuyFee(parseInt(tempShareAmount) || 0).toFixed(2)}€</strong></p>
-                <p className={styles.totalCost}>Gesamtkosten: <strong>{calculateBuyTotal().toFixed(2)}€</strong></p>
-              </div>
+              <p>Gesamtkosten: <strong>{calculateBuyTotal().toFixed(2)}€</strong></p>
               <p>Verfügbares Guthaben: {currentBalance.toFixed(2)}€</p>
+              <p>Max. kaufbare Aktien: {getMaxBuyableShares()}</p>
             </div>
             <div className={styles.popupButtons}>
               <button
@@ -386,7 +387,7 @@ const Game: React.FC = () => {
         </div>
       )}
 
-      {/* ERWEITERTE Sell Popup mit Gebühren-Anzeige */}
+      {/* ERWEITERTE Sell Popup mit Max-Button */}
       {showSellPopup && (
         <div className={styles.popupOverlay}>
           <div className={styles.popup}>
@@ -394,7 +395,6 @@ const Game: React.FC = () => {
             <p>Wie viele {currentStockInfo?.name} Aktien möchtest du verkaufen?</p>
             <div className={styles.priceInfo}>
               <span>Aktueller Preis: <strong>{currentPrice.toFixed(2)}€</strong></span>
-              <span>Verkaufsgebühr: <strong>{currentStockInfo?.sellFee}%</strong></span>
             </div>
             <div className={styles.inputWithMaxButton}>
               <input
@@ -416,11 +416,7 @@ const Game: React.FC = () => {
               </button>
             </div>
             <div className={styles.calculationInfo}>
-              <div className={styles.feeBreakdown}>
-                <p>Verkaufserlös: <strong>{((parseInt(tempShareAmount) || 0) * currentPrice).toFixed(2)}€</strong></p>
-                <p>Verkaufsgebühr: <strong>-{calculateSellFee(parseInt(tempShareAmount) || 0).toFixed(2)}€</strong></p>
-                <p className={styles.totalRevenue}>Netto-Erlös: <strong>{calculateSellTotal().toFixed(2)}€</strong></p>
-              </div>
+              <p>Verkaufserlös: <strong>{calculateSellTotal().toFixed(2)}€</strong></p>
               <p>Besitzt: {currentHolding?.shares || 0} Aktien</p>
               {currentHolding && (
                 <p>Ø Kaufpreis: {currentHolding.averagePrice.toFixed(2)}€</p>
@@ -462,7 +458,7 @@ const Game: React.FC = () => {
             <p>Interaktive Aktienkurs-Analyse mit monatlicher Navigation</p>
           </header>
 
-          {/* Navigation mit STARTKAPITAL statt Gesamtvermögen */}
+          {/* Navigation mit KORRIGIERTER Vermögensanzeige */}
           <div className={styles.navigationContainer}>
             <MonthNavigator
               currentMonth={currentMonth}
@@ -470,11 +466,12 @@ const Game: React.FC = () => {
               availableMonths={availableMonths}
             />
             <div className={styles.balanceDisplay}>
-              <span className={styles.balanceLabel}>Startkapital:</span>
-              <span className={styles.balanceValue}>{startCapital.toFixed(2)}€</span>
+              <span className={styles.balanceLabel}>Gesamtvermögen:</span>
+              <span className={styles.balanceValue}>{calculateTotalValue().toFixed(2)}€</span>
             </div>
           </div>
 
+          {/* Rest der Komponente bleibt gleich... */}
           <div className={styles.chartContainer}>
             <StockChart
               data={currentMonthData}
@@ -482,7 +479,6 @@ const Game: React.FC = () => {
             />
           </div>
 
-          {/* Erweiterte Trading Panel mit Gebühren-Info */}
           <div className={styles.tradingPanel}>
             <div className={styles.stockPosition}>
               <div className={styles.positionInfo}>
@@ -500,31 +496,25 @@ const Game: React.FC = () => {
                 <span className={styles.positionValue}>{currentBalance.toFixed(2)}€</span>
               </div>
             </div>
-            <div className={styles.tradingInfo}>
-              <div className={styles.feeInfo}>
-                <span>Kaufgebühr: {currentStockInfo?.buyFee}%</span>
-                <span>Verkaufsgebühr: {currentStockInfo?.sellFee}%</span>
-              </div>
-              <div className={styles.tradingButtons}>
-                <button
-                  onClick={handleBuyClick}
-                  className={styles.buyButton}
-                  disabled={getMaxBuyableShares() === 0}
-                >
-                  📈 Kaufen
-                </button>
-                <button
-                  onClick={handleSellClick}
-                  className={styles.sellButton}
-                  disabled={getMaxSellableShares() === 0}
-                >
-                  📉 Verkaufen
-                </button>
-              </div>
+            <div className={styles.tradingButtons}>
+              <button
+                onClick={handleBuyClick}
+                className={styles.buyButton}
+                disabled={getMaxBuyableShares() === 0}
+              >
+                📈 Kaufen
+              </button>
+              <button
+                onClick={handleSellClick}
+                className={styles.sellButton}
+                disabled={getMaxSellableShares() === 0}
+              >
+                📉 Verkaufen
+              </button>
             </div>
           </div>
 
-          {/* Stats bleiben unverändert */}
+          {/* Stats bleiben unverändert... */}
           <div className={styles.stats}>
             <div className={styles.statItem}>
               <span className={styles.statLabel}>Datenpunkte im Monat:</span>
