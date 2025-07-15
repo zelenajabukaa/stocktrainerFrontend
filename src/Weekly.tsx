@@ -289,7 +289,7 @@ const Weekly: React.FC = () => {
   }
 
   return (
-    <div className={styles.weeklyContainer}>
+    <>
       {/* Startkapital Popup */}
       {showStartCapitalPopup && (
         <div className={styles.popupOverlay}>
@@ -442,112 +442,85 @@ const Weekly: React.FC = () => {
         </div>
       )}
 
-      <div className={styles.weeklyLayout}>
-        <Sidebar
-          availableStocks={availableStocks}
-          selectedStock={selectedStock}
-          onStockSelect={handleStockSelect}
-        />
+      <div className={styles.weeklyContainer}>
+        <div className={styles.weeklyLayout}>
+          <Sidebar
+            availableStocks={availableStocks}
+            selectedStock={selectedStock}
+            onStockSelect={handleStockSelect}
+          />
 
-        <main className={styles.mainContent}>
-          <header className={styles.appHeader}>
-            <h1>📊 {currentStockInfo?.name || 'Weekly Trading'} Dashboard</h1>
-            <p>Einzelwöchentliche Aktienkurs-Analyse</p>
-          </header>
+          <main className={styles.mainContent}>
+            <header className={styles.appHeader}>
+              <h1>📊 {currentStockInfo?.name || 'Weekly Trading'} Dashboard</h1>
+              <p>Einzelwöchentliche Aktienkurs-Analyse</p>
+            </header>
 
-          <div className={styles.navigationContainer}>
-            <WeekNavigator
-              currentWeekKey={currentWeekKey}
-              onWeekChange={handleWeekChange}
-              availableWeeks={availableWeeks}
-              weekString={currentWeek.weekString}
-            />
-            <div className={styles.balanceDisplay}>
-              <span className={styles.balanceLabel}>Startkapital:</span>
-              <span className={styles.balanceValue}>{startCapital.toFixed(2)}€</span>
-            </div>
-          </div>
-
-          <div className={styles.chartContainer}>
-            <WeeklyStockChart
-              data={currentWeek.dailyData}
-              stockColor={currentStockInfo?.color || '#2563eb'}
-              weekString={currentWeek.weekString}
-            />
-          </div>
-
-          <div className={styles.tradingPanel}>
-            <div className={styles.stockPosition}>
-              <div className={styles.positionInfo}>
-                <span className={styles.positionLabel}>Besitzt:</span>
-                <span className={styles.positionValue}>
-                  {currentHolding?.shares || 0} Aktien
-                </span>
-              </div>
-              <div className={styles.positionInfo}>
-                <span className={styles.positionLabel}>Wochenschlusspreis:</span>
-                <span className={styles.positionValue}>{currentPrice.toFixed(2)}€</span>
-              </div>
-              <div className={styles.positionInfo}>
-                <span className={styles.positionLabel}>Bargeld:</span>
-                <span className={styles.positionValue}>{currentBalance.toFixed(2)}€</span>
+            <div className={styles.navigationContainer}>
+              <WeekNavigator
+                currentWeekKey={currentWeekKey}
+                onWeekChange={handleWeekChange}
+                availableWeeks={availableWeeks}
+                weekString={currentWeek.weekString}
+              />
+              <div className={styles.balanceDisplay}>
+                <span className={styles.balanceLabel}>Startkapital:</span>
+                <span className={styles.balanceValue}>{startCapital.toFixed(2)}€</span>
               </div>
             </div>
-            <div className={styles.tradingInfo}>
-              <div className={styles.feeInfo}>
-                <span>Kaufgebühr: {currentStockInfo?.buyFee}%</span>
-                <span>Verkaufsgebühr: {currentStockInfo?.sellFee}%</span>
-              </div>
-              <div className={styles.tradingButtons}>
-                <button
-                  onClick={handleBuyClick}
-                  className={styles.buyButton}
-                  disabled={getMaxBuyableShares() === 0}
-                >
-                  📈 Kaufen
-                </button>
-                <button
-                  onClick={handleSellClick}
-                  className={styles.sellButton}
-                  disabled={getMaxSellableShares() === 0}
-                >
-                  📉 Verkaufen
-                </button>
-              </div>
-            </div>
-          </div>
 
-          <div className={styles.stats}>
-            <div className={styles.statItem}>
-              <span className={styles.statLabel}>Handelstage in der Woche:</span>
-              <span className={styles.statValue}>{currentWeek.dailyData.length}</span>
+            <div className={styles.chartContainer}>
+              <WeeklyStockChart
+                data={currentWeek.dailyData}
+                stockColor={currentStockInfo?.color || '#2563eb'}
+                weekString={currentWeek.weekString}
+              />
             </div>
-            {currentWeek.dailyData.length > 0 && (
-              <>
-                <div className={styles.statItem}>
-                  <span className={styles.statLabel}>Höchster Kurs:</span>
-                  <span className={styles.statValue}>
-                    {Math.max(...currentWeek.dailyData.map(d => d.close)).toFixed(2)}€
+
+            <div className={styles.tradingPanel}>
+              <div className={styles.stockPosition}>
+                <div className={styles.positionInfo}>
+                  <span className={styles.positionLabel}>Besitzt:</span>
+                  <span className={styles.positionValue}>
+                    {currentHolding?.shares || 0} Aktien
                   </span>
                 </div>
-                <div className={styles.statItem}>
-                  <span className={styles.statLabel}>Niedrigster Kurs:</span>
-                  <span className={styles.statValue}>
-                    {Math.min(...currentWeek.dailyData.map(d => d.close)).toFixed(2)}€
-                  </span>
+                <div className={styles.positionInfo}>
+                  <span className={styles.positionLabel}>Wochenschlusspreis:</span>
+                  <span className={styles.positionValue}>{currentPrice.toFixed(2)}€</span>
                 </div>
-                <div className={styles.statItem}>
-                  <span className={styles.statLabel}>Wochenschlusspreis:</span>
-                  <span className={styles.statValue}>
-                    {currentPrice.toFixed(2)}€
-                  </span>
+                <div className={styles.positionInfo}>
+                  <span className={styles.positionLabel}>Bargeld:</span>
+                  <span className={styles.positionValue}>{currentBalance.toFixed(2)}€</span>
                 </div>
-              </>
-            )}
-          </div>
-        </main>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 24 }}>
+                <div className={styles.tradingButtons}>
+                  <button
+                    onClick={handleBuyClick}
+                    className={styles.buyButton}
+                    disabled={getMaxBuyableShares() === 0}
+                  >
+                    📈 Kaufen
+                  </button>
+                  <button
+                    onClick={handleSellClick}
+                    className={styles.sellButton}
+                    disabled={getMaxSellableShares() === 0}
+                  >
+                    📉 Verkaufen
+                  </button>
+                </div>
+                <div className={styles.feeInfo}>
+                  <span>Kaufgebühr: {currentStockInfo?.buyFee ?? 0}%</span>
+                  <span>Verkaufsgebühr: {currentStockInfo?.sellFee ?? 0}%</span>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
