@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './css/home.css';
 
 const Home: React.FC = () => {
@@ -7,6 +7,14 @@ const Home: React.FC = () => {
   const username = "Username";
   const level = 1;
   const ingameCurrency = 0;
+  const navigate = useNavigate();
+
+  const handleButtonClick = (label: string) => {
+    if (label === 'Neues Spiel') {
+      navigate('/game/monthly');
+    }
+    // ggf. weitere Navigationen für andere Buttons
+  };
 
   return (
     <div className="main-bg">
@@ -24,6 +32,18 @@ const Home: React.FC = () => {
       <div className="main-content">
         <div className="card card-main">Hauptbereich</div>
         <div className="card card-side">Sidebar</div>
+
+        <div className="card card-side">
+          {['Neues Spiel', 'Levelbelohnungen', 'Quests', 'Abzeichen', 'Auswertungen', 'Einstellungen'].map((label, idx) => (
+            <button
+              className="friends-btn friends-btn-large"
+              key={idx}
+              onClick={() => handleButtonClick(label)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

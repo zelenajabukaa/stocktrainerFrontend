@@ -1,5 +1,127 @@
 /* Game.module.css - Vollständiges Trading Dashboard CSS */
 
+/* Gebühren-Breakdown Styles */
+.feeBreakdown {
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.feeBreakdown p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #374151;
+  display: flex;
+  justify-content: space-between;
+}
+
+.totalCost {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 8px;
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.totalRevenue {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 8px;
+  margin-top: 8px;
+  font-weight: 600;
+  color: #059669;
+}
+
+/* Erweiterte Trading Panel Styles */
+.tradingPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 30px;
+}
+
+.stockPosition {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.tradingInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.feeInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #64748b;
+  text-align: right;
+}
+
+.tradingButtons {
+  display: flex;
+  gap: 15px;
+}
+
+/* Preis-Info Erweiterung */
+.priceInfo {
+  background: #f0f9ff;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  text-align: center;
+  border: 1px solid #0ea5e9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.priceInfo span {
+  font-size: 14px;
+}
+
+/* Responsive Design für neue Elemente */
+@media (max-width: 768px) {
+  .tradingPanel {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .stockPosition {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .tradingInfo {
+    align-items: center;
+    width: 100%;
+  }
+
+  .feeInfo {
+    text-align: center;
+  }
+
+  .priceInfo {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .feeBreakdown p {
+    font-size: 13px;
+  }
+}
+
 /* Container und Layout */
 .gameContainer {
   max-width: 1400px;
@@ -30,6 +152,129 @@
   flex-direction: column;
   overflow: hidden;
 }
+
+/* Gebühren-Breakdown Styles */
+.feeBreakdown {
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.feeBreakdown p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #374151;
+  display: flex;
+  justify-content: space-between;
+}
+
+.totalCost {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 8px;
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.totalRevenue {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 8px;
+  margin-top: 8px;
+  font-weight: 600;
+  color: #059669;
+}
+
+/* Erweiterte Trading Panel Styles */
+.tradingPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 30px;
+}
+
+.stockPosition {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.tradingInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.feeInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #64748b;
+  text-align: right;
+}
+
+.tradingButtons {
+  display: flex;
+  gap: 15px;
+}
+
+/* Preis-Info Erweiterung */
+.priceInfo {
+  background: #f0f9ff;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  text-align: center;
+  border: 1px solid #0ea5e9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.priceInfo span {
+  font-size: 14px;
+}
+
+/* Responsive Design für neue Elemente */
+@media (max-width: 768px) {
+  .tradingPanel {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .stockPosition {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .tradingInfo {
+    align-items: center;
+    width: 100%;
+  }
+
+  .feeInfo {
+    text-align: center;
+  }
+
+  .priceInfo {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .feeBreakdown p {
+    font-size: 13px;
+  }
+}
+
 
 .sidebarHeader {
   padding: 20px;
