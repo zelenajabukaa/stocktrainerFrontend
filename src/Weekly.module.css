@@ -1,0 +1,845 @@
+/* Weekly.module.css - Identisch zu Game.module.css aber mit wöchentlichen Anpassungen */
+
+.weeklyContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+.weeklyLayout {
+  display: flex;
+  gap: 20px;
+  min-height: 100vh;
+}
+
+/* Sidebar Styles - identisch zu Game.module.css */
+.sidebar {
+  width: 280px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebarHeader {
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  background: white;
+  border-radius: 12px 12px 0 0;
+}
+
+.sidebarHeader h3 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.stockList {
+  padding: 10px;
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.stockList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.stockList::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.stockList::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.stockList::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.stockItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+}
+
+.stockItem:hover {
+  background: #f8fafc;
+}
+
+.stockItem:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.stockItemActive {
+  background: #eff6ff;
+  border: 1px solid #3b82f6;
+}
+
+.stockColorIndicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.stockInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  min-width: 0;
+}
+
+.stockSymbol {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.stockName {
+  font-size: 12px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.sidebarFooter {
+  padding: 15px 20px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 0 0 12px 12px;
+  flex-shrink: 0;
+}
+
+.stockCount {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+  text-align: center;
+}
+
+/* Main Content */
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Header Styles */
+.appHeader {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.appHeader h1 {
+  margin-bottom: 10px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.appHeader p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+/* Year Navigator */
+.yearNavigator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.navButton {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(124, 58, 237, 0.3);
+}
+
+.navButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(124, 58, 237, 0.4);
+}
+
+.navButton:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.currentYear {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  min-width: 120px;
+  text-align: center;
+  padding: 8px 16px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+}
+
+/* Navigation Container */
+.navigationContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.balanceDisplay {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.balanceLabel {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.balanceValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: #059669;
+}
+
+/* Chart Container */
+.chartContainer {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.stockChart {
+  width: 100%;
+}
+
+/* Custom Tooltip */
+.customTooltip {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  border-left: 4px solid #7c3aed;
+}
+
+.tooltipDate {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.tooltipPrice {
+  margin: 0 0 8px 0;
+  color: #7c3aed;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.tooltipPeriod {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* Trading Panel */
+.tradingPanel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 30px;
+}
+
+.stockPosition {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.positionInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.positionLabel {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.positionValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.tradingInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.feeInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #64748b;
+  text-align: right;
+}
+
+.tradingButtons {
+  display: flex;
+  gap: 15px;
+}
+
+.buyButton {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.3);
+}
+
+.buyButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(5, 150, 105, 0.4);
+}
+
+.buyButton:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.sellButton {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+}
+
+.sellButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.4);
+}
+
+.sellButton:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Statistics */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.statItem {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s ease;
+}
+
+.statItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.statLabel {
+  display: block;
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.statValue {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* Popup Styles - identisch zu Game.module.css */
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.popup {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid #e2e8f0;
+  animation: popupSlideIn 0.3s ease-out;
+}
+
+@keyframes popupSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.popup h2 {
+  margin: 0 0 15px 0;
+  color: #1e293b;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.popup p {
+  margin: 0 0 20px 0;
+  color: #64748b;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.popupInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-bottom: 15px;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.popupInput:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.inputWithMaxButton {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.inputWithMaxButton .popupInput {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.maxButton {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+}
+
+.maxButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.4);
+}
+
+.maxButton:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.priceInfo {
+  background: #f3e8ff;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  text-align: center;
+  border: 1px solid #c4b5fd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.priceInfo span {
+  font-size: 14px;
+}
+
+.calculationInfo {
+  background: #f8fafc;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+  border: 1px solid #e2e8f0;
+}
+
+.calculationInfo p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #374151;
+}
+
+.calculationInfo strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.feeBreakdown {
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.feeBreakdown p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #374151;
+  display: flex;
+  justify-content: space-between;
+}
+
+.totalCost {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 8px;
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.totalRevenue {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 8px;
+  margin-top: 8px;
+  font-weight: 600;
+  color: #059669;
+}
+
+.popupButtons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.popupButtonPrimary {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(124, 58, 237, 0.3);
+}
+
+.popupButtonPrimary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(124, 58, 237, 0.4);
+}
+
+.popupButtonPrimary:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.popupButtonSecondary {
+  background: transparent;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.popupButtonSecondary:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 1.2rem;
+  color: #64748b;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.error {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 1.1rem;
+  color: #dc2626;
+  background: #fef2f2;
+  border-radius: 12px;
+  margin: 20px 0;
+  border: 1px solid #fecaca;
+  box-shadow: 0 4px 6px rgba(220, 38, 38, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .weeklyContainer {
+    padding: 15px;
+  }
+
+  .weeklyLayout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    position: static;
+    max-height: 300px;
+  }
+
+  .stockList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    max-height: 200px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .appHeader h1 {
+    font-size: 2rem;
+  }
+
+  .stockList {
+    grid-template-columns: 1fr;
+    max-height: 150px;
+  }
+
+  .navigationContainer {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .balanceDisplay {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .tradingPanel {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .stockPosition {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .tradingInfo {
+    align-items: center;
+    width: 100%;
+  }
+
+  .feeInfo {
+    text-align: center;
+  }
+
+  .yearNavigator {
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px 15px;
+  }
+
+  .navButton {
+    width: 100%;
+    max-width: 250px;
+  }
+
+  .currentYear {
+    min-width: auto;
+    width: 100%;
+    max-width: 250px;
+  }
+
+  .priceInfo {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .popup {
+    margin: 20px;
+    padding: 20px;
+  }
+
+  .popupButtons {
+    flex-direction: column;
+  }
+
+  .popupButtonPrimary,
+  .popupButtonSecondary {
+    width: 100%;
+  }
+
+  .inputWithMaxButton {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .maxButton {
+    width: 100%;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .weeklyContainer {
+    padding: 10px;
+  }
+
+  .appHeader {
+    padding: 15px;
+  }
+
+  .appHeader h1 {
+    font-size: 1.8rem;
+  }
+
+  .chartContainer {
+    padding: 15px 10px;
+  }
+}

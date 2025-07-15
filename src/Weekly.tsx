@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import StockChart from './components/StockChart';
-import MonthNavigator from './components/MonthNavigator';
+import WeeklyStockChart from './components/WeeklyStockChart';
+import YearNavigator from './components/YearNavigator';
 import Sidebar from './components/Sidebar';
-import { parseNvidiaCSV, groupDataByMonth } from './utils/csvParser';
-import { loadAvailableStocks, loadStockData, AVAILABLE_STOCKS } from './utils/stockLoader';
-import type { StockDataPoint, GroupedStockData } from './utils/csvParser';
+import { parseWeeklyData, groupWeeklyDataByYear } from './utils/WeeklyParser';
+import { loadAvailableStocks, loadStockData } from './utils/stockLoader';
+import type { WeeklyStockDataPoint, GroupedWeeklyData } from './utils/WeeklyParser';
 import type { StockInfo } from './utils/stockLoader';
-import styles from './Game.module.css';
+import styles from './Weekly.module.css';
 
 interface StockHolding {
   symbol: string;
@@ -14,13 +14,13 @@ interface StockHolding {
   averagePrice: number;
 }
 
-const Game: React.FC = () => {
+const Weekly: React.FC = () => {
   const [availableStocks, setAvailableStocks] = useState<StockInfo[]>([]);
   const [selectedStock, setSelectedStock] = useState<string>('');
-  const [stockData, setStockData] = useState<StockDataPoint[]>([]);
-  const [groupedData, setGroupedData] = useState<GroupedStockData>({});
-  const [currentMonth, setCurrentMonth] = useState<string>('');
-  const [availableMonths, setAvailableMonths] = useState<string[]>([]);
+  const [stockData, setStockData] = useState<WeeklyStockDataPoint[]>([]);
+  const [groupedData, setGroupedData] = useState<GroupedWeeklyData>({});
+  const [currentYear, setCurrentYear] = useState<string>('');
+  const [availableYears, setAvailableYears] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
@@ -34,7 +34,7 @@ const Game: React.FC = () => {
   const [tempCapitalInput, setTempCapitalInput] = useState<string>('');
   const [tempShareAmount, setTempShareAmount] = useState<string>('');
 
-  // Bestehende useEffect Hooks...
+  // Lade verfügbare Aktien beim Start
   useEffect(() => {
     const initializeStocks = async (): Promise<void> => {
       try {
@@ -54,6 +54,7 @@ const Game: React.FC = () => {
     initializeStocks();
   }, []);
 
+  // Lade Wochendaten für ausgewählte Aktie
   useEffect(() => {
     if (!selectedStock) return;
 
@@ -67,14 +68,14 @@ const Game: React.FC = () => {
         }
 
         const csvContent = await loadStockData(stockInfo.filename);
-        const parsedData = parseNvidiaCSV(csvContent);
-        const grouped = groupDataByMonth(parsedData);
-        const months = Object.keys(grouped).sort();
+        const parsedData = parseWeeklyData(csvContent);
+        const grouped = groupWeeklyDataByYear(parsedData);
+        const years = Object.keys(grouped).sort();
 
         setStockData(parsedData);
         setGroupedData(grouped);
-        setAvailableMonths(months);
-        setCurrentMonth(months[0]);
+        setAvailableYears(years);
+        setCurrentYear(years[0]);
         setLoading(false);
       } catch (error) {
         console.error('Fehler beim Laden der Aktien-Daten:', error);
@@ -88,9 +89,9 @@ const Game: React.FC = () => {
 
   // Helper Functions
   const getCurrentStockPrice = (): number => {
-    const currentMonthData = groupedData[currentMonth] || [];
-    if (currentMonthData.length === 0) return 0;
-    return currentMonthData[currentMonthData.length - 1].close;
+    const currentYearData = groupedData[currentYear] || [];
+    if (currentYearData.length === 0) return 0;
+    return currentYearData[currentYearData.length - 1].close;
   };
 
   const getCurrentStockInfo = (): StockInfo | undefined => {
@@ -101,7 +102,7 @@ const Game: React.FC = () => {
     return stockHoldings.find(holding => holding.symbol === selectedStock);
   };
 
-  // NEU: Gebühren-Berechnungen
+  // Gebühren-Berechnungen
   const calculateBuyFee = (shares: number): number => {
     const stockInfo = getCurrentStockInfo();
     if (!stockInfo) return 0;
@@ -137,7 +138,6 @@ const Game: React.FC = () => {
     const stockInfo = getCurrentStockInfo();
     if (currentPrice === 0 || !stockInfo) return 0;
 
-    // Binäre Suche für die maximale Anzahl Aktien unter Berücksichtigung der Gebühren
     let maxShares = 0;
     let testShares = Math.floor(currentBalance / currentPrice);
 
@@ -164,8 +164,8 @@ const Game: React.FC = () => {
     setError('');
   };
 
-  const handleMonthChange = (month: string): void => {
-    setCurrentMonth(month);
+  const handleYearChange = (year: string): void => {
+    setCurrentYear(year);
   };
 
   const handleStartCapitalSubmit = (): void => {
@@ -206,15 +206,12 @@ const Game: React.FC = () => {
     const totalCost = subtotal + fee;
 
     if (shares > 0 && totalCost <= currentBalance) {
-      // Aktualisiere Balance (mit Gebühren)
       setCurrentBalance(prev => prev - totalCost);
 
-      // Aktualisiere Stock Holdings
       setStockHoldings(prev => {
         const existingHolding = prev.find(h => h.symbol === selectedStock);
 
         if (existingHolding) {
-          // Berechne neuen Durchschnittspreis (nur Aktienpreis, ohne Gebühren)
           const totalShares = existingHolding.shares + shares;
           const totalValue = (existingHolding.shares * existingHolding.averagePrice) + subtotal;
           const newAveragePrice = totalValue / totalShares;
@@ -225,7 +222,6 @@ const Game: React.FC = () => {
               : h
           );
         } else {
-          // Neue Aktie hinzufügen
           return [...prev, { symbol: selectedStock, shares, averagePrice: currentPrice }];
         }
       });
@@ -244,10 +240,8 @@ const Game: React.FC = () => {
     const currentHolding = getCurrentStockHolding();
 
     if (shares > 0 && currentHolding && shares <= currentHolding.shares) {
-      // Aktualisiere Balance (mit Gebühren-Abzug)
       setCurrentBalance(prev => prev + totalRevenue);
 
-      // Aktualisiere Stock Holdings
       setStockHoldings(prev => {
         return prev.map(h => {
           if (h.symbol === selectedStock) {
@@ -265,44 +259,35 @@ const Game: React.FC = () => {
     setTempShareAmount('');
   };
 
-  const formatMonthDisplay = (monthKey: string): string => {
-    const [year, month] = monthKey.split('-');
-    const date = new Date(parseInt(year), parseInt(month) - 1);
-    return date.toLocaleDateString('de-DE', {
-      year: 'numeric',
-      month: 'long'
-    });
-  };
-
   if (loading) {
     return (
-      <div className={styles.gameContainer}>
-        <div className={styles.loading}>Lade Aktien-Daten...</div>
+      <div className={styles.weeklyContainer}>
+        <div className={styles.loading}>Lade Wochendaten...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className={styles.gameContainer}>
+      <div className={styles.weeklyContainer}>
         <div className={styles.error}>{error}</div>
       </div>
     );
   }
 
-  const currentMonthData = groupedData[currentMonth] || [];
+  const currentYearData = groupedData[currentYear] || [];
   const currentStockInfo = getCurrentStockInfo();
   const currentPrice = getCurrentStockPrice();
   const currentHolding = getCurrentStockHolding();
 
   return (
-    <div className={styles.gameContainer}>
-      {/* Startkapital Popup */}
+    <div className={styles.weeklyContainer}>
+      {/* Alle Popups - identisch zu Game.tsx aber mit wöchentlichen Daten */}
       {showStartCapitalPopup && (
         <div className={styles.popupOverlay}>
           <div className={styles.popup}>
             <h2>💰 Startkapital festlegen</h2>
-            <p>Wie viel Geld möchtest du für das Trading verwenden?</p>
+            <p>Wie viel Geld möchtest du für das wöchentliche Trading verwenden?</p>
             <input
               type="number"
               value={tempCapitalInput}
@@ -325,14 +310,14 @@ const Game: React.FC = () => {
         </div>
       )}
 
-      {/* ERWEITERTE Buy Popup mit Gebühren-Anzeige */}
+      {/* Buy Popup */}
       {showBuyPopup && (
         <div className={styles.popupOverlay}>
           <div className={styles.popup}>
             <h2>📈 Aktien kaufen</h2>
             <p>Wie viele {currentStockInfo?.name} Aktien möchtest du kaufen?</p>
             <div className={styles.priceInfo}>
-              <span>Aktueller Preis: <strong>{currentPrice.toFixed(2)}€</strong></span>
+              <span>Wochenpreis: <strong>{currentPrice.toFixed(2)}€</strong></span>
               <span>Kaufgebühr: <strong>{currentStockInfo?.buyFee}%</strong></span>
             </div>
             <div className={styles.inputWithMaxButton}>
@@ -386,14 +371,14 @@ const Game: React.FC = () => {
         </div>
       )}
 
-      {/* ERWEITERTE Sell Popup mit Gebühren-Anzeige */}
+      {/* Sell Popup */}
       {showSellPopup && (
         <div className={styles.popupOverlay}>
           <div className={styles.popup}>
             <h2>📉 Aktien verkaufen</h2>
             <p>Wie viele {currentStockInfo?.name} Aktien möchtest du verkaufen?</p>
             <div className={styles.priceInfo}>
-              <span>Aktueller Preis: <strong>{currentPrice.toFixed(2)}€</strong></span>
+              <span>Wochenpreis: <strong>{currentPrice.toFixed(2)}€</strong></span>
               <span>Verkaufsgebühr: <strong>{currentStockInfo?.sellFee}%</strong></span>
             </div>
             <div className={styles.inputWithMaxButton}>
@@ -449,7 +434,7 @@ const Game: React.FC = () => {
         </div>
       )}
 
-      <div className={styles.gameLayout}>
+      <div className={styles.weeklyLayout}>
         <Sidebar
           availableStocks={availableStocks}
           selectedStock={selectedStock}
@@ -458,16 +443,15 @@ const Game: React.FC = () => {
 
         <main className={styles.mainContent}>
           <header className={styles.appHeader}>
-            <h1>📈 {currentStockInfo?.name || 'Trading'} Dashboard</h1>
-            <p>Interaktive Aktienkurs-Analyse mit monatlicher Navigation</p>
+            <h1>📊 {currentStockInfo?.name || 'Weekly Trading'} Dashboard</h1>
+            <p>Wöchentliche Aktienkurs-Analyse mit Jahresnavigation</p>
           </header>
 
-          {/* Navigation mit STARTKAPITAL statt Gesamtvermögen */}
           <div className={styles.navigationContainer}>
-            <MonthNavigator
-              currentMonth={currentMonth}
-              onMonthChange={handleMonthChange}
-              availableMonths={availableMonths}
+            <YearNavigator
+              currentYear={currentYear}
+              onYearChange={handleYearChange}
+              availableYears={availableYears}
             />
             <div className={styles.balanceDisplay}>
               <span className={styles.balanceLabel}>Startkapital:</span>
@@ -476,13 +460,12 @@ const Game: React.FC = () => {
           </div>
 
           <div className={styles.chartContainer}>
-            <StockChart
-              data={currentMonthData}
+            <WeeklyStockChart
+              data={currentYearData}
               stockColor={currentStockInfo?.color || '#2563eb'}
             />
           </div>
 
-          {/* Erweiterte Trading Panel mit Gebühren-Info */}
           <div className={styles.tradingPanel}>
             <div className={styles.stockPosition}>
               <div className={styles.positionInfo}>
@@ -492,7 +475,7 @@ const Game: React.FC = () => {
                 </span>
               </div>
               <div className={styles.positionInfo}>
-                <span className={styles.positionLabel}>Aktueller Preis:</span>
+                <span className={styles.positionLabel}>Wochenpreis:</span>
                 <span className={styles.positionValue}>{currentPrice.toFixed(2)}€</span>
               </div>
               <div className={styles.positionInfo}>
@@ -524,30 +507,29 @@ const Game: React.FC = () => {
             </div>
           </div>
 
-          {/* Stats bleiben unverändert */}
           <div className={styles.stats}>
             <div className={styles.statItem}>
-              <span className={styles.statLabel}>Datenpunkte im Monat:</span>
-              <span className={styles.statValue}>{currentMonthData.length}</span>
+              <span className={styles.statLabel}>Wochen im Jahr:</span>
+              <span className={styles.statValue}>{currentYearData.length}</span>
             </div>
-            {currentMonthData.length > 0 && (
+            {currentYearData.length > 0 && (
               <>
                 <div className={styles.statItem}>
                   <span className={styles.statLabel}>Höchster Kurs:</span>
                   <span className={styles.statValue}>
-                    {Math.max(...currentMonthData.map(d => d.close)).toFixed(2)}€
+                    {Math.max(...currentYearData.map(d => d.close)).toFixed(2)}€
                   </span>
                 </div>
                 <div className={styles.statItem}>
                   <span className={styles.statLabel}>Niedrigster Kurs:</span>
                   <span className={styles.statValue}>
-                    {Math.min(...currentMonthData.map(d => d.close)).toFixed(2)}€
+                    {Math.min(...currentYearData.map(d => d.close)).toFixed(2)}€
                   </span>
                 </div>
                 <div className={styles.statItem}>
                   <span className={styles.statLabel}>Durchschnittskurs:</span>
                   <span className={styles.statValue}>
-                    {(currentMonthData.reduce((sum, d) => sum + d.close, 0) / currentMonthData.length).toFixed(2)}€
+                    {(currentYearData.reduce((sum, d) => sum + d.close, 0) / currentYearData.length).toFixed(2)}€
                   </span>
                 </div>
               </>
@@ -559,4 +541,4 @@ const Game: React.FC = () => {
   );
 };
 
-export default Game;
+export default Weekly;
