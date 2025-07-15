@@ -342,263 +342,260 @@ const Game: React.FC = () => {
   const currentHolding = getCurrentStockHolding();
 
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, background: '#f3f3f3ff', width: '100vw', height: '100vh' }} />
-      <div className={styles.gameContainer} style={{ position: 'relative', zIndex: 1 }}>
-        {/* Startkapital Popup bleibt gleich... */}
-        {showStartCapitalPopup && (
-          <div className={styles.popupOverlay}>
-            <div className={styles.popup}>
-              <h2>💰 Startkapital festlegen</h2>
-              <p>Wie viel Geld möchtest du für das Trading verwenden?</p>
+    <div className={styles.gameContainer}>
+      {/* Startkapital Popup bleibt gleich... */}
+      {showStartCapitalPopup && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.popup}>
+            <h2>💰 Startkapital festlegen</h2>
+            <p>Wie viel Geld möchtest du für das Trading verwenden?</p>
+            <input
+              type="number"
+              value={tempCapitalInput}
+              onChange={(e) => setTempCapitalInput(e.target.value)}
+              placeholder="z.B. 10000"
+              className={styles.popupInput}
+              min="1"
+              step="0.01"
+            />
+            <div className={styles.popupButtons}>
+              <button
+                onClick={handleStartCapitalSubmit}
+                className={styles.popupButtonPrimary}
+                disabled={!tempCapitalInput || parseFloat(tempCapitalInput) <= 0}
+              >
+                Bestätigen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ERWEITERTE Buy Popup mit Max-Button */}
+      {showBuyPopup && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.popup}>
+            <h2>📈 Aktien kaufen</h2>
+            <p>Wie viele {currentStockInfo?.name} Aktien möchtest du kaufen?</p>
+            <div className={styles.priceInfo}>
+              <span>Aktueller Preis: <strong>{currentPrice.toFixed(2)}€</strong></span>
+            </div>
+            <div className={styles.inputWithMaxButton}>
               <input
                 type="number"
-                value={tempCapitalInput}
-                onChange={(e) => setTempCapitalInput(e.target.value)}
-                placeholder="z.B. 10000"
+                value={tempShareAmount}
+                onChange={(e) => setTempShareAmount(e.target.value)}
+                placeholder="Anzahl Aktien"
                 className={styles.popupInput}
                 min="1"
-                step="0.01"
+                step="1"
+                max={getMaxBuyableShares()}
               />
-              <div className={styles.popupButtons}>
-                <button
-                  onClick={handleStartCapitalSubmit}
-                  className={styles.popupButtonPrimary}
-                  disabled={!tempCapitalInput || parseFloat(tempCapitalInput) <= 0}
-                >
-                  Bestätigen
-                </button>
-              </div>
+              <button
+                onClick={handleMaxBuy}
+                className={styles.maxButton}
+                disabled={getMaxBuyableShares() === 0}
+              >
+                Max ({getMaxBuyableShares()})
+              </button>
+            </div>
+            <div className={styles.calculationInfo}>
+              <p>Gesamtkosten: <strong>{calculateBuyTotal().toFixed(2)}€</strong></p>
+              <p>Verfügbares Guthaben: {currentBalance.toFixed(2)}€</p>
+              <p>Max. kaufbare Aktien: {getMaxBuyableShares()}</p>
+            </div>
+            <div className={styles.popupButtons}>
+              <button
+                onClick={() => setShowBuyPopup(false)}
+                className={styles.popupButtonSecondary}
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={handleBuySubmit}
+                className={styles.popupButtonPrimary}
+                disabled={
+                  !tempShareAmount ||
+                  parseInt(tempShareAmount) <= 0 ||
+                  calculateBuyTotal() > currentBalance ||
+                  parseInt(tempShareAmount) > getMaxBuyableShares()
+                }
+              >
+                Kaufen
+              </button>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* ERWEITERTE Buy Popup mit Max-Button */}
-        {showBuyPopup && (
-          <div className={styles.popupOverlay}>
-            <div className={styles.popup}>
-              <h2>📈 Aktien kaufen</h2>
-              <p>Wie viele {currentStockInfo?.name} Aktien möchtest du kaufen?</p>
-              <div className={styles.priceInfo}>
-                <span>Aktueller Preis: <strong>{currentPrice.toFixed(2)}€</strong></span>
-              </div>
-              <div className={styles.inputWithMaxButton}>
-                <input
-                  type="number"
-                  value={tempShareAmount}
-                  onChange={(e) => setTempShareAmount(e.target.value)}
-                  placeholder="Anzahl Aktien"
-                  className={styles.popupInput}
-                  min="1"
-                  step="1"
-                  max={getMaxBuyableShares()}
-                />
-                <button
-                  onClick={handleMaxBuy}
-                  className={styles.maxButton}
-                  disabled={getMaxBuyableShares() === 0}
-                >
-                  Max ({getMaxBuyableShares()})
-                </button>
-              </div>
-              <div className={styles.calculationInfo}>
-                <p>Gesamtkosten: <strong>{calculateBuyTotal().toFixed(2)}€</strong></p>
-                <p>Verfügbares Guthaben: {currentBalance.toFixed(2)}€</p>
-                <p>Max. kaufbare Aktien: {getMaxBuyableShares()}</p>
-              </div>
-              <div className={styles.popupButtons}>
-                <button
-                  onClick={() => setShowBuyPopup(false)}
-                  className={styles.popupButtonSecondary}
-                >
-                  Abbrechen
-                </button>
-                <button
-                  onClick={handleBuySubmit}
-                  className={styles.popupButtonPrimary}
-                  disabled={
-                    !tempShareAmount ||
-                    parseInt(tempShareAmount) <= 0 ||
-                    calculateBuyTotal() > currentBalance ||
-                    parseInt(tempShareAmount) > getMaxBuyableShares()
-                  }
-                >
-                  Kaufen
-                </button>
-              </div>
+      {/* ERWEITERTE Sell Popup mit Max-Button */}
+      {showSellPopup && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.popup}>
+            <h2>📉 Aktien verkaufen</h2>
+            <p>Wie viele {currentStockInfo?.name} Aktien möchtest du verkaufen?</p>
+            <div className={styles.priceInfo}>
+              <span>Aktueller Preis: <strong>{currentPrice.toFixed(2)}€</strong></span>
             </div>
-          </div>
-        )}
-
-        {/* ERWEITERTE Sell Popup mit Max-Button */}
-        {showSellPopup && (
-          <div className={styles.popupOverlay}>
-            <div className={styles.popup}>
-              <h2>📉 Aktien verkaufen</h2>
-              <p>Wie viele {currentStockInfo?.name} Aktien möchtest du verkaufen?</p>
-              <div className={styles.priceInfo}>
-                <span>Aktueller Preis: <strong>{currentPrice.toFixed(2)}€</strong></span>
-              </div>
-              <div className={styles.inputWithMaxButton}>
-                <input
-                  type="number"
-                  value={tempShareAmount}
-                  onChange={(e) => setTempShareAmount(e.target.value)}
-                  placeholder="Anzahl Aktien"
-                  className={styles.popupInput}
-                  min="1"
-                  step="1"
-                  max={getMaxSellableShares()}
-                />
-                <button
-                  onClick={handleMaxSell}
-                  className={styles.maxButton}
-                  disabled={getMaxSellableShares() === 0}
-                >
-                  Max ({getMaxSellableShares()})
-                </button>
-              </div>
-              <div className={styles.calculationInfo}>
-                <p>Verkaufserlös: <strong>{calculateSellTotal().toFixed(2)}€</strong></p>
-                <p>Besitzt: {currentHolding?.shares || 0} Aktien</p>
-                {currentHolding && (
-                  <p>Ø Kaufpreis: {currentHolding.averagePrice.toFixed(2)}€</p>
-                )}
-              </div>
-              <div className={styles.popupButtons}>
-                <button
-                  onClick={() => setShowSellPopup(false)}
-                  className={styles.popupButtonSecondary}
-                >
-                  Abbrechen
-                </button>
-                <button
-                  onClick={handleSellSubmit}
-                  className={styles.popupButtonPrimary}
-                  disabled={
-                    !tempShareAmount ||
-                    parseInt(tempShareAmount) <= 0 ||
-                    parseInt(tempShareAmount) > getMaxSellableShares()
-                  }
-                >
-                  Verkaufen
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className={styles.gameLayout}>
-          <Sidebar
-            availableStocks={availableStocks}
-            selectedStock={selectedStock}
-            onStockSelect={handleStockSelect}
-          />
-
-          <main className={styles.mainContent}>
-            <header className={styles.appHeader}>
-              <h1>📈 {currentStockInfo?.name || 'Trading'} Dashboard</h1>
-              <p>Interaktive Aktienkurs-Analyse mit monatlicher Navigation</p>
-            </header>
-
-            {/* Navigation mit KORRIGIERTER Vermögensanzeige */}
-            <div className={styles.navigationContainer}>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button
-                  className={viewMode === 'monthly' ? styles.navButton : styles.navButtonSecondary}
-                  onClick={() => setViewMode('monthly')}
-                  disabled={viewMode === 'monthly'}
-                >
-                  Letzte 4 Wochen
-                </button>
-                <button
-                  className={viewMode === 'yearly' ? styles.navButton : styles.navButtonSecondary}
-                  onClick={() => setViewMode('yearly')}
-                  disabled={viewMode === 'yearly'}
-                >
-                  Letztes Jahr
-                </button>
-              </div>
-              <div className={styles.balanceDisplay}>
-                <span className={styles.balanceLabel}>Gesamtvermögen:</span>
-                <span className={styles.balanceValue}>{calculateTotalValue().toFixed(2)}€</span>
-              </div>
-            </div>
-
-            {/* Rest der Komponente bleibt gleich... */}
-            <div className={styles.chartContainer}>
-              <StockChart
-                data={currentPeriodData}
-                stockColor={currentStockInfo?.color || '#2563eb'}
+            <div className={styles.inputWithMaxButton}>
+              <input
+                type="number"
+                value={tempShareAmount}
+                onChange={(e) => setTempShareAmount(e.target.value)}
+                placeholder="Anzahl Aktien"
+                className={styles.popupInput}
+                min="1"
+                step="1"
+                max={getMaxSellableShares()}
               />
+              <button
+                onClick={handleMaxSell}
+                className={styles.maxButton}
+                disabled={getMaxSellableShares() === 0}
+              >
+                Max ({getMaxSellableShares()})
+              </button>
             </div>
-
-            <div className={styles.tradingPanel}>
-              <div className={styles.stockPosition}>
-                <div className={styles.positionInfo}>
-                  <span className={styles.positionLabel}>Besitzt:</span>
-                  <span className={styles.positionValue}>
-                    {currentHolding?.shares || 0} Aktien
-                  </span>
-                </div>
-                <div className={styles.positionInfo}>
-                  <span className={styles.positionLabel}>Aktueller Preis:</span>
-                  <span className={styles.positionValue}>{currentPrice.toFixed(2)}€</span>
-                </div>
-                <div className={styles.positionInfo}>
-                  <span className={styles.positionLabel}>Bargeld:</span>
-                  <span className={styles.positionValue}>{currentBalance.toFixed(2)}€</span>
-                </div>
-              </div>
-              <div className={styles.tradingButtons}>
-                <button
-                  onClick={handleBuyClick}
-                  className={styles.buyButton}
-                  disabled={getMaxBuyableShares() === 0}
-                >
-                  📈 Kaufen
-                </button>
-                <button
-                  onClick={handleSellClick}
-                  className={styles.sellButton}
-                  disabled={getMaxSellableShares() === 0}
-                >
-                  📉 Verkaufen
-                </button>
-              </div>
-            </div>
-
-            {/* Stats bleiben unverändert... */}
-            <div className={styles.stats}>
-              <div className={styles.statItem}>
-                <span className={styles.statLabel}>Datenpunkte im Monat:</span>
-                <span className={styles.statValue}>{currentPeriodData.length}</span>
-              </div>
-              {currentPeriodData.length > 0 && (
-                <>
-                  <div className={styles.statItem}>
-                    <span className={styles.statLabel}>Höchster Kurs:</span>
-                    <span className={styles.statValue}>
-                      {Math.max(...currentPeriodData.map(d => d.close)).toFixed(2)}€
-                    </span>
-                  </div>
-                  <div className={styles.statItem}>
-                    <span className={styles.statLabel}>Niedrigster Kurs:</span>
-                    <span className={styles.statValue}>
-                      {Math.min(...currentPeriodData.map(d => d.close)).toFixed(2)}€
-                    </span>
-                  </div>
-                  <div className={styles.statItem}>
-                    <span className={styles.statLabel}>Durchschnittskurs:</span>
-                    <span className={styles.statValue}>
-                      {(currentPeriodData.reduce((sum, d) => sum + d.close, 0) / currentPeriodData.length).toFixed(2)}€
-                    </span>
-                  </div>
-                </>
+            <div className={styles.calculationInfo}>
+              <p>Verkaufserlös: <strong>{calculateSellTotal().toFixed(2)}€</strong></p>
+              <p>Besitzt: {currentHolding?.shares || 0} Aktien</p>
+              {currentHolding && (
+                <p>Ø Kaufpreis: {currentHolding.averagePrice.toFixed(2)}€</p>
               )}
             </div>
-          </main>
+            <div className={styles.popupButtons}>
+              <button
+                onClick={() => setShowSellPopup(false)}
+                className={styles.popupButtonSecondary}
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={handleSellSubmit}
+                className={styles.popupButtonPrimary}
+                disabled={
+                  !tempShareAmount ||
+                  parseInt(tempShareAmount) <= 0 ||
+                  parseInt(tempShareAmount) > getMaxSellableShares()
+                }
+              >
+                Verkaufen
+              </button>
+            </div>
+          </div>
         </div>
+      )}
+
+      <div className={styles.gameLayout}>
+        <Sidebar
+          availableStocks={availableStocks}
+          selectedStock={selectedStock}
+          onStockSelect={handleStockSelect}
+        />
+
+        <main className={styles.mainContent}>
+          <header className={styles.appHeader}>
+            <h1>📈 {currentStockInfo?.name || 'Trading'} Dashboard</h1>
+            <p>Interaktive Aktienkurs-Analyse mit monatlicher Navigation</p>
+          </header>
+
+          {/* Navigation mit KORRIGIERTER Vermögensanzeige */}
+          <div className={styles.navigationContainer}>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                className={viewMode === 'monthly' ? styles.navButton : styles.navButtonSecondary}
+                onClick={() => setViewMode('monthly')}
+                disabled={viewMode === 'monthly'}
+              >
+                Letzte 4 Wochen
+              </button>
+              <button
+                className={viewMode === 'yearly' ? styles.navButton : styles.navButtonSecondary}
+                onClick={() => setViewMode('yearly')}
+                disabled={viewMode === 'yearly'}
+              >
+                Letztes Jahr
+              </button>
+            </div>
+            <div className={styles.balanceDisplay}>
+              <span className={styles.balanceLabel}>Gesamtvermögen:</span>
+              <span className={styles.balanceValue}>{calculateTotalValue().toFixed(2)}€</span>
+            </div>
+          </div>
+
+          {/* Rest der Komponente bleibt gleich... */}
+          <div className={styles.chartContainer}>
+            <StockChart
+              data={currentPeriodData}
+              stockColor={currentStockInfo?.color || '#2563eb'}
+            />
+          </div>
+
+          <div className={styles.tradingPanel}>
+            <div className={styles.stockPosition}>
+              <div className={styles.positionInfo}>
+                <span className={styles.positionLabel}>Besitzt:</span>
+                <span className={styles.positionValue}>
+                  {currentHolding?.shares || 0} Aktien
+                </span>
+              </div>
+              <div className={styles.positionInfo}>
+                <span className={styles.positionLabel}>Aktueller Preis:</span>
+                <span className={styles.positionValue}>{currentPrice.toFixed(2)}€</span>
+              </div>
+              <div className={styles.positionInfo}>
+                <span className={styles.positionLabel}>Bargeld:</span>
+                <span className={styles.positionValue}>{currentBalance.toFixed(2)}€</span>
+              </div>
+            </div>
+            <div className={styles.tradingButtons}>
+              <button
+                onClick={handleBuyClick}
+                className={styles.buyButton}
+                disabled={getMaxBuyableShares() === 0}
+              >
+                📈 Kaufen
+              </button>
+              <button
+                onClick={handleSellClick}
+                className={styles.sellButton}
+                disabled={getMaxSellableShares() === 0}
+              >
+                📉 Verkaufen
+              </button>
+            </div>
+          </div>
+
+          {/* Stats bleiben unverändert... */}
+          <div className={styles.stats}>
+            <div className={styles.statItem}>
+              <span className={styles.statLabel}>Datenpunkte im Monat:</span>
+              <span className={styles.statValue}>{currentPeriodData.length}</span>
+            </div>
+            {currentPeriodData.length > 0 && (
+              <>
+                <div className={styles.statItem}>
+                  <span className={styles.statLabel}>Höchster Kurs:</span>
+                  <span className={styles.statValue}>
+                    {Math.max(...currentPeriodData.map(d => d.close)).toFixed(2)}€
+                  </span>
+                </div>
+                <div className={styles.statItem}>
+                  <span className={styles.statLabel}>Niedrigster Kurs:</span>
+                  <span className={styles.statValue}>
+                    {Math.min(...currentPeriodData.map(d => d.close)).toFixed(2)}€
+                  </span>
+                </div>
+                <div className={styles.statItem}>
+                  <span className={styles.statLabel}>Durchschnittskurs:</span>
+                  <span className={styles.statValue}>
+                    {(currentPeriodData.reduce((sum, d) => sum + d.close, 0) / currentPeriodData.length).toFixed(2)}€
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+        </main>
       </div>
     </div>
   );
