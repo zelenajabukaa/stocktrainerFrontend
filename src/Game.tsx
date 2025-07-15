@@ -571,7 +571,6 @@ const Game: React.FC = () => {
                 stockColor={currentStockInfo?.color || '#2563eb'}
               />
             </div>
-
             <div className={styles.tradingPanel}>
               <div className={styles.stockPosition} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '35%' }}>
                 <div className={styles.positionInfo}>
