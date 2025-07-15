@@ -7,6 +7,7 @@ import { loadAvailableStocks, loadStockData, AVAILABLE_STOCKS } from './utils/st
 import type { StockDataPoint, GroupedStockData } from './utils/csvParser';
 import type { StockInfo } from './utils/stockLoader';
 import styles from './Game.module.css';
+import Header from './components/Header';
 
 interface StockHolding {
   symbol: string;

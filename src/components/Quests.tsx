@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './Quests.module.css';
+import Header from './Header';
 
 interface Quest {
   id: string;
@@ -79,6 +80,7 @@ const Quests: React.FC = () => {
 
   return (
     <div className={styles.questsContainer}>
+        <Header/>
       <div className={styles.questsTitle}>Quests</div>
 
       <ul className={styles.questList}>
