@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /* src/css/login.module.css (erweitert) */
 
 /* Großer Titel oben */
@@ -6,37 +5,13 @@
   position: absolute;
   top: 2.5rem;
   color: #006eff;
-=======
-/* === RESET === */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* === BODY === */
-body {
-  font-family: 'Rajdhani', 'Segoe UI', sans-serif;
-  background: #0b0f19;
-  color: #e2e8f0;
-  overflow: hidden;
-  height: 100vh;
-  position: relative;
-}
-
-/* === Canvas für animierte Aktienlinien === */
-.stockCanvas {
-  position: fixed;
-  top: 0;
->>>>>>> 60f60dd33353a7e0d008cfcf9a1ecf6c6fb3c0fc
   left: 0;
   width: 100vw;
-  height: 100vh;
-  z-index: 0;
-  pointer-events: none;
+  font-size: 3rem;
+  text-align: center;
+  z-index: 2;
 }
 
-<<<<<<< HEAD
 .login-title h1 {
   font-size: 3rem;
   font-weight: 900;
@@ -47,25 +22,12 @@ body {
 }
 
 .login-container {
-=======
-/* === Gradient Overlay für bessere Lesbarkeit === */
-.gradientOverlay {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at center, rgba(11, 15, 25, 0.3) 0%, rgba(11, 15, 25, 0.8) 100%);
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* === Login Container === */
-.loginContainer {
->>>>>>> 60f60dd33353a7e0d008cfcf9a1ecf6c6fb3c0fc
   position: fixed;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-<<<<<<< HEAD
   background: linear-gradient(135deg, #f3f4f6 0%, #e0e7ff 100%);
   z-index: 1;
 }
@@ -83,90 +45,30 @@ body {
   padding: 2.5rem 2rem 2rem 2rem;
   border-radius: 1.2rem;
   box-shadow: 0 4px 32px 0 rgba(99, 102, 241, 0.10);
-=======
-  z-index: 2;
-}
-
-/* === Titel === */
-.loginTitleFixed {
-  position: absolute;
-  top: 2rem;
-  width: 100%;
-  text-align: center;
-  font-size: 3rem;
-  font-weight: 900;
-  color: #3b82f6;
-  text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-  letter-spacing: 0.04em;
-  z-index: 3;
-}
-
-/* === Formular Wrapper === */
-.loginFormWrapper {
-  width: 100%;
-  max-width: 400px;
-  padding: 2rem;
-  z-index: 3;
-}
-
-/* === Fancy Login Box === */
-.loginForm {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border-radius: 1.5rem;
-  box-shadow:
-    0 0 10px rgba(59, 130, 246, 0.3),
-    0 0 40px rgba(59, 130, 246, 0.1),
-    inset 0 0 6px rgba(255, 255, 255, 0.02);
-  padding: 2.8rem 2rem;
->>>>>>> 60f60dd33353a7e0d008cfcf9a1ecf6c6fb3c0fc
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  gap: 1.2rem;
+  min-width: 320px;
+  max-width: 90vw;
 }
 
-<<<<<<< HEAD
 .login-form h2 {
   margin: 0 0 0.5rem 0;
   color: #006eff;
-=======
-.loginForm:hover {
-  transform: scale(1.015);
-  box-shadow:
-    0 0 15px rgba(59, 130, 246, 0.4),
-    0 0 60px rgba(59, 130, 246, 0.2),
-    inset 0 0 8px rgba(255, 255, 255, 0.03);
-}
-
-.loginForm h2 {
->>>>>>> 60f60dd33353a7e0d008cfcf9a1ecf6c6fb3c0fc
   font-size: 2rem;
   font-weight: 800;
   text-align: center;
-  color: #60a5fa;
-  margin-bottom: 0.5rem;
 }
 
-/* === Inputs === */
-.loginForm input {
-  padding: 0.9rem 1.1rem;
+.login-form input {
+  padding: 0.8rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.7rem;
   font-size: 1.1rem;
-  border: 1px solid #1e293b;
-  border-radius: 0.6rem;
-  background: #1e293b;
-  color: #e2e8f0;
-  transition: 0.3s ease;
-}
-
-.loginForm input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
   outline: none;
+  transition: border 0.2s;
 }
 
-<<<<<<< HEAD
 .login-form input:focus {
   border: 1.5px solid #6366f1;
 }
@@ -181,35 +83,20 @@ body {
   background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
   color: #fff;
   font-weight: 700;
-=======
-/* === Button === */
-.loginForm button {
-  padding: 0.9rem;
->>>>>>> 60f60dd33353a7e0d008cfcf9a1ecf6c6fb3c0fc
   font-size: 1.1rem;
-  font-weight: 700;
   border: none;
-  border-radius: 0.6rem;
-  background: linear-gradient(135deg, #3b82f6, #1e40af);
-  color: #fff;
+  border-radius: 0.7rem;
+  padding: 0.8rem 0;
   cursor: pointer;
-<<<<<<< HEAD
   margin-top: 0.5rem;
   box-shadow: 0 2px 12px 0 rgba(99, 102, 241, 0.10);
   transition: background 0.2s;
-=======
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
->>>>>>> 60f60dd33353a7e0d008cfcf9a1ecf6c6fb3c0fc
 }
 
-.loginForm button:hover {
-  background: linear-gradient(135deg, #1e40af, #3b82f6);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+.login-form button:hover {
+  background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
 }
 
-<<<<<<< HEAD
 .login-form button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -239,19 +126,4 @@ body {
   opacity: 0.6 !important;
   cursor: not-allowed !important;
   background: transparent !important;
-=======
-/* === Responsive === */
-@media (max-width: 480px) {
-  .loginTitleFixed {
-    font-size: 2rem;
-  }
-  
-  .loginForm {
-    padding: 2rem 1.5rem;
-  }
-  
-  .loginForm h2 {
-    font-size: 1.6rem;
-  }
->>>>>>> 60f60dd33353a7e0d008cfcf9a1ecf6c6fb3c0fc
 }
