@@ -182,8 +182,8 @@
   margin: 0;
 }
 
-/* Year Navigator */
-.yearNavigator {
+/* Week Navigator statt Year Navigator */
+.weekNavigator {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -195,43 +195,64 @@
   border: 1px solid #e2e8f0;
 }
 
-.navButton {
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(124, 58, 237, 0.3);
-}
-
-.navButton:hover:not(:disabled) {
-  background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(124, 58, 237, 0.4);
-}
-
-.navButton:disabled {
-  background: #e2e8f0;
-  color: #94a3b8;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.currentYear {
-  font-size: 1.5rem;
+.currentWeek {
+  font-size: 1.2rem;
   font-weight: 700;
   color: #1e293b;
-  min-width: 120px;
+  min-width: 250px;
   text-align: center;
   padding: 8px 16px;
   background: #f1f5f9;
   border-radius: 8px;
   border: 2px solid #e2e8f0;
+}
+
+/* Chart Header */
+.chartHeader {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.chartTitle {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Angepasste Tooltips */
+.tooltipDate {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.tooltipPrice {
+  margin: 0;
+  color: #7c3aed;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Responsive Design für Wochennavigation */
+@media (max-width: 768px) {
+  .weekNavigator {
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px 15px;
+  }
+
+  .currentWeek {
+    min-width: auto;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .navButton {
+    width: 100%;
+    max-width: 200px;
+  }
 }
 
 /* Navigation Container */

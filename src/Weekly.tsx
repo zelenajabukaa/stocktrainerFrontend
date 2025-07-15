@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import WeeklyStockChart from './components/WeeklyStockChart';
-import YearNavigator from './components/YearNavigator';
+import WeekNavigator from './components/WeekNavigator';
 import Sidebar from './components/Sidebar';
-import { parseWeeklyData, groupWeeklyDataByYear } from './utils/WeeklyParser';
+import { parseWeeklyData } from './utils/WeeklyParser';
 import { loadAvailableStocks, loadStockData } from './utils/stockLoader';
-import type { WeeklyStockDataPoint, GroupedWeeklyData } from './utils/WeeklyParser';
+import type { WeekData, WeeklyStockDataPoint } from './utils/WeeklyParser';
 import type { StockInfo } from './utils/stockLoader';
 import styles from './Weekly.module.css';
 
@@ -17,10 +17,9 @@ interface StockHolding {
 const Weekly: React.FC = () => {
   const [availableStocks, setAvailableStocks] = useState<StockInfo[]>([]);
   const [selectedStock, setSelectedStock] = useState<string>('');
-  const [stockData, setStockData] = useState<WeeklyStockDataPoint[]>([]);
-  const [groupedData, setGroupedData] = useState<GroupedWeeklyData>({});
-  const [currentYear, setCurrentYear] = useState<string>('');
-  const [availableYears, setAvailableYears] = useState<string[]>([]);
+  const [allWeekData, setAllWeekData] = useState<WeekData[]>([]);
+  const [currentWeekKey, setCurrentWeekKey] = useState<string>('');
+  const [availableWeeks, setAvailableWeeks] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
@@ -69,13 +68,11 @@ const Weekly: React.FC = () => {
 
         const csvContent = await loadStockData(stockInfo.filename);
         const parsedData = parseWeeklyData(csvContent);
-        const grouped = groupWeeklyDataByYear(parsedData);
-        const years = Object.keys(grouped).sort();
+        const weekKeys = parsedData.map(w => w.weekKey);
 
-        setStockData(parsedData);
-        setGroupedData(grouped);
-        setAvailableYears(years);
-        setCurrentYear(years[0]);
+        setAllWeekData(parsedData);
+        setAvailableWeeks(weekKeys);
+        setCurrentWeekKey(weekKeys[0]);
         setLoading(false);
       } catch (error) {
         console.error('Fehler beim Laden der Aktien-Daten:', error);
@@ -88,10 +85,13 @@ const Weekly: React.FC = () => {
   }, [selectedStock, availableStocks]);
 
   // Helper Functions
+  const getCurrentWeekData = (): WeekData | undefined => {
+    return allWeekData.find(w => w.weekKey === currentWeekKey);
+  };
+
   const getCurrentStockPrice = (): number => {
-    const currentYearData = groupedData[currentYear] || [];
-    if (currentYearData.length === 0) return 0;
-    return currentYearData[currentYearData.length - 1].close;
+    const currentWeek = getCurrentWeekData();
+    return currentWeek ? currentWeek.lastDayPrice : 0; // Letzter Tag der Woche
   };
 
   const getCurrentStockInfo = (): StockInfo | undefined => {
@@ -164,8 +164,8 @@ const Weekly: React.FC = () => {
     setError('');
   };
 
-  const handleYearChange = (year: string): void => {
-    setCurrentYear(year);
+  const handleWeekChange = (weekKey: string): void => {
+    setCurrentWeekKey(weekKey);
   };
 
   const handleStartCapitalSubmit = (): void => {
@@ -200,7 +200,7 @@ const Weekly: React.FC = () => {
 
   const handleBuySubmit = (): void => {
     const shares = parseInt(tempShareAmount);
-    const currentPrice = getCurrentStockPrice();
+    const currentPrice = getCurrentStockPrice(); // Letzter Tag der Woche
     const subtotal = shares * currentPrice;
     const fee = calculateBuyFee(shares);
     const totalCost = subtotal + fee;
@@ -233,7 +233,7 @@ const Weekly: React.FC = () => {
 
   const handleSellSubmit = (): void => {
     const shares = parseInt(tempShareAmount);
-    const currentPrice = getCurrentStockPrice();
+    const currentPrice = getCurrentStockPrice(); // Letzter Tag der Woche
     const subtotal = shares * currentPrice;
     const fee = calculateSellFee(shares);
     const totalRevenue = subtotal - fee;
@@ -275,14 +275,22 @@ const Weekly: React.FC = () => {
     );
   }
 
-  const currentYearData = groupedData[currentYear] || [];
+  const currentWeek = getCurrentWeekData();
   const currentStockInfo = getCurrentStockInfo();
   const currentPrice = getCurrentStockPrice();
   const currentHolding = getCurrentStockHolding();
 
+  if (!currentWeek) {
+    return (
+      <div className={styles.weeklyContainer}>
+        <div className={styles.error}>Keine Wochendaten verfügbar</div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.weeklyContainer}>
-      {/* Alle Popups - identisch zu Game.tsx aber mit wöchentlichen Daten */}
+      {/* Startkapital Popup */}
       {showStartCapitalPopup && (
         <div className={styles.popupOverlay}>
           <div className={styles.popup}>
@@ -317,7 +325,7 @@ const Weekly: React.FC = () => {
             <h2>📈 Aktien kaufen</h2>
             <p>Wie viele {currentStockInfo?.name} Aktien möchtest du kaufen?</p>
             <div className={styles.priceInfo}>
-              <span>Wochenpreis: <strong>{currentPrice.toFixed(2)}€</strong></span>
+              <span>Wochenschlusspreis: <strong>{currentPrice.toFixed(2)}€</strong></span>
               <span>Kaufgebühr: <strong>{currentStockInfo?.buyFee}%</strong></span>
             </div>
             <div className={styles.inputWithMaxButton}>
@@ -378,7 +386,7 @@ const Weekly: React.FC = () => {
             <h2>📉 Aktien verkaufen</h2>
             <p>Wie viele {currentStockInfo?.name} Aktien möchtest du verkaufen?</p>
             <div className={styles.priceInfo}>
-              <span>Wochenpreis: <strong>{currentPrice.toFixed(2)}€</strong></span>
+              <span>Wochenschlusspreis: <strong>{currentPrice.toFixed(2)}€</strong></span>
               <span>Verkaufsgebühr: <strong>{currentStockInfo?.sellFee}%</strong></span>
             </div>
             <div className={styles.inputWithMaxButton}>
@@ -444,14 +452,15 @@ const Weekly: React.FC = () => {
         <main className={styles.mainContent}>
           <header className={styles.appHeader}>
             <h1>📊 {currentStockInfo?.name || 'Weekly Trading'} Dashboard</h1>
-            <p>Wöchentliche Aktienkurs-Analyse mit Jahresnavigation</p>
+            <p>Einzelwöchentliche Aktienkurs-Analyse</p>
           </header>
 
           <div className={styles.navigationContainer}>
-            <YearNavigator
-              currentYear={currentYear}
-              onYearChange={handleYearChange}
-              availableYears={availableYears}
+            <WeekNavigator
+              currentWeekKey={currentWeekKey}
+              onWeekChange={handleWeekChange}
+              availableWeeks={availableWeeks}
+              weekString={currentWeek.weekString}
             />
             <div className={styles.balanceDisplay}>
               <span className={styles.balanceLabel}>Startkapital:</span>
@@ -461,8 +470,9 @@ const Weekly: React.FC = () => {
 
           <div className={styles.chartContainer}>
             <WeeklyStockChart
-              data={currentYearData}
+              data={currentWeek.dailyData}
               stockColor={currentStockInfo?.color || '#2563eb'}
+              weekString={currentWeek.weekString}
             />
           </div>
 
@@ -475,7 +485,7 @@ const Weekly: React.FC = () => {
                 </span>
               </div>
               <div className={styles.positionInfo}>
-                <span className={styles.positionLabel}>Wochenpreis:</span>
+                <span className={styles.positionLabel}>Wochenschlusspreis:</span>
                 <span className={styles.positionValue}>{currentPrice.toFixed(2)}€</span>
               </div>
               <div className={styles.positionInfo}>
@@ -509,27 +519,27 @@ const Weekly: React.FC = () => {
 
           <div className={styles.stats}>
             <div className={styles.statItem}>
-              <span className={styles.statLabel}>Wochen im Jahr:</span>
-              <span className={styles.statValue}>{currentYearData.length}</span>
+              <span className={styles.statLabel}>Handelstage in der Woche:</span>
+              <span className={styles.statValue}>{currentWeek.dailyData.length}</span>
             </div>
-            {currentYearData.length > 0 && (
+            {currentWeek.dailyData.length > 0 && (
               <>
                 <div className={styles.statItem}>
                   <span className={styles.statLabel}>Höchster Kurs:</span>
                   <span className={styles.statValue}>
-                    {Math.max(...currentYearData.map(d => d.close)).toFixed(2)}€
+                    {Math.max(...currentWeek.dailyData.map(d => d.close)).toFixed(2)}€
                   </span>
                 </div>
                 <div className={styles.statItem}>
                   <span className={styles.statLabel}>Niedrigster Kurs:</span>
                   <span className={styles.statValue}>
-                    {Math.min(...currentYearData.map(d => d.close)).toFixed(2)}€
+                    {Math.min(...currentWeek.dailyData.map(d => d.close)).toFixed(2)}€
                   </span>
                 </div>
                 <div className={styles.statItem}>
-                  <span className={styles.statLabel}>Durchschnittskurs:</span>
+                  <span className={styles.statLabel}>Wochenschlusspreis:</span>
                   <span className={styles.statValue}>
-                    {(currentYearData.reduce((sum, d) => sum + d.close, 0) / currentYearData.length).toFixed(2)}€
+                    {currentPrice.toFixed(2)}€
                   </span>
                 </div>
               </>
