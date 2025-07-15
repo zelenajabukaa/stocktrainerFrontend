@@ -19,12 +19,30 @@ const Login: React.FC = () => {
     setPassword(e.target.value);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: implement login logic
-    // Hier direkt weiterleiten zu /home
-    navigate("/home");
-  };
+    try {
+      const response = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+      });
+
+      if (!response.ok) {
+        alert("Login fehlgeschlagen");
+        return;
+      }
+
+      const data = await response.json();
+      localStorage.setItem("token", data.token);
+      navigate("/home");
+    } catch (error) {
+      console.error("Fehler beim Login:", error);
+      alert("Serverfehler beim Login");
+    }
+  }
 
   return (
     <div className={styles['login-container']}>
