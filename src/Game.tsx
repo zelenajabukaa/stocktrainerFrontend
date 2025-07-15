@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import StockChart from './components/StockChart';
 import MonthNavigator from './components/MonthNavigator';
@@ -16,7 +15,6 @@ interface StockHolding {
 }
 
 const Game: React.FC = () => {
-  // Alle bestehenden State-Variablen bleiben gleich...
   const [availableStocks, setAvailableStocks] = useState<StockInfo[]>([]);
   const [selectedStock, setSelectedStock] = useState<string>('');
   const [stockData, setStockData] = useState<StockDataPoint[]>([]);
@@ -35,8 +33,8 @@ const Game: React.FC = () => {
   const [showSellPopup, setShowSellPopup] = useState<boolean>(false);
   const [tempCapitalInput, setTempCapitalInput] = useState<string>('');
   const [tempShareAmount, setTempShareAmount] = useState<string>('');
+  const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
 
-  // Alle bestehenden useEffect Hooks bleiben unverändert...
   useEffect(() => {
     const initializeStocks = async (): Promise<void> => {
       try {
@@ -137,6 +135,50 @@ const Game: React.FC = () => {
 
     return totalValue;
   };
+
+  // Neue Funktion: Gruppiere Daten nach Woche
+  const groupDataByWeek = (data: StockDataPoint[]): GroupedStockData => {
+    const grouped: GroupedStockData = {};
+    data.forEach(point => {
+      const year = point.date.getFullYear();
+      // ISO Woche berechnen
+      const tempDate = new Date(point.date.getTime());
+      tempDate.setHours(0, 0, 0, 0);
+      tempDate.setDate(tempDate.getDate() + 4 - (tempDate.getDay() || 7));
+      const yearStart = new Date(tempDate.getFullYear(), 0, 1);
+      const weekNo = Math.ceil((((tempDate.getTime() - yearStart.getTime()) / 86400000) + yearStart.getDay() + 1) / 7);
+      const weekKey = `${year}-KW${weekNo}`;
+      if (!grouped[weekKey]) grouped[weekKey] = [];
+      grouped[weekKey].push(point);
+    });
+    return grouped;
+  };
+
+  // Gruppiere Daten für die letzten 4 Wochen
+  const getLast4WeeksData = (data: StockDataPoint[]): StockDataPoint[] => {
+    if (data.length === 0) return [];
+    const sorted = [...data].sort((a, b) => b.date.getTime() - a.date.getTime());
+    const lastDate = sorted[0].date;
+    const fourWeeksAgo = new Date(lastDate);
+    fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 27); // 4 Wochen = 28 Tage
+    return sorted.filter(point => point.date >= fourWeeksAgo);
+  };
+
+  // Gruppiere Daten für das letzte Jahr
+  const getLastYearData = (data: StockDataPoint[]): StockDataPoint[] => {
+    if (data.length === 0) return [];
+    const sorted = [...data].sort((a, b) => b.date.getTime() - a.date.getTime());
+    const lastDate = sorted[0].date;
+    const oneYearAgo = new Date(lastDate);
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    return sorted.filter(point => point.date >= oneYearAgo);
+  };
+
+  // Daten je nach Ansicht
+  const currentPeriodData = viewMode === 'monthly' ? getLast4WeeksData(stockData) : getLastYearData(stockData);
+  // const availablePeriods = viewMode === 'monthly' ? availableMonths : Object.keys(groupDataByWeek(stockData)).sort();
+  const currentPeriod = viewMode === 'monthly' ? currentMonth : currentMonth; // currentMonth wird für beide genutzt
+  const setCurrentPeriod = setCurrentMonth; // Alias für Klarheit
 
   // Handler Functions
   const handleStockSelect = (symbol: string): void => {
@@ -295,7 +337,6 @@ const Game: React.FC = () => {
     );
   }
 
-  const currentMonthData = groupedData[currentMonth] || [];
   const currentStockInfo = getCurrentStockInfo();
   const currentPrice = getCurrentStockPrice();
   const currentHolding = getCurrentStockHolding();
@@ -460,11 +501,22 @@ const Game: React.FC = () => {
 
           {/* Navigation mit KORRIGIERTER Vermögensanzeige */}
           <div className={styles.navigationContainer}>
-            <MonthNavigator
-              currentMonth={currentMonth}
-              onMonthChange={handleMonthChange}
-              availableMonths={availableMonths}
-            />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                className={viewMode === 'monthly' ? styles.navButton : styles.navButtonSecondary}
+                onClick={() => setViewMode('monthly')}
+                disabled={viewMode === 'monthly'}
+              >
+                Letzte 4 Wochen
+              </button>
+              <button
+                className={viewMode === 'yearly' ? styles.navButton : styles.navButtonSecondary}
+                onClick={() => setViewMode('yearly')}
+                disabled={viewMode === 'yearly'}
+              >
+                Letztes Jahr
+              </button>
+            </div>
             <div className={styles.balanceDisplay}>
               <span className={styles.balanceLabel}>Gesamtvermögen:</span>
               <span className={styles.balanceValue}>{calculateTotalValue().toFixed(2)}€</span>
@@ -474,7 +526,7 @@ const Game: React.FC = () => {
           {/* Rest der Komponente bleibt gleich... */}
           <div className={styles.chartContainer}>
             <StockChart
-              data={currentMonthData}
+              data={currentPeriodData}
               stockColor={currentStockInfo?.color || '#2563eb'}
             />
           </div>
@@ -518,26 +570,26 @@ const Game: React.FC = () => {
           <div className={styles.stats}>
             <div className={styles.statItem}>
               <span className={styles.statLabel}>Datenpunkte im Monat:</span>
-              <span className={styles.statValue}>{currentMonthData.length}</span>
+              <span className={styles.statValue}>{currentPeriodData.length}</span>
             </div>
-            {currentMonthData.length > 0 && (
+            {currentPeriodData.length > 0 && (
               <>
                 <div className={styles.statItem}>
                   <span className={styles.statLabel}>Höchster Kurs:</span>
                   <span className={styles.statValue}>
-                    {Math.max(...currentMonthData.map(d => d.close)).toFixed(2)}€
+                    {Math.max(...currentPeriodData.map(d => d.close)).toFixed(2)}€
                   </span>
                 </div>
                 <div className={styles.statItem}>
                   <span className={styles.statLabel}>Niedrigster Kurs:</span>
                   <span className={styles.statValue}>
-                    {Math.min(...currentMonthData.map(d => d.close)).toFixed(2)}€
+                    {Math.min(...currentPeriodData.map(d => d.close)).toFixed(2)}€
                   </span>
                 </div>
                 <div className={styles.statItem}>
                   <span className={styles.statLabel}>Durchschnittskurs:</span>
                   <span className={styles.statValue}>
-                    {(currentMonthData.reduce((sum, d) => sum + d.close, 0) / currentMonthData.length).toFixed(2)}€
+                    {(currentPeriodData.reduce((sum, d) => sum + d.close, 0) / currentPeriodData.length).toFixed(2)}€
                   </span>
                 </div>
               </>
