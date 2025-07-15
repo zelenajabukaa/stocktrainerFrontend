@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import StockChart from './components/StockChart';
 import MonthNavigator from './components/MonthNavigator';
+import CompanyInfo from './components/CompanyInfo';
 import Sidebar from './components/Sidebar';
 import { parseNvidiaCSV, groupDataByMonth } from './utils/csvParser';
 import { loadAvailableStocks, loadStockData, AVAILABLE_STOCKS } from './utils/stockLoader';
@@ -23,6 +24,7 @@ const Game: React.FC = () => {
   const [availableMonths, setAvailableMonths] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const [showCompanyInfo, setShowCompanyInfo] = useState<boolean>(false);
 
   // Trading-States
   const [startCapital, setStartCapital] = useState<number>(0);
@@ -184,6 +186,10 @@ const Game: React.FC = () => {
   const handleStockSelect = (symbol: string): void => {
     setSelectedStock(symbol);
     setError('');
+  };
+
+  const handleCompanyInfoToggle = (): void => {
+    setShowCompanyInfo(!showCompanyInfo);
   };
 
   const handleMonthChange = (month: string): void => {
@@ -402,6 +408,29 @@ const Game: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* NEU: Company Info Button */}
+        <div className={styles.companyInfoButtonContainer}>
+          <button
+            onClick={handleCompanyInfoToggle}
+            className={styles.companyInfoButton}
+          >
+            <span className={styles.companyInfoButtonIcon}></span>
+            Unternehmensinformationen
+            <span className={styles.companyInfoButtonArrow}>
+              {showCompanyInfo ? '▼' : '▶'}
+            </span>
+          </button>
+        </div>
+
+        {/* NEU: Company Info Panel */}
+        <CompanyInfo
+          isOpen={showCompanyInfo}
+          onToggle={handleCompanyInfoToggle}
+          stockSymbol={selectedStock}
+          stockColor={currentStockInfo?.color || '#2563eb'}
+        />
+
 
         {/* ERWEITERTE Buy Popup mit Max-Button */}
         {showBuyPopup && (
