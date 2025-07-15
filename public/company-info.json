@@ -1,0 +1,46 @@
+{
+    "NVDA": {
+        "name": "NVIDIA Corporation",
+        "logo": "nvidia.png",
+        "description": "NVIDIA ist ein führender Technologiekonzern, der sich auf die Entwicklung von Grafikprozessoren (GPUs) und System-on-a-Chip-Einheiten für Mobile Computing und Automotive Market spezialisiert hat.",
+        "history": "NVIDIA wurde 1993 von Jensen Huang, Chris Malachowsky und Curtis Priem in Santa Clara, Kalifornien, gegründet. Das Unternehmen revolutionierte die Computergrafik mit der GeForce-Serie und ist heute führend in den Bereichen KI, Deep Learning und autonomes Fahren.",
+        "industry": "Halbleiter & Grafikprozessoren",
+        "founded": "1993",
+        "headquarters": "Santa Clara, Kalifornien, USA",
+        "employees": "~29,600",
+        "website": "nvidia.com"
+    },
+    "AMZN": {
+        "name": "Amazon.com Inc.",
+        "logo": "amazon.png",
+        "description": "Amazon ist ein multinationaler Technologiekonzern, der sich auf E-Commerce, Cloud Computing, digitale Streaming-Dienste und künstliche Intelligenz konzentriert.",
+        "history": "Amazon wurde 1994 von Jeff Bezos in Bellevue, Washington, als Online-Buchhandlung gegründet. Das Unternehmen expandierte schnell zu einem der größten E-Commerce- und Cloud-Computing-Unternehmen der Welt.",
+        "industry": "E-Commerce & Cloud Computing",
+        "founded": "1994",
+        "headquarters": "Seattle, Washington, USA",
+        "employees": "~1,540,000",
+        "website": "amazon.com"
+    },
+    "AAPL": {
+        "name": "Apple Inc.",
+        "logo": "apple.png",
+        "description": "Apple ist ein amerikanischer multinationaler Technologiekonzern, der Unterhaltungselektronik, Computersoftware und Online-Dienste entwickelt, produziert und verkauft.",
+        "history": "Apple wurde 1976 von Steve Jobs, Steve Wozniak und Ronald Wayne in Los Altos, Kalifornien, gegründet. Das Unternehmen revolutionierte die Technologiebranche mit Produkten wie dem iPhone, iPad und Mac.",
+        "industry": "Unterhaltungselektronik & Software",
+        "founded": "1976",
+        "headquarters": "Cupertino, Kalifornien, USA",
+        "employees": "~164,000",
+        "website": "apple.com"
+    },
+    "TSLA": {
+        "name": "Tesla Inc.",
+        "logo": "tesla.png",
+        "description": "Tesla ist ein amerikanischer Elektrofahrzeug- und Clean Energy-Konzern, der Elektroautos, Energiespeichersysteme und Solarpaneele entwickelt und produziert.",
+        "history": "Tesla wurde 2003 von Martin Eberhard und Marc Tarpenning gegründet. Elon Musk übernahm 2008 die Führung und machte Tesla zum weltweit wertvollsten Automobilunternehmen und Pionier der Elektromobilität.",
+        "industry": "Elektrofahrzeuge & Clean Energy",
+        "founded": "2003",
+        "headquarters": "Austin, Texas, USA",
+        "employees": "~140,000",
+        "website": "tesla.com"
+    }
+}
