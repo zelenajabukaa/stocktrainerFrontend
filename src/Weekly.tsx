@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import WeeklyStockChart from './components/WeeklyStockChart';
 import WeekNavigator from './components/WeekNavigator';
 import Sidebar from './components/Sidebar';
-import { parseWeeklyData } from './utils/WeeklyParser';
+import { parseWeeklyData } from './utils/weeklyParser';
 import { loadAvailableStocks, loadStockData } from './utils/stockLoader';
-import type { WeekData, WeeklyStockDataPoint } from './utils/WeeklyParser';
+import type { WeekData, WeeklyStockDataPoint } from './utils/weeklyParser';
 import type { StockInfo } from './utils/stockLoader';
 import styles from './Weekly.module.css';
 

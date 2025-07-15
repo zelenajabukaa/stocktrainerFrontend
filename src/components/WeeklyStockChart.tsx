@@ -1,6 +1,6 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import type { WeeklyStockDataPoint } from '../utils/WeeklyParser';
+import type { WeeklyStockDataPoint } from '../utils/weeklyParser';
 import styles from '../Weekly.module.css';
 
 interface WeeklyStockChartProps {
