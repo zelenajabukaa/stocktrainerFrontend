@@ -23,11 +23,7 @@ const Home: React.FC = () => {
       {/* Main Content: Hauptbereich und Sidebar füllen den Rest */}
       <div className="main-content">
         <div className="card card-main">Hauptbereich</div>
-        <div className="card card-side">
-          {['Neues Spiel', 'Levelbelohnungen', 'Quests', 'Abzeichen', 'Auswertungen', 'Einstellungen'].map((label, idx) => (
-            <button className="friends-btn friends-btn-large" key={idx}>{label}</button>
-          ))}
-        </div>
+        <div className="card card-side">Sidebar</div>
       </div>
     </div>
   );
