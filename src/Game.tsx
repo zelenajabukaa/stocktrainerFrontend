@@ -37,6 +37,8 @@ const Game: React.FC = () => {
   const [tempCapitalInput, setTempCapitalInput] = useState<string>('');
   const [tempShareAmount, setTempShareAmount] = useState<string>('');
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
+  const [weekOffset, setWeekOffset] = useState<number>(0);
+  const [maxWeekOffset, setMaxWeekOffset] = useState<number>(0);
 
   useEffect(() => {
     const initializeStocks = async (): Promise<void> => {
@@ -99,10 +101,11 @@ const Game: React.FC = () => {
 
   // Helper Functions
   const getCurrentStockPrice = (): number => {
-    const currentMonthData = groupedData[currentMonth] || [];
-    if (currentMonthData.length === 0) return 0;
-    return currentMonthData[currentMonthData.length - 1].close;
+    const displayData = getShiftedData(); // Verwende die aktuell angezeigten Daten
+    if (displayData.length === 0) return 0;
+    return displayData[displayData.length - 1].close; // Letzter Punkt der Ansicht
   };
+
 
   const getCurrentStockHolding = (): StockHolding | undefined => {
     return stockHoldings.find(holding => holding.symbol === selectedStock);
@@ -113,6 +116,69 @@ const Game: React.FC = () => {
       return total + (holding.shares * holding.averagePrice);
     }, 0);
   };
+
+
+  const calculateMaxWeekOffset = (): number => {
+    if (!stockData || stockData.length === 0) return 0;
+
+    if (viewMode === 'monthly') {
+      // Für 4-Wochen-Ansicht: Gesamtwochen - 4 Wochen
+      const totalWeeks = Math.floor(stockData.length / 7);
+      return Math.max(0, totalWeeks - 4);
+    } else {
+      // Für Jahresansicht: Gesamtwochen - 52 Wochen (1 Jahr)
+      const totalWeeks = Math.floor(stockData.length / 7);
+      return Math.max(0, totalWeeks - 52);
+    }
+  };
+
+
+  // Neue Funktion: Berechne verschobene Daten
+  const getShiftedData = (): StockDataPoint[] => {
+    if (!stockData || stockData.length === 0) return [];
+
+    if (viewMode === 'monthly') {
+      // Letzte 4 Wochen = 28 Tage
+      const daysToShow = 28;
+      const startIndex = Math.max(0, stockData.length - daysToShow - (weekOffset * 7));
+      const endIndex = Math.min(stockData.length, startIndex + daysToShow);
+      return stockData.slice(startIndex, endIndex);
+    } else {
+      // Letztes Jahr = 365 Tage
+      const daysToShow = 365;
+      const startIndex = Math.max(0, stockData.length - daysToShow - (weekOffset * 7));
+      const endIndex = Math.min(stockData.length, startIndex + daysToShow);
+      return stockData.slice(startIndex, endIndex);
+    }
+  };
+
+
+  // Handler für Shift-Button
+  const handleShiftForward = (): void => {
+    const totalWeeks = Math.floor(stockData.length / 7);
+    const maxOffset = viewMode === 'monthly' ? totalWeeks - 4 : totalWeeks - 52;
+    if (weekOffset < maxOffset) {
+      setWeekOffset(prev => prev + 1);
+    }
+  };
+
+  const handleShiftBackward = (): void => {
+    if (weekOffset > 0) {
+      setWeekOffset(prev => prev - 1);
+    }
+  };
+
+  // Berechne maxOffset wenn sich viewMode oder stockData ändern
+  useEffect(() => {
+    const maxOffset = calculateMaxWeekOffset();
+    setMaxWeekOffset(maxOffset);
+
+    // Reset offset wenn ViewMode wechselt
+    if (weekOffset > maxOffset) {
+      setWeekOffset(0);
+    }
+  }, [viewMode, stockData]);
+
 
   // KORRIGIERTE calculateTotalValue Funktion
   const calculateTotalValue = (): number => {
@@ -377,6 +443,7 @@ const Game: React.FC = () => {
   const currentStockInfo = getCurrentStockInfo();
   const currentPrice = getCurrentStockPrice();
   const currentHolding = getCurrentStockHolding();
+  const displayData = getShiftedData();
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
@@ -570,37 +637,56 @@ const Game: React.FC = () => {
               <p>Interaktive Aktienkurs-Analyse mit monatlicher Navigation</p>
             </header>
 
-            {/* Navigation mit KORRIGIERTER Vermögensanzeige */}
+            {/* Navigation mit Shift-Buttons */}
             <div className={styles.navigationContainer}>
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <button
                   className={viewMode === 'monthly' ? styles.navButton : styles.navButtonSecondary}
                   onClick={() => setViewMode('monthly')}
-                  disabled={viewMode === 'monthly'}
                 >
                   Letzte 4 Wochen
                 </button>
                 <button
                   className={viewMode === 'yearly' ? styles.navButton : styles.navButtonSecondary}
                   onClick={() => setViewMode('yearly')}
-                  disabled={viewMode === 'yearly'}
                 >
                   Letztes Jahr
                 </button>
+
+                {/* Shift-Buttons */}
+                <div className={styles.shiftControls}>
+                  <button
+                    className={styles.shiftButton}
+                    onClick={handleShiftBackward}
+                    disabled={weekOffset === 0}
+                  >
+                    ◀
+                  </button>
+                  <span className={styles.shiftIndicator}>
+                    {weekOffset === 0 ? 'Aktuell' : `+${weekOffset}W`}
+                  </span>
+                  <button
+                    className={styles.shiftButton}
+                    onClick={handleShiftForward}
+                    disabled={weekOffset >= Math.floor(stockData.length / 7) - (viewMode === 'monthly' ? 4 : 52)}
+                  >
+                    ▶
+                  </button>
+                </div>
               </div>
+
               <div className={styles.balanceDisplay}>
                 <span className={styles.balanceLabel}>Gesamtvermögen:</span>
                 <span className={styles.balanceValue}>{calculateTotalValue().toFixed(2)}€</span>
               </div>
             </div>
 
+
             {/* Rest der Komponente bleibt gleich... */}
-            <div className={styles.chartContainer}>
-              <StockChart
-                data={currentPeriodData}
-                stockColor={currentStockInfo?.color || '#2563eb'}
-              />
-            </div>
+            <StockChart
+              data={displayData}  // ✅ Richtig
+              stockColor={currentStockInfo?.color || '#2563eb'}
+            />
             <div className={styles.tradingPanel}>
               <div className={styles.stockPosition} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '35%' }}>
                 <div className={styles.positionInfo}>
@@ -645,27 +731,38 @@ const Game: React.FC = () => {
             {/* Stats bleiben unverändert... */}
             <div className={styles.stats}>
               <div className={styles.statItem}>
-                <span className={styles.statLabel}>Datenpunkte im Monat:</span>
-                <span className={styles.statValue}>{currentPeriodData.length}</span>
+                <span className={styles.statLabel}>Datenpunkte im Zeitraum:</span>
+                <span className={styles.statValue}>{displayData.length}</span>
               </div>
-              {currentPeriodData.length > 0 && (
+              {displayData.length > 0 && (
                 <>
                   <div className={styles.statItem}>
                     <span className={styles.statLabel}>Höchster Kurs:</span>
                     <span className={styles.statValue}>
-                      {Math.max(...currentPeriodData.map(d => d.close)).toFixed(2)}€
+                      {displayData.length > 0 ? Math.max(...displayData.map(d => d.close)).toFixed(2) : '0.00'}€
                     </span>
                   </div>
                   <div className={styles.statItem}>
                     <span className={styles.statLabel}>Niedrigster Kurs:</span>
                     <span className={styles.statValue}>
-                      {Math.min(...currentPeriodData.map(d => d.close)).toFixed(2)}€
+                      {displayData.length > 0 ? Math.max(...displayData.map(d => d.close)).toFixed(2) : '0.00'}€
                     </span>
                   </div>
                   <div className={styles.statItem}>
                     <span className={styles.statLabel}>Durchschnittskurs:</span>
                     <span className={styles.statValue}>
-                      {(currentPeriodData.reduce((sum, d) => sum + d.close, 0) / currentPeriodData.length).toFixed(2)}€
+                      {(displayData.reduce((sum, d) => sum + d.close, 0) / displayData.length).toFixed(2)}€
+                    </span>
+                  </div>
+                  <div className={styles.statItem}>
+                    <span className={styles.statLabel}>Entwicklung:</span>
+                    <span className={`${styles.statValue} ${displayData.length > 1 &&
+                      displayData[displayData.length - 1].close > displayData[0].close
+                      ? styles.statValuePositive : styles.statValueNegative
+                      }`}>
+                      {displayData.length > 1 ? (
+                        ((displayData[displayData.length - 1].close - displayData[0].close) / displayData[0].close * 100).toFixed(2)
+                      ) : '0.00'}%
                     </span>
                   </div>
                 </>
