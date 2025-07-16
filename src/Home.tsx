@@ -5,7 +5,14 @@ import './css/home.css';
 
 const Home: React.FC = () => {
   // Platzhalter für Username und Level
-  const username = "Username";
+  let username = "Username";
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const userObj = JSON.parse(userData);
+      if (userObj.username) username = userObj.username;
+    }
+  } catch {}
   const level = 1;
   const ingameCurrency = 0;
   const navigate = useNavigate();
