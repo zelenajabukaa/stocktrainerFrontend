@@ -6,7 +6,6 @@ import styles from '../Game.module.css';
 interface StockChartProps {
     data: StockDataPoint[];
     stockColor: string;
-    // currentMonth entfernt - wird nicht mehr benötigt
 }
 
 interface ChartDataPoint extends StockDataPoint {
@@ -26,19 +25,17 @@ const StockChart: React.FC<StockChartProps> = ({ data, stockColor }) => {
     const CustomTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
         if (active && payload && payload.length) {
             const dataPoint = payload[0].payload;
+
+            // Formatiere den Kurs korrekt (entferne das Komma am Ende)
+            const formattedPrice = dataPoint.close.toFixed(2);
+
             return (
                 <div className={styles.customTooltip}>
-                    <p className={styles.tooltipDate}>{`Datum: ${dataPoint.dateString}`}</p>
-                    <p className={styles.tooltipPrice}>{`Kurs: ${dataPoint.closeString}€`}</p>
+                    <p className={styles.tooltipPrice}>{formattedPrice}€</p>
                 </div>
             );
         }
         return null;
-    };
-
-    const formatXAxisLabel = (tickItem: number): string => {
-        const date = new Date(tickItem);
-        return date.getDate().toString();
     };
 
     const formatYAxisLabel = (value: number): string => {
@@ -52,7 +49,6 @@ const StockChart: React.FC<StockChartProps> = ({ data, stockColor }) => {
 
     return (
         <div className={styles.stockChart}>
-            {/* Chart Header entfernt - Monat wird nur in Navigation angezeigt */}
             <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -61,7 +57,8 @@ const StockChart: React.FC<StockChartProps> = ({ data, stockColor }) => {
                         type="number"
                         scale="time"
                         domain={['dataMin', 'dataMax']}
-                        tickFormatter={formatXAxisLabel}
+                        tick={false}
+                        axisLine={false}
                         stroke="#64748b"
                     />
                     <YAxis
