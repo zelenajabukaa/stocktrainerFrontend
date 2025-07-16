@@ -1,117 +1,408 @@
+/* Levelbelohnungen.module.css */
 .battlepassFullPage {
+  background: linear-gradient(135deg, #0b0f19 0%, #1a1f2d 100%);
   min-height: 100vh;
-  width: 100vw;
-  background: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 3rem 0 2rem 0;
-  box-sizing: border-box;
+  color: #e2e8f0;
+  font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+  position: relative;
+  overflow-x: auto; /* Horizontales Scrolling aktivieren */
+  overflow-y: hidden; /* Vertikales Scrolling deaktivieren */
+  padding-top: 80px;
+  padding-bottom: 50px;
 }
 
+.battlepassFullPage::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 30%),
+    radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 30%),
+    radial-gradient(circle at 50% 50%, rgba(30, 64, 175, 0.05) 0%, transparent 50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.battlepassTitle {
+  text-align: center;
+  font-size: 3.2rem;
+  font-weight: 900;
+  margin: 2rem 0 3rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  position: relative;
+  z-index: 10;
+  background: linear-gradient(90deg, #8b9fdf 0%, #5d6dbd 50%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  position: sticky;
+  left: 0;
+  width: 100%;
+}
+
+.battlepassTitle::after {
+  content: '';
+  display: block;
+  width: 200px;
+  height: 4px;
+  background: linear-gradient(90deg, #1e40af, #8b5cf6);
+  margin: 10px auto;
+  border-radius: 2px;
+  box-shadow: 0 0 15px rgba(91, 33, 182, 0.6);
+}
+
+/* HORIZONTAL SCROLLING CONTAINER */
 .levelsRowFull {
   display: flex;
-  gap: 2rem;
-  overflow-x: auto;
-  padding-bottom: 2rem;
-  width: 90vw;
-  justify-content: flex-start;
+  flex-wrap: nowrap;
+  gap: 25px;
+  padding: 20px 50px;
+  width: max-content;
+  min-width: 100%;
+  margin: 0 auto;
+  position: relative;
+  z-index: 10;
+  transform: translateZ(0); /* Für bessere Performance */
+}
+
+/* LEVEL TRACK STYLING */
+.levelsRowFull::before {
+  content: '';
+  position: absolute;
+  top: 70px;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, 
+    rgba(30, 64, 175, 0.8) 0%, 
+    rgba(59, 130, 246, 0.8) 50%, 
+    rgba(139, 92, 246, 0.8) 100%);
+  border-radius: 4px;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+  z-index: -1;
+}
+
+.levelBox {
+  background: rgba(30, 41, 59, 0.5);
+  border: 2px solid rgba(139, 159, 223, 0.2);
+  border-radius: 15px;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transform: translateY(0);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 5px 15px rgba(0, 0, 0, 0.3),
+    inset 0 0 15px rgba(255, 255, 255, 0.05);
+  min-width: 220px;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+/* VERBESSERTER FREIGESCHALTET-STIL - VIEL SICHTBARER */
+.levelBoxUnlocked {
+  composes: levelBox;
+  background: linear-gradient(135deg, rgba(30, 64, 175, 0.6) 0%, rgba(55, 48, 163, 0.7) 100%);
+  border: 3px solid rgba(91, 143, 249, 0.9);
+  box-shadow: 
+    0 0 35px rgba(59, 130, 246, 0.8),
+    0 8px 30px rgba(0, 0, 0, 0.5),
+    inset 0 0 25px rgba(255, 255, 255, 0.15),
+    0 0 60px rgba(139, 92, 246, 0.4);
+  transform: scale(1.02);
+}
+
+.levelBox:hover {
+  transform: translateY(-8px) scale(1.03);
+  border-color: rgba(91, 143, 249, 0.7);
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(59, 130, 246, 0.6),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  z-index: 3;
+}
+
+.levelBox::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(135deg, 
+    rgba(30, 64, 175, 0) 0%, 
+    rgba(59, 130, 246, 0.3) 50%, 
+    rgba(139, 92, 246, 0.5) 100%);
+  border-radius: 17px;
+  z-index: -1;
+}
+
+/* VERSTÄRKTES GLOW FÜR FREIGESCHALTETE LEVEL */
+.levelBoxUnlocked::before {
+  background: linear-gradient(135deg, 
+    rgba(30, 64, 175, 0.7) 0%, 
+    rgba(59, 130, 246, 0.9) 50%, 
+    rgba(139, 92, 246, 1) 100%);
+  box-shadow: 0 0 40px rgba(59, 130, 246, 0.6);
+}
+
+/* CONNECTION LINE BETWEEN BOXES */
+.levelBox:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -30px;
+  width: 25px;
+  height: 4px;
+  background: rgba(139, 159, 223, 0.4);
+  transform: translateY(-50%);
+  z-index: 1;
+  border-radius: 2px;
+}
+
+.levelBoxUnlocked:not(:last-child)::after {
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
+  height: 6px;
+}
+
+.levelNumber {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #8b9fdf;
+  text-shadow: 0 0 10px rgba(139, 159, 223, 0.5);
+  letter-spacing: 1px;
+}
+
+/* BESSERE SICHTBARKEIT FÜR FREIGESCHALTETE LEVEL-NUMMERN */
+.levelBoxUnlocked .levelNumber {
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+  font-weight: 800;
 }
 
 .avatarImg {
-  width: 64px;
-  height: 64px;
-  object-fit: cover;
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin: 0 auto 15px;
   border-radius: 50%;
-  margin-bottom: 0.7rem;
-  box-shadow: 0 2px 8px 0 rgba(99,102,241,0.10);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 8px;
+  border: 2px solid rgba(139, 159, 223, 0.3);
+  transition: all 0.3s ease;
+}
+
+.levelBoxUnlocked .avatarImg {
+  border: 3px solid rgba(59, 130, 246, 0.9);
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+  background: rgba(30, 64, 175, 0.2);
+}
+
+.reward {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 10px 0;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+}
+
+.levelBoxUnlocked .reward {
+  color: #ffffff;
+  text-shadow: 0 0 15px rgba(163, 191, 250, 0.8);
+  font-weight: 800;
 }
 
 .xp {
   font-size: 1rem;
-  color: #6366f1;
-  margin-bottom: 0.7rem;
-  font-weight: 500;
-}
-.battlepassContainer {
-  background: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
-  padding: 2rem 2.5rem;
-  border-radius: 1.5rem;
-  box-shadow: 0 4px 24px 0 rgba(99,102,241,0.13);
-  margin: 2rem auto;
-  max-width: 900px;
+  color: #93c5fd;
+  margin-top: 10px;
+  font-weight: 600;
+  background: rgba(30, 64, 175, 0.3);
+  padding: 5px 10px;
+  border-radius: 20px;
+  display: inline-block;
 }
 
-.battlepassTitle {
-  color: #fff;
-  font-size: 2rem;
+.levelBoxUnlocked .xp {
+  background: rgba(30, 64, 175, 0.8);
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(30, 64, 175, 0.5);
+}
+
+/* VERBESSERTER FREIGESCHALTET-BADGE */
+.unlockedBadge {
+  position: absolute;
+  top: 25px;
+  right: -40px;
+  background: linear-gradient(90deg, #10b981, #059669);
+  color: white;
+  padding: 6px 35px;
+  font-size: 0.9rem;
   font-weight: 800;
-  text-align: center;
-  margin-bottom: 2rem;
+  transform: rotate(45deg);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.6);
+  z-index: 5;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
 }
 
-.levelsRow {
-  display: flex;
-  gap: 1.5rem;
-  overflow-x: auto;
-  padding-bottom: 1rem;
+/* SCROLLBAR STYLING */
+.battlepassFullPage::-webkit-scrollbar {
+  height: 12px;
 }
 
-.levelBox {
-  background: #fff;
-  border-radius: 1rem;
-  box-shadow: 0 2px 8px 0 rgba(99,102,241,0.10);
-  min-width: 120px;
-  padding: 1.2rem 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.battlepassFullPage::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 10px;
+}
+
+.battlepassFullPage::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  border-radius: 10px;
+  border: 2px solid rgba(30, 41, 59, 0.7);
+}
+
+.battlepassFullPage::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #2563eb, #7c3aed);
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+  .levelBox {
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .battlepassTitle {
+    font-size: 2.5rem;
+  }
+  
+  .levelBox {
+    min-width: 180px;
+    padding: 15px;
+  }
+  
+  .avatarImg {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .reward {
+    font-size: 1.1rem;
+    min-height: 50px;
+  }
+  
+  .levelsRowFull {
+    padding: 20px 30px;
+    gap: 20px;
+  }
+  
+  .levelsRowFull::before {
+    top: 60px;
+    height: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .battlepassTitle {
+    font-size: 2rem;
+    letter-spacing: 1px;
+  }
+  
+  .levelBox {
+    min-width: 160px;
+    padding: 12px;
+  }
+  
+  .levelNumber {
+    font-size: 1.1rem;
+  }
+  
+  .avatarImg {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .reward {
+    font-size: 0.95rem;
+    min-height: 45px;
+  }
+  
+  .xp {
+    font-size: 0.9rem;
+  }
+  
+  .levelsRowFull {
+    padding: 20px 15px;
+    gap: 15px;
+  }
+  
+  .levelsRowFull::before {
+    top: 55px;
+    height: 5px;
+  }
+}
+
+/* SPECIAL STYLING FOR CURRENT LEVEL */
+.currentLevel {
   position: relative;
-  opacity: 0.6;
-  transition: box-shadow 0.2s, opacity 0.2s;
+  transform: scale(1.1);
+  z-index: 4;
+  box-shadow: 
+    0 0 40px rgba(59, 130, 246, 0.9),
+    0 15px 35px rgba(0, 0, 0, 0.6),
+    inset 0 0 30px rgba(255, 255, 255, 0.25);
+}
+
+.currentLevel::before {
+  content: 'AKTUELL';
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  color: white;
+  padding: 4px 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 20px;
+  z-index: 6;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.6);
+}
+
+/* ANIMATIONS */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
 }
 
 .levelBoxUnlocked {
-  background: #fff;
-  border-radius: 1rem;
-  box-shadow: 0 4px 16px 0 rgba(99,102,241,0.18);
-  min-width: 120px;
-  padding: 1.2rem 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  border: 2px solid #6366f1;
-  opacity: 1;
-  transition: box-shadow 0.2s, opacity 0.2s;
+  animation: float 3s ease-in-out infinite;
 }
 
-.levelNumber {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #6366f1;
-  margin-bottom: 0.5rem;
+.currentLevel {
+  animation: float 2.5s ease-in-out infinite;
 }
 
-.reward {
-  font-size: 1rem;
-  color: #22223b;
-  margin-bottom: 0.7rem;
+/* PULSING ANIMATION FÜR FREIGESCHALTETE LEVEL */
+@keyframes pulse {
+  0% { box-shadow: 0 0 35px rgba(59, 130, 246, 0.8), 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(255, 255, 255, 0.15), 0 0 60px rgba(139, 92, 246, 0.4); }
+  50% { box-shadow: 0 0 45px rgba(59, 130, 246, 1), 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(255, 255, 255, 0.2), 0 0 80px rgba(139, 92, 246, 0.6); }
+  100% { box-shadow: 0 0 35px rgba(59, 130, 246, 0.8), 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(255, 255, 255, 0.15), 0 0 60px rgba(139, 92, 246, 0.4); }
 }
 
-.unlockedBadge {
-  background: #6366f1;
-  color: #fff;
-  font-size: 0.9rem;
-  font-weight: 700;
-  padding: 0.3rem 0.8rem;
-  border-radius: 0.7rem;
-  position: absolute;
-  bottom: 0.7rem;
-  left: 50%;
-  transform: translateX(-50%);
-  box-shadow: 0 2px 8px 0 rgba(99,102,241,0.10);
+.levelBoxUnlocked {
+  animation: float 3s ease-in-out infinite, pulse 2s ease-in-out infinite;
 }
