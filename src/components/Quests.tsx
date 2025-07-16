@@ -6,7 +6,8 @@ interface Quest {
   id: string;
   group: string; 
   description: string;
-  xp: number;
+  xp?: number;
+  money?: number;
 }
 
 const quests: Quest[] = [
@@ -49,6 +50,19 @@ const quests: Quest[] = [
   { id: 'activity_7', group: 'activity', description: 'Führe in einer Woche mindestens 40 Trades aus.', xp: 3000 },
   { id: 'activity_8', group: 'activity', description: 'Führe in einer Woche mindestens 50 Trades aus.', xp: 5000 },
 
+ { id: 'special_1', group: 'special', description: 'Vermeide Verluste und erhalte mindestens dein Startbudget zurück.', money: 100 },
+{ id: 'special_2', group: 'special', description: 'Erziele mindestens 10% Gewinn auf dein Startbudget.', money: 500 },
+{ id: 'special_3', group: 'special', description: 'Erziele mindestens 20% Gewinn auf dein Startbudget.', money: 2500 },
+{ id: 'special_4', group: 'special', description: 'Erziele mindestens 50% Gewinn auf dein Startbudget.', money: 5000 },
+{ id: 'special_5', group: 'special', description: 'Verdopple dein Startbudget.', money: 10000 },
+{ id: 'special_6', group: 'special', description: 'Verdreifache dein Startbudget.', money: 25000 },
+{ id: 'special_7', group: 'special', description: 'Vervierfache dein Startbudget.', money: 50000 }
+
+
+
+
+
+
 ];
 
 const completedQuestIds = [];
@@ -89,7 +103,11 @@ const Quests: React.FC = () => {
             <div className={styles.questInfo}>
               <span className={styles.questDescription}>{quest.description}</span>
             </div>
-            <span className={styles.xpBadge}>{quest.xp} XP</span>
+            {typeof quest.money === 'number' ? (
+              <span className={styles.xpBadge}>{quest.money} €</span>
+            ) : (
+              <span className={styles.xpBadge}>{quest.xp} XP</span>
+            )}
           </li>
         ))}
       </ul>
