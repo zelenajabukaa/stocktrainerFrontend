@@ -42,5 +42,242 @@
         "headquarters": "Austin, Texas, USA",
         "employees": "~140,000",
         "website": "tesla.com"
-    }
+    },
+  "INTC": {
+    "name": "Intel Corporation",
+    "logo": "intel.png",
+    "description": "Intel ist ein führender Technologiekonzern, der CPUs, Komponenten und Grafiklösungen entwickelt und produziert.",
+    "history": "Intel wurde 1968 von Gordon Moore und Robert Noyce gegründet, entwickelte den ersten kommerziellen Mikroprozessor (4004) und dominierte jahrzehntelang den PC-Markt.",
+    "industry": "Halbleiter",
+    "founded": "1968",
+    "headquarters": "Santa Clara, Kalifornien, USA",
+    "employees": "~102,600",
+    "website": "intel.com"
+  },
+  "BA": {
+    "name": "The Boeing Company",
+    "logo": "boeing.png",
+    "description": "Boeing ist ein globaler Luft- und Raumfahrtkonzern, der Verkehrsflugzeuge, Verteidigungs- und Raumfahrtsysteme entwickelt und betreut.",
+    "history": "Boeing entstand 1916, hat heute drei Geschäftseinheiten (Commercial Airplanes; Defense, Space & Security; Global Services) und ist einer der grössten US-Exporteure.",
+    "industry": "Luft‑ & Raumfahrt",
+    "founded": "1916",
+    "headquarters": "Arlington, Virginia, USA",
+    "employees": "~170,000+",
+    "website": "boeing.com"
+  },
+  "MSFT": {
+    "name": "Microsoft Corporation",
+    "logo": "microsoft.png",
+    "description": "Microsoft ist ein führender Technologiekonzern, tätig in Software, Hardware, Cloud, Gaming und KI.",
+    "history": "Microsoft wurde 1975 von Bill Gates und Paul Allen gegründet und prägte PC‑Software mit MS‑DOS und Windows; heutiger Fokus liegt auf Cloud (Azure), Office‑Suite, Xbox und KI.",
+    "industry": "Informationstechnologie",
+    "founded": "1975",
+    "headquarters": "Redmond, Washington, USA",
+    "employees": "~228,000",
+    "website": "microsoft.com"
+  },
+    
+  "NFLX": {
+    "name": "Netflix, Inc.",
+    "logo": "netflix.png",
+    "description": "Netflix ist ein globales Streaming‑ und Medienunternehmen, bekannt für On‑Demand-Serien und -Filme.",
+    "history": "Netflix wurde 1997 von Reed Hastings und Marc Randolph gegründet, begann mit DVD‑Versand, führte 2007 Streaming ein und hat inzwischen über 300 Mio. Abonnenten weltweit.",
+    "industry": "Streaming & Medien",
+    "founded": "1997",
+    "headquarters": "Los Gatos, Kalifornien, USA",
+    "employees": "divers (zahl zuletzt nicht exakt)",
+    "website": "netflix.com"
+  },
+  "GOOGL": {
+    "name": "Google LLC",
+    "logo": "google.png",
+    "description": "Google ist ein weltweit führendes Technologieunternehmen, das Internetdienstleistungen wie die Google-Suche, YouTube, Gmail und Android bereitstellt.",
+    "history": "Google wurde 1998 von Larry Page und Sergey Brin in Menlo Park, Kalifornien, gegründet. Die Firma entwickelte sich rasch zu einem der wichtigsten Player im Internet und wurde 2015 eine Tochtergesellschaft von Alphabet Inc.",
+    "industry": "Internetdienstleistungen & Werbung",
+    "founded": "1998",
+    "headquarters": "Mountain View, Kalifornien, USA",
+    "employees": "~182,500",
+    "website": "google.com"
+},
+"KO": {
+    "name": "The Coca-Cola Company",
+    "logo": "cola.png",
+    "description": "Coca-Cola ist ein weltweit führender Getränkekonzern, der für seine gleichnamige Limonade und eine Vielzahl weiterer Getränke bekannt ist.",
+    "history": "Coca-Cola wurde 1886 von John Stith Pemberton in Atlanta, Georgia, entwickelt. Seitdem hat sich das Unternehmen zu einem globalen Giganten mit über 500 Marken weltweit entwickelt.",
+    "industry": "Getränkeindustrie",
+    "founded": "1892",
+    "headquarters": "Atlanta, Georgia, USA",
+    "employees": "~79,100",
+    "website": "coca-colacompany.com"
+},
+"DIS": {
+    "name": "The Walt Disney Company",
+    "logo": "disney.png",
+    "description": "Disney ist ein globaler Unterhaltungskonzern, der in den Bereichen Film, Fernsehen, Freizeitparks, Medien und Streaming tätig ist.",
+    "history": "Disney wurde 1923 von Walt und Roy O. Disney gegründet. Das Unternehmen ist berühmt für seine Zeichentrickfilme, Freizeitparks und Franchises wie Marvel, Star Wars und Pixar.",
+    "industry": "Unterhaltung & Medien",
+    "founded": "1923",
+    "headquarters": "Burbank, Kalifornien, USA",
+    "employees": "~220,000",
+    "website": "thewaltdisneycompany.com"
+},
+"PEP": {
+    "name": "PepsiCo, Inc.",
+    "logo": "pepsiCo.png",
+    "description": "PepsiCo ist ein weltweit tätiger Lebensmittel- und Getränkekonzern, bekannt für Produkte wie Pepsi, Lay’s, Gatorade und Quaker.",
+    "history": "PepsiCo entstand 1965 durch die Fusion von Pepsi-Cola und Frito-Lay. Heute ist es eines der größten Unternehmen für Snacks und Getränke weltweit.",
+    "industry": "Lebensmittel & Getränke",
+    "founded": "1965",
+    "headquarters": "Purchase, New York, USA",
+    "employees": "~315,000",
+    "website": "pepsico.com"
+},
+"EBAY": {
+    "name": "eBay Inc.",
+    "logo": "ebay.png",
+    "description": "eBay ist ein globaler E-Commerce-Marktplatz, der es Nutzern ermöglicht, Produkte zu kaufen und zu verkaufen – sowohl über Auktionen als auch Festpreise.",
+    "history": "eBay wurde 1995 von Pierre Omidyar in San Jose, Kalifornien, gegründet. Die Plattform begann als Auktionsseite und entwickelte sich schnell zu einem der größten Online-Marktplätze weltweit.",
+    "industry": "E-Commerce",
+    "founded": "1995",
+    "headquarters": "San Jose, Kalifornien, USA",
+    "employees": "~11,600",
+    "website": "ebay.com"
+},
+"HON": {
+    "name": "Honeywell International Inc.",
+    "logo": "honeywell.png",
+    "description": "Honeywell ist ein diversifizierter Industriekonzern, der Produkte und Dienstleistungen in den Bereichen Luftfahrt, Gebäudetechnik, Sicherheitslösungen und Spezialchemikalien anbietet.",
+    "history": "Honeywell wurde 1906 gegründet und hat sich im Laufe der Jahrzehnte durch Fusionen und Innovationen zu einem globalen Unternehmen mit Fokus auf Technologie und industrielle Automatisierung entwickelt.",
+    "industry": "Industrie, Technologie & Fertigung",
+    "founded": "1906",
+    "headquarters": "Charlotte, North Carolina, USA",
+    "employees": "~97,000",
+    "website": "honeywell.com"
+},
+"MA": {
+    "name": "Mastercard Incorporated",
+    "logo": "masterCard.png",
+    "description": "Mastercard ist ein führendes globales Zahlungsunternehmen, das elektronische Transaktionen zwischen Finanzinstituten, Händlern und Kunden ermöglicht.",
+    "history": "Mastercard entstand 1966 als Interbank Card Association und wurde später in Mastercard umbenannt. Das Unternehmen treibt seit Jahrzehnten Innovationen im bargeldlosen Zahlungsverkehr voran.",
+    "industry": "Finanzdienstleistungen & Zahlungsverkehr",
+    "founded": "1966",
+    "headquarters": "Purchase, New York, USA",
+    "employees": "~29,900",
+    "website": "mastercard.com"
+},
+"MCD": {
+    "name": "McDonald's Corporation",
+    "logo": "mcDonalds.png",
+    "description": "McDonald's ist das weltweit größte Fast-Food-Unternehmen, bekannt für Burger, Pommes und Getränke – mit Tausenden Filialen in über 100 Ländern.",
+    "history": "McDonald's wurde 1940 von Richard und Maurice McDonald gegründet. Ray Kroc trat 1954 bei und baute das Unternehmen zu einem globalen Franchise-Giganten aus.",
+    "industry": "Systemgastronomie & Franchise",
+    "founded": "1940",
+    "headquarters": "Chicago, Illinois, USA",
+    "employees": "~150,000 (inkl. Konzern und Franchise)",
+    "website": "mcdonalds.com"
+},
+"META": {
+    "name": "Meta Platforms, Inc.",
+    "logo": "meta.png",
+    "description": "Meta ist ein führendes Technologieunternehmen, das soziale Netzwerke wie Facebook, Instagram und WhatsApp sowie Virtual- und Augmented-Reality-Technologien entwickelt.",
+    "history": "Meta wurde 2004 als Facebook von Mark Zuckerberg gegründet. 2021 erfolgte die Umbenennung in Meta Platforms, um den Fokus auf das Metaverse und immersive Technologien zu unterstreichen.",
+    "industry": "Soziale Medien & Technologie",
+    "founded": "2004",
+    "headquarters": "Menlo Park, Kalifornien, USA",
+    "employees": "~67,300",
+    "website": "meta.com"
+},
+"NKE": {
+    "name": "Nike, Inc.",
+    "logo": "nike.png",
+    "description": "Nike ist ein weltweit führender Hersteller von Sportbekleidung, Schuhen und Ausrüstung mit ikonischen Marken wie Air Jordan und Converse.",
+    "history": "Nike wurde 1964 als Blue Ribbon Sports gegründet und 1971 in Nike umbenannt. Das Unternehmen wuchs mit innovativem Design und Athleten-Sponsoring zur bekanntesten Sportmarke der Welt.",
+    "industry": "Sportartikel & Bekleidung",
+    "founded": "1964",
+    "headquarters": "Beaverton, Oregon, USA",
+    "employees": "~83,700",
+    "website": "nike.com"
+},
+
+"SBUX": {
+    "name": "Starbucks Corporation",
+    "logo": "starbucks.png",
+    "description": "Starbucks ist die weltweit größte Kaffeehauskette, bekannt für ihre Espressogetränke, Tees und Snacks in tausenden Filialen weltweit.",
+    "history": "Starbucks wurde 1971 in Seattle gegründet. Unter CEO Howard Schultz wuchs das Unternehmen rasant und etablierte sich als Synonym für Premium-Kaffee und Kaffeekultur.",
+    "industry": "Gastronomie & Einzelhandel",
+    "founded": "1971",
+    "headquarters": "Seattle, Washington, USA",
+    "employees": "~381,000",
+    "website": "starbucks.com"
+},
+"ORCL": {
+    "name": "Oracle Corporation",
+    "logo": "oracle.png",
+    "description": "Oracle ist ein multinationales IT-Unternehmen, spezialisiert auf Datenbanken, Cloud-Lösungen, Unternehmenssoftware und KI-Infrastruktur.",
+    "history": "Oracle wurde 1977 von Larry Ellison, Bob Miner und Ed Oates gegründet. Das Unternehmen wurde mit seinen relationalen Datenbanksystemen groß und expandierte später in Cloud- und Business-Software.",
+    "industry": "Software & Cloud-Infrastruktur",
+    "founded": "1977",
+    "headquarters": "Austin, Texas, USA",
+    "employees": "~143,000",
+    "website": "oracle.com"
+},
+"PYPL": {
+    "name": "PayPal Holdings, Inc.",
+    "logo": "payPal.png",
+    "description": "PayPal ist ein führendes Online-Zahlungsunternehmen, das sichere Transaktionen für Verbraucher und Händler weltweit ermöglicht.",
+    "history": "PayPal wurde 1998 gegründet und fusionierte 2000 mit Elon Musks X.com. 2002 wurde es von eBay übernommen und 2015 wieder als eigenständiges Unternehmen ausgegliedert.",
+    "industry": "Fintech & Online-Zahlungen",
+    "founded": "1998",
+    "headquarters": "San Jose, Kalifornien, USA",
+    "employees": "~27,200",
+    "website": "paypal.com"
+},
+"PFE": {
+    "name": "Pfizer Inc.",
+    "logo": "pfizer.png",
+    "description": "Pfizer ist ein globales Pharmaunternehmen, das Medikamente, Impfstoffe und Gesundheitsprodukte entwickelt und vertreibt.",
+    "history": "Pfizer wurde 1849 in Brooklyn, New York, gegründet. Es ist bekannt für die Entwicklung zahlreicher Medikamente, darunter Viagra, Lipitor und den COVID-19-Impfstoff gemeinsam mit BioNTech.",
+    "industry": "Pharmazeutik & Biotechnologie",
+    "founded": "1849",
+    "headquarters": "New York City, New York, USA",
+    "employees": "~83,000",
+    "website": "pfizer.com"
+},
+"UNH": {
+    "name": "UnitedHealth Group Incorporated",
+    "logo": "unitedHealthGroup.png",
+    "description": "UnitedHealth Group ist ein führendes Gesundheitsunternehmen, das Dienstleistungen in den Bereichen Krankenversicherung, Gesundheitsmanagement und Datenanalytik anbietet.",
+    "history": "UnitedHealth Group wurde 1977 gegründet und entwickelte sich zu einem der größten Gesundheitsdienstleister weltweit mit den beiden Hauptsegmenten UnitedHealthcare und Optum.",
+    "industry": "Gesundheitswesen & Versicherung",
+    "founded": "1977",
+    "headquarters": "Minnetonka, Minnesota, USA",
+    "employees": "~400,000",
+    "website": "unitedhealthgroup.com"
+},
+"V": {
+    "name": "Visa Inc.",
+    "logo": "visa.png",
+    "description": "Visa ist ein globales Finanzdienstleistungsunternehmen, das elektronische Zahlungssysteme für Verbraucher, Unternehmen und Regierungen bereitstellt.",
+    "history": "Visa wurde 1958 als 'BankAmericard' eingeführt und 1976 in Visa umbenannt. Das Unternehmen ist einer der größten Anbieter von Kreditkarten- und Zahlungslösungen weltweit.",
+    "industry": "Zahlungsverkehr & Finanztechnologie",
+    "founded": "1958",
+    "headquarters": "Foster City, Kalifornien, USA",
+    "employees": "~26,500",
+    "website": "visa.com"
+},
+"WMT": {
+    "name": "Walmart Inc.",
+    "logo": "walmart.png",
+    "description": "Walmart ist das weltweit größte Einzelhandelsunternehmen, das Discount-Warenhäuser, Supermärkte und Onlinehandel betreibt.",
+    "history": "Walmart wurde 1962 von Sam Walton in Arkansas gegründet. Das Unternehmen revolutionierte den Einzelhandel mit seiner Niedrigpreisstrategie und expandierte global.",
+    "industry": "Einzelhandel & E-Commerce",
+    "founded": "1962",
+    "headquarters": "Bentonville, Arkansas, USA",
+    "employees": "~2,100,000",
+    "website": "walmart.com"
 }
+
+
+
+}
+
