@@ -1,6 +1,7 @@
 
 import React from 'react';
 import styles from '../css/Levelbelohnungen.module.css';
+import Header from './Header';
 
 const avatarImages: Record<string, string> = {
   'Avatar Livio': '/public/avatar/avatar5.png',
@@ -20,7 +21,7 @@ const rewards = [
   { level: 5, reward: '900 Münzen', xp: 1500, unlocked: false },
   { level: 6, reward: 'PayPal Aktie', xp: 2200, unlocked: false },
   { level: 7, reward: 'Apple Aktie', xp: 2800, unlocked: false },
-  { level: 8, reward: 'Avatar Araber', xp: 3500, unlocked: false },
+  { level: 8, reward: 'Avatar Al Muffler', xp: 3500, unlocked: false },
   { level: 9, reward: 'Mc Donalds Aktie', xp: 4500, unlocked: false },
   { level: 10, reward: 'UnitedHealthGroup Aktie', xp: 5800, unlocked: false },
   { level: 11, reward: 'Visa Aktie', xp: 7000, unlocked: false },
@@ -36,8 +37,20 @@ const rewards = [
 ];
 
 const Levelbelohnungen: React.FC = () => {
+  let username = "Username";
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const userObj = JSON.parse(userData);
+      if (userObj.username) username = userObj.username;
+    }
+  } catch {}
+  const level = 1;
+  const ingameCurrency = 0;
+
   return (
     <div className={styles.battlepassFullPage}>
+      <Header username={username} level={level} ingameCurrency={ingameCurrency} />
       <h2 className={styles.battlepassTitle}>Levelbelohnungen</h2>
       <div className={styles.levelsRowFull}>
         {rewards.map((item) => {
