@@ -27,9 +27,23 @@ const AvatarSettings: React.FC = () => {
     avatar8,
     avatar9,
   ];
+
+    let username = "Username";
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const userObj = JSON.parse(userData);
+      if (userObj.username) username = userObj.username;
+    }
+  } catch {}
+  const level = 1;
+  const ingameCurrency = 0;
+
+
   return (
     <div className={styles.avatarSettingsContainer}>
-      <Header />
+        <Header username={username} level={level} ingameCurrency={ingameCurrency} />
+
       <div className={styles.avatarSettingsContent}>
         <h2 className={styles.avatarTitle}>Avatar</h2>
         <div className={styles.avatarGrid}>
