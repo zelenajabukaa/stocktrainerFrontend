@@ -4,8 +4,8 @@ import styles from '../css/Levelbelohnungen.module.css';
 import Header from './Header';
 
 const avatarImages: Record<string, string> = {
-  'Avatar Livio': '/public/avatar/avatar5.png',
-  'Avatar Araber': '/public/avatar/avatar4.png',
+  'Avatar Rajib': '/public/avatar/avatar5.png',
+  'Avatar Muhamed': '/public/avatar/avatar4.png',
   'Avatar Goat': '/public/avatar/avatar9.png',
 };
 
@@ -16,12 +16,12 @@ const defaultImages: Record<string, string> = {
 const rewards = [
   { level: 1, reward: 'Nike Aktie', xp: 100, unlocked: true },
   { level: 2, reward: 'PepsiCo Aktie', xp: 300, unlocked: true },
-  { level: 3, reward: 'Avatar Livio', xp: 500, unlocked: true },
+  { level: 3, reward: 'Avatar Rajib', xp: 500, unlocked: true },
   { level: 4, reward: 'Honeywell Aktie', xp: 1000, unlocked: true },
   { level: 5, reward: '900 Münzen', xp: 1500, unlocked: false },
   { level: 6, reward: 'PayPal Aktie', xp: 2200, unlocked: false },
   { level: 7, reward: 'Apple Aktie', xp: 2800, unlocked: false },
-  { level: 8, reward: 'Avatar Al Muffler', xp: 3500, unlocked: false },
+  { level: 8, reward: 'Avatar Muhamed', xp: 3500, unlocked: false },
   { level: 9, reward: 'Mc Donalds Aktie', xp: 4500, unlocked: false },
   { level: 10, reward: 'UnitedHealthGroup Aktie', xp: 5800, unlocked: false },
   { level: 11, reward: 'Visa Aktie', xp: 7000, unlocked: false },
