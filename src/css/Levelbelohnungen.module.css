@@ -1,0 +1,81 @@
+.battlepassContainer {
+  background: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
+  padding: 2rem 2.5rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 24px 0 rgba(99,102,241,0.13);
+  margin: 2rem auto;
+  max-width: 900px;
+}
+
+.battlepassTitle {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.levelsRow {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.levelBox {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px 0 rgba(99,102,241,0.10);
+  min-width: 120px;
+  padding: 1.2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  opacity: 0.6;
+  transition: box-shadow 0.2s, opacity 0.2s;
+}
+
+.levelBoxUnlocked {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px 0 rgba(99,102,241,0.18);
+  min-width: 120px;
+  padding: 1.2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 2px solid #6366f1;
+  opacity: 1;
+  transition: box-shadow 0.2s, opacity 0.2s;
+}
+
+.levelNumber {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #6366f1;
+  margin-bottom: 0.5rem;
+}
+
+.reward {
+  font-size: 1rem;
+  color: #22223b;
+  margin-bottom: 0.7rem;
+}
+
+.unlockedBadge {
+  background: #6366f1;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.3rem 0.8rem;
+  border-radius: 0.7rem;
+  position: absolute;
+  bottom: 0.7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 8px 0 rgba(99,102,241,0.10);
+}
