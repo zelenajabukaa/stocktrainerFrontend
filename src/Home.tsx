@@ -33,10 +33,10 @@ const Home: React.FC = () => {
     canvas.height = window.innerHeight;
 
     // Erstelle mehrere Aktienlinien
-    stockLinesRef.current = Array.from({ length: 6 }, (_, i) => ({
+    stockLinesRef.current = Array.from({ length: 8 }, (_, i) => ({
       points: [],
       baseY: canvas.height * (0.2 + i * 0.13),
-      speed: 0.001 + Math.random() * 0.1,
+      speed: 0.001 + Math.random() * 0.3,
       direction: Math.random() > 0.5 ? 1 : -1,
       stepSize: 15 + Math.random() * 25,
       volatility: 20 + Math.random() * 40,

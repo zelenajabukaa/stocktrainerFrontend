@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Quests.module.css';
+import styles from '../css/Quests.module.css';
 import Header from './Header';
 
 interface Quest {
