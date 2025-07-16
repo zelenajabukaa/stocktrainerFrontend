@@ -28,8 +28,8 @@ const Login: React.FC = () => {
     // Erstelle mehrere Aktienlinien mit realistischen Zickzack-Bewegungen
     stockLinesRef.current = Array.from({ length: 6 }, (_, i) => ({
       points: [],
-      baseY: canvas.height * (0.2 + i * 0.13), // Vertikale Verteilung
-      speed: 0.05 + Math.random() * 1, // Geschwindigkeit
+      baseY: canvas.height * (0.3 + i * 0.09), // Vertikale Verteilung
+      speed: 0.05 + Math.random() * 0.5, // Geschwindigkeit
       direction: Math.random() > 0.5 ? 1 : -1, // Aktuelle Richtung
       stepSize: 15 + Math.random() * 25, // Horizontale Schrittweite
       volatility: 20 + Math.random() * 40, // Wie stark hoch/runter

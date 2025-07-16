@@ -1,128 +1,224 @@
-.main-bg {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
-  font-family: 'Inter', Arial, sans-serif;
+/* === RESET === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.header-area {
+/* === BODY === */
+body {
+  font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+  background: #0b0f19;
+  color: #e2e8f0;
+  overflow: hidden;
+  height: 100vh;
   position: relative;
-  min-height: 7.5rem;
 }
 
-.lvl-badge {
-  background: #6366f1;
-  color: white;
-  border-radius: 1.5rem;
-  padding: 0.5rem 1.7rem;
-  font-weight: 700;
-  font-size: 1.2rem;
-  letter-spacing: 0.05em;
-  z-index: 2;
+.main-bg {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.ingame-currency {
-  background: #6366f1;
-  color: white;
-  border-radius: 1.5rem;
-  padding: 0.5rem 1.7rem;
-  font-weight: 700;
-  font-size: 1.2rem;
-  letter-spacing: 0.05em;
-  margin-left: 0.5rem;
+/* === Canvas für animierte Aktienlinien === */
+.stockCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* === Gradient Overlay für bessere Lesbarkeit === */
+.gradientOverlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(11, 15, 25, 0.3) 0%, rgba(11, 15, 25, 0.8) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* === Header === */
+.header-area {
+  padding: 1.5rem 0.5rem;
+  padding-top: 6rem;
+  z-index: 3;
+  position: relative;
 }
 
 .center-col {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 2.5rem;
+  margin-top: 1rem;
 }
 
 .username {
-  font-weight: 800;
-  font-size: 4rem;
-  color: #22223b;
-  letter-spacing: 0.01em;
+  font-size: 4.5rem;
+  font-weight: 900;
+  color: #8b9fdf;
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  letter-spacing: 0.04em;
 }
 
+/* === Level Badge === */
+.lvl-badge {
+  background:  #1e40af;
+  border-radius: 0.6rem;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
+}
+
+/* === Ingame Currency === */
+.ingame-currency {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(123, 193, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 0.6rem;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+/* === Buttons === */
 .friends-btn {
-  background: linear-gradient(90deg, #6366f1 0%, #818cf8 100%);
-  color: white;
-  border: none;
-  border-radius: 2rem;
-  padding: 1rem 2.5rem;
+  padding: 0.5rem 1.5rem;
+  margin-top: 1rem;
   font-size: 1.1rem;
   font-weight: 700;
-  box-shadow: 0 2px 12px 0 rgba(99, 102, 241, 0.15);
+  border: none;
+  border-radius: 0.6rem;
+  background: #1e40af;
+  color: #fff;
   cursor: pointer;
-  transition: background 0.2s;
-  margin-top: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
 }
 
+.friends-btn:hover {
+  background:  #0061fd;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.35);
+}
+
+.friends-btn-large {
+  padding: 1rem;
+  font-size: 1.2rem;
+}
+
+/* === Main Content === */
 .main-content {
-  flex: 1;
+  position: relative;
+  z-index: 2;
   display: flex;
-  justify-content: flex-start;
-  align-items: stretch;
-  gap: 1.2rem;
-  padding: 2.5rem 0 2.5rem 0;
-  min-height: 0;
+  width: 100%;
+  height: calc(100vh - 280px);
+  padding: 0 2rem 2rem;
+  gap: 2rem;
 }
 
+/* === Cards === */
 .card {
-  background: white;
-  border-radius: 2rem;
-  box-shadow: 0 4px 24px 0 rgba(99, 102, 241, 0.10);
-  min-height: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 1.5rem;
+  box-shadow:
+    0 0 10px rgba(59, 130, 246, 0.3),
+    0 0 40px rgba(59, 130, 246, 0.1),
+    inset 0 0 6px rgba(255, 255, 255, 0.02);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.015);
+  box-shadow:
+    0 0 15px rgba(59, 130, 246, 0.4),
+    0 0 60px rgba(59, 130, 246, 0.2),
+    inset 0 0 8px rgba(255, 255, 255, 0.03);
 }
 
 .card-main {
-  flex: 0 0 70%;
+  flex: 1;
+  padding: 2rem;
   font-size: 1.5rem;
-  color: #6366f1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #93c5fd;
 }
 
 .card-side {
-  flex: 0 0 28%;
-  font-size: 1.2rem;
-  color: #22223b;
+  width: 280px;
+}
+
+.card-side-vertical {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
 }
-.card-side-vertical {
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-}
+
+/* === Sidebar Buttons === */
 .sidebar-btns {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  width: 100%;
+  gap: 0.3rem;
+  height: 97%;
+  padding: 0.5rem;
 }
-.sidebar-btn {
-  width: 80%;
-  margin: 0 auto;
-  font-size: 1.25rem;
-  padding: 2rem 0;
-  border-radius: 1.2rem;
-  box-shadow: 0 2px 12px 0 rgba(99, 102, 241, 0.10);
-}
+
 .sidebar-btns-fill {
-  gap: 1.5rem;
-  height: 100%;
-  justify-content: stretch;
+  justify-content: space-around;
 }
+
+.sidebar-btn {
+  width: 100%;
+  text-align: center;
+}
+
 .sidebar-btn-fill {
-  flex: 1 1 0;
-  min-height: 0;
+  flex: 1;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+}
+
+.sidebar-btn {
+  padding: 0.5rem;
+  border-radius: 0.6rem;
+  background: rgba(36, 167, 255, 1);
+  color: #222222;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+/* === Positionierung === */
+.header-area > div:first-child {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  gap: 2
+rem;
+  align-items: center;
+}
+
+/* === Responsive Design === */
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .card-side {
+    width: 100%;
+  }
+
+  .username {
+    font-size: 2rem;
+  }
 }
