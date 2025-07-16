@@ -16,8 +16,8 @@ const defaultImages: Record<string, string> = {
 const rewards = [
   { level: 1, reward: 'Nike Aktie', xp: 100, unlocked: true },
   { level: 2, reward: 'PepsiCo Aktie', xp: 300, unlocked: true },
-  { level: 3, reward: 'Avatar Livio', xp: 500, unlocked: false },
-  { level: 4, reward: 'Honeywell Aktie', xp: 1000, unlocked: false },
+  { level: 3, reward: 'Avatar Livio', xp: 500, unlocked: true },
+  { level: 4, reward: 'Honeywell Aktie', xp: 1000, unlocked: true },
   { level: 5, reward: '900 Münzen', xp: 1500, unlocked: false },
   { level: 6, reward: 'PayPal Aktie', xp: 2200, unlocked: false },
   { level: 7, reward: 'Apple Aktie', xp: 2800, unlocked: false },
@@ -68,7 +68,7 @@ const Levelbelohnungen: React.FC = () => {
           } else if (item.reward.includes('Münzen')) {
             imgSrc = defaultImages['Münzen'];
           } else {
-            imgSrc = '/public/avatar/avatar1.png'; // Fallback
+            imgSrc = '/public/avatar/avatar4.png'; // Fallback
           }
           return (
             <div

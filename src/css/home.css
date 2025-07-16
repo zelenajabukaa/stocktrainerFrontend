@@ -57,7 +57,7 @@ body {
 }
 
 .username {
-  font-size: 4.5rem;
+  font-size: 5.5rem;
   font-weight: 900;
   color: #8b9fdf;
   text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
@@ -118,7 +118,7 @@ body {
   display: flex;
   width: 100%;
   height: calc(100vh - 280px);
-  padding: 0 2rem 2rem;
+  padding: 0 8rem 8rem;
   gap: 2rem;
 }
 
