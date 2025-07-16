@@ -92,9 +92,20 @@ const Quests: React.FC = () => {
   const completedCount = completedQuestIds.length;
   const progress = (completedCount / totalQuests) * 100;
 
+  let username = "Username";
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const userObj = JSON.parse(userData);
+      if (userObj.username) username = userObj.username;
+    }
+  } catch {}
+  const level = 1;
+  const ingameCurrency = 0;
+
   return (
     <div className={styles.questsContainer}>
-        <Header/>
+      <Header username={username} level={level} ingameCurrency={ingameCurrency} />
       <div className={styles.questsTitle}>Quests</div>
 
       <ul className={styles.questList}>
