@@ -61,7 +61,7 @@ const Header: React.FC<{ username: string; level: number; ingameCurrency: number
         {open && (
           <div className={styles.menuDropdown}>
             <button className={styles.menuItem}>Einstellungen</button>
-            <button className={styles.menuItem}>Avatar ändern</button>
+            <button className={styles.menuItem} onClick={() => navigate('/user/avatar')}>Avatar ändern</button>
             <button className={styles.menuItem} onClick={handleLogout}>Ausloggen</button>
           </div>
         )}
