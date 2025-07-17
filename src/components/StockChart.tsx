@@ -60,6 +60,7 @@ const StockChart: React.FC<StockChartProps> = ({ data, stockColor }) => {
                         tick={false}
                         axisLine={false}
                         stroke="#64748b"
+                        reversed={true}
                     />
                     <YAxis
                         domain={['dataMin - 1', 'dataMax + 1']}

@@ -37,7 +37,8 @@ const Game: React.FC = () => {
   const [tempCapitalInput, setTempCapitalInput] = useState<string>('');
   const [tempShareAmount, setTempShareAmount] = useState<string>('');
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
-  const [weekOffset, setWeekOffset] = useState<number>(0);
+  const [monthlyWeekOffset, setMonthlyWeekOffset] = useState<number>(0);
+  const [yearlyWeekOffset, setYearlyWeekOffset] = useState<number>(0);
   const [maxWeekOffset, setMaxWeekOffset] = useState<number>(0);
 
   useEffect(() => {
@@ -100,11 +101,19 @@ const Game: React.FC = () => {
   }, [selectedStock, availableStocks]);
 
   // Helper Functions
+  // Aktueller Preis aus den angezeigten Daten
   const getCurrentStockPrice = (): number => {
-    const displayData = getShiftedData(); // Verwende die aktuell angezeigten Daten
+    const displayData = getShiftedData();
     if (displayData.length === 0) return 0;
-    return displayData[displayData.length - 1].close; // Letzter Punkt der Ansicht
+    return displayData[displayData.length - 1].close; // Rechtester Punkt
   };
+
+
+  // Funktion um den aktuellen Offset basierend auf viewMode zu bekommen
+  const getCurrentOffset = (): number => {
+    return viewMode === 'monthly' ? monthlyWeekOffset : yearlyWeekOffset;
+  };
+
 
 
   const getCurrentStockHolding = (): StockHolding | undefined => {
@@ -116,7 +125,6 @@ const Game: React.FC = () => {
       return total + (holding.shares * holding.averagePrice);
     }, 0);
   };
-
 
   const calculateMaxWeekOffset = (): number => {
     if (!stockData || stockData.length === 0) return 0;
@@ -132,52 +140,85 @@ const Game: React.FC = () => {
     }
   };
 
+  let TRADING_START_YEAR = 2020; // Startjahr für Trading-Daten
 
-  // Neue Funktion: Berechne verschobene Daten
   const getShiftedData = (): StockDataPoint[] => {
     if (!stockData || stockData.length === 0) return [];
 
-    if (viewMode === 'monthly') {
-      // Letzte 4 Wochen = 28 Tage
-      const daysToShow = 28;
-      const startIndex = Math.max(0, stockData.length - daysToShow - (weekOffset * 7));
-      const endIndex = Math.min(stockData.length, startIndex + daysToShow);
-      return stockData.slice(startIndex, endIndex);
-    } else {
-      // Letztes Jahr = 365 Tage
-      const daysToShow = 365;
-      const startIndex = Math.max(0, stockData.length - daysToShow - (weekOffset * 7));
-      const endIndex = Math.min(stockData.length, startIndex + daysToShow);
-      return stockData.slice(startIndex, endIndex);
+    let result: StockDataPoint[] = [];
+
+    // Verwende den entsprechenden Offset für den aktuellen ViewMode
+    const currentOffset = getCurrentOffset();
+
+    // Finde den ersten Eintrag des Startjahres
+    const startYearIndex = stockData.findIndex(item =>
+      item.date.getFullYear() === TRADING_START_YEAR
+    );
+
+    if (startYearIndex === -1) {
+      console.error(`Startjahr ${TRADING_START_YEAR} nicht in den Daten gefunden`);
+      return [];
     }
+
+    // Berechne den Endpunkt basierend auf dem aktuellen Offset
+    const endIndex = Math.min(stockData.length, startYearIndex + (currentOffset * 7));
+
+    if (viewMode === 'monthly') {
+      // Letzte 4 Wochen vor dem Endpunkt
+      const daysToShow = 28;
+      const startIndex = Math.max(0, endIndex - daysToShow);
+      result = stockData.slice(startIndex, endIndex);
+    } else {
+      // Letztes Jahr vor dem Endpunkt
+      const daysToShow = 365;
+      const startIndex = Math.max(0, endIndex - daysToShow);
+      result = stockData.slice(startIndex, endIndex);
+    }
+
+    return result; // Chronologisch, älteste zuerst
   };
 
 
-  // Handler für Shift-Button
+  // Synchrone Shift-Handler - beide Modi werden gleichzeitig erhöht
   const handleShiftForward = (): void => {
-    const totalWeeks = Math.floor(stockData.length / 7);
-    const maxOffset = viewMode === 'monthly' ? totalWeeks - 4 : totalWeeks - 52;
-    if (weekOffset < maxOffset) {
-      setWeekOffset(prev => prev + 1);
+    const maxMonthlyOffset = Math.floor(stockData.length / 7) - 4;
+    const maxYearlyOffset = Math.floor(stockData.length / 7) - 52;
+
+    // Prüfe ob beide Modi noch Platz für +1 Woche haben
+    if (monthlyWeekOffset < maxMonthlyOffset && yearlyWeekOffset < maxYearlyOffset) {
+      setMonthlyWeekOffset(prev => prev + 1);
+      setYearlyWeekOffset(prev => prev + 1);
     }
   };
 
   const handleShiftBackward = (): void => {
-    if (weekOffset > 0) {
-      setWeekOffset(prev => prev - 1);
+    // Beide Modi gleichzeitig reduzieren, aber nicht unter 0
+    if (monthlyWeekOffset > 0 && yearlyWeekOffset > 0) {
+      setMonthlyWeekOffset(prev => prev - 1);
+      setYearlyWeekOffset(prev => prev - 1);
     }
   };
 
-  // Berechne maxOffset wenn sich viewMode oder stockData ändern
-  useEffect(() => {
-    const maxOffset = calculateMaxWeekOffset();
-    setMaxWeekOffset(maxOffset);
 
-    // Reset offset wenn ViewMode wechselt
-    if (weekOffset > maxOffset) {
-      setWeekOffset(0);
+  // useEffect für Monthly Offset
+  useEffect(() => {
+    if (!stockData || stockData.length === 0) return;
+
+    const maxMonthlyOffset = Math.floor(stockData.length / 7) - 4;
+    if (monthlyWeekOffset > maxMonthlyOffset) {
+      setMonthlyWeekOffset(Math.max(0, maxMonthlyOffset));
     }
-  }, [viewMode, stockData]);
+  }, [stockData, monthlyWeekOffset]);
+
+  // useEffect für Yearly Offset
+  useEffect(() => {
+    if (!stockData || stockData.length === 0) return;
+
+    const maxYearlyOffset = Math.floor(stockData.length / 7) - 52;
+    if (yearlyWeekOffset > maxYearlyOffset) {
+      setYearlyWeekOffset(Math.max(0, maxYearlyOffset));
+    }
+  }, [stockData, yearlyWeekOffset]);
 
 
   // KORRIGIERTE calculateTotalValue Funktion
@@ -445,6 +486,15 @@ const Game: React.FC = () => {
   const currentHolding = getCurrentStockHolding();
   const displayData = getShiftedData();
 
+  console.log('DEBUG:', {
+    dataLength: displayData.length,
+    firstPrice: displayData[0]?.close,
+    lastPrice: displayData[displayData.length - 1]?.close,
+    firstDate: displayData[0]?.dateString,
+    lastDate: displayData[displayData.length - 1]?.dateString
+  });
+
+
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
       <div style={{ position: 'fixed', inset: 0, zIndex: 0, background: '#f3f3f3ff', width: '100vw', height: '100vh' }} />
@@ -637,7 +687,7 @@ const Game: React.FC = () => {
               <p>Interaktive Aktienkurs-Analyse mit monatlicher Navigation</p>
             </header>
 
-            {/* Navigation mit Shift-Buttons */}
+            {/* Erweiterte Navigation Container */}
             <div className={styles.navigationContainer}>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <button
@@ -653,22 +703,33 @@ const Game: React.FC = () => {
                   Letztes Jahr
                 </button>
 
-                {/* Shift-Buttons */}
+                {/* Erweiterte Shift-Controls mit Modi-Info */}
                 <div className={styles.shiftControls}>
                   <button
                     className={styles.shiftButton}
                     onClick={handleShiftBackward}
-                    disabled={weekOffset === 0}
+                    disabled={monthlyWeekOffset === 0 || yearlyWeekOffset === 0}
                   >
                     ◀
                   </button>
-                  <span className={styles.shiftIndicator}>
-                    {weekOffset === 0 ? 'Aktuell' : `+${weekOffset}W`}
-                  </span>
+
+                  {/* Zeige beide Offsets an */}
+                  <div className={styles.offsetDisplay}>
+                    <span className={styles.currentModeOffset}>
+                      {viewMode === 'monthly' ? 'M' : 'Y'}: +{getCurrentOffset()}W
+                    </span>
+                    <span className={styles.otherModeOffset}>
+                      {viewMode === 'monthly' ? 'Y' : 'M'}: +{viewMode === 'monthly' ? yearlyWeekOffset : monthlyWeekOffset}W
+                    </span>
+                  </div>
+
                   <button
                     className={styles.shiftButton}
                     onClick={handleShiftForward}
-                    disabled={weekOffset >= Math.floor(stockData.length / 7) - (viewMode === 'monthly' ? 4 : 52)}
+                    disabled={
+                      monthlyWeekOffset >= Math.floor(stockData.length / 7) - 4 ||
+                      yearlyWeekOffset >= Math.floor(stockData.length / 7) - 52
+                    }
                   >
                     ▶
                   </button>
@@ -676,8 +737,8 @@ const Game: React.FC = () => {
               </div>
 
               <div className={styles.balanceDisplay}>
-                <span className={styles.balanceLabel}>Gesamtvermögen:</span>
-                <span className={styles.balanceValue}>{calculateTotalValue().toFixed(2)}€</span>
+                <span className={styles.balanceLabel}>Startkapital:</span>
+                <span className={styles.balanceValue}>{startCapital.toFixed(2)}€</span>
               </div>
             </div>
 
@@ -739,13 +800,13 @@ const Game: React.FC = () => {
                   <div className={styles.statItem}>
                     <span className={styles.statLabel}>Höchster Kurs:</span>
                     <span className={styles.statValue}>
-                      {displayData.length > 0 ? Math.max(...displayData.map(d => d.close)).toFixed(2) : '0.00'}€
+                      {Math.max(...displayData.map(d => d.close)).toFixed(2)}€
                     </span>
                   </div>
                   <div className={styles.statItem}>
                     <span className={styles.statLabel}>Niedrigster Kurs:</span>
                     <span className={styles.statValue}>
-                      {displayData.length > 0 ? Math.max(...displayData.map(d => d.close)).toFixed(2) : '0.00'}€
+                      {Math.min(...displayData.map(d => d.close)).toFixed(2)}€
                     </span>
                   </div>
                   <div className={styles.statItem}>
@@ -757,7 +818,7 @@ const Game: React.FC = () => {
                   <div className={styles.statItem}>
                     <span className={styles.statLabel}>Entwicklung:</span>
                     <span className={`${styles.statValue} ${displayData.length > 1 &&
-                      displayData[displayData.length - 1].close > displayData[0].close
+                      displayData[displayData.length - 1].close > displayData[0].close // ✅ Letzter > Erster
                       ? styles.statValuePositive : styles.statValueNegative
                       }`}>
                       {displayData.length > 1 ? (
