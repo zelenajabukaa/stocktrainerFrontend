@@ -153,7 +153,7 @@ const Home: React.FC = () => {
       <canvas ref={canvasRef} className="stockCanvas" />
       <div className="gradientOverlay" />
 
-      <Header username={username} level={level} ingameCurrency={ingameCurrency} />
+      <Header/>
 
       
       {/* Header mit Level, Username und Freunde-Button */}
