@@ -191,7 +191,8 @@ const Header: React.FC = () => {
         </button>
         {open && (
           <div className={styles.menuDropdown}>
-            <button className={styles.menuItem}>Einstellungen</button>
+            <button className={styles.menuItem} onClick={() => navigate('/user/settings')}>
+              Einstellungen</button>
             <button className={styles.menuItem} onClick={() => navigate('/user/avatar')}>
               Avatar ändern
             </button>
