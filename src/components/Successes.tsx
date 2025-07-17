@@ -49,7 +49,7 @@ const Successes: React.FC = () => {
   return (
     <div className={styles.successesContainer}>
       <Header username="Username" level={1} ingameCurrency={0} />
-      <h2 className={styles.successesTitle}>Badges & Successes</h2>
+      <h2 className={styles.successesTitle}>Abzeichen</h2>
 
       <div className={styles.successesGrid}>
         {successTypes.map((type, idx) => {
