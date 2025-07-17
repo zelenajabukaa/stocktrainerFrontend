@@ -88,8 +88,6 @@ const AvatarSettings: React.FC = () => {
             const isUnlocked = Number(ua?.bought) === 1;
             const isSelected = Number(ua?.selected) === 1;
 
-            console.log(`🧩 Avatar ${avatar_id}`, ua, 'Unlocked:', isUnlocked, 'Selected:', isSelected);
-
             return (
               <div key={avatar_id} className={styles.avatarField}>
                 <img
@@ -103,6 +101,32 @@ const AvatarSettings: React.FC = () => {
                   className={styles.avatarSelectButton}
                   disabled={!isUnlocked || isSelected}
                   style={isSelected ? { backgroundColor: 'gray', cursor: 'default' } : {}}
+                  onClick={async () => {
+                    if (!userId || !isUnlocked || isSelected) return;
+                    // Button-Status sofort lokal anpassen
+                    setUserAvatars(prev => prev.map(a =>
+                      Number(a.avatar_id) === avatar_id
+                        ? { ...a, selected: 1 }
+                        : { ...a, selected: 0 }
+                    ));
+                    try {
+                      const token = localStorage.getItem('token');
+                      const res = await fetch(`http://localhost:3000/api/users/${userId}/avatars/${avatar_id}/select`, {
+                        method: 'PUT',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${token}`,
+                        },
+                      });
+                      if (res.ok) {
+                        window.location.reload(); // Seite neu laden, damit Header das neue Profilbild anzeigt
+                      } else {
+                        alert('Avatar konnte nicht ausgewählt werden.');
+                      }
+                    } catch (err) {
+                      alert('Fehler beim Auswählen des Avatars.');
+                    }
+                  }}
                 >
                   {!isUnlocked
                     ? 'Nicht freigeschaltet'
