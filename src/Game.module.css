@@ -1,4 +1,412 @@
-/* Game.module.css - Vollständiges Trading Dashboard CSS */
+/* Finish Button */
+.finishButton {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);
+}
+
+.finishButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(245, 158, 11, 0.4);
+}
+
+.finishButton:disabled {
+  background: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Finish Popup */
+.finishPopup {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideIn 0.3s ease;
+}
+
+.finishHeader {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  padding: 30px;
+  text-align: center;
+  border-radius: 16px 16px 0 0;
+}
+
+.finishTitle {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.finishSubtitle {
+  font-size: 16px;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.finishContent {
+  padding: 30px;
+}
+
+.resultCard {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.resultRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.resultRow:last-child {
+  margin-bottom: 0;
+}
+
+.resultLabel {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.resultValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.resultPercentage {
+  font-size: 18px;
+}
+
+.resultPositive {
+  color: #059669;
+}
+
+.resultNegative {
+  color: #dc2626;
+}
+
+.resultDivider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 15px 0;
+}
+
+/* Performance Indicator */
+.performanceIndicator {
+  text-align: center;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.performanceExcellent {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #166534;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.performanceGood {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.performanceNeutral {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  color: #475569;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.performancePoor {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.performanceIcon {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+.performanceText {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.finishActions {
+  padding: 20px 30px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: center;
+}
+
+.finishCloseButton {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.finishCloseButton:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  transform: translateY(-1px);
+}
+
+/* Animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .finishPopup {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .finishHeader {
+    padding: 20px;
+  }
+
+  .finishTitle {
+    font-size: 24px;
+  }
+
+  .finishSubtitle {
+    font-size: 14px;
+  }
+
+  .finishContent {
+    padding: 20px;
+  }
+
+  .resultCard {
+    padding: 15px;
+  }
+
+  .resultValue {
+    font-size: 14px;
+  }
+
+  .resultPercentage {
+    font-size: 16px;
+  }
+}
+
+
+
+
+
+/* Suchleiste Styles */
+.searchContainer {
+  position: relative;
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.searchInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px;
+  padding-right: 35px;
+  /* Platz für Clear-Button */
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.clearButton {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 14px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.clearButton:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+/* Aktualisierte Suchleiste mit Icon links */
+.searchInput {
+  padding-left: 35px;
+  /* Platz für Such-Icon */
+}
+
+/* Keine Ergebnisse Styles */
+.noResults {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.noResultsIcon {
+  font-size: 32px;
+  opacity: 0.5;
+  margin-bottom: 12px;
+}
+
+.noResultsText {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Erweiterte Sidebar Header */
+.sidebarHeader {
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebarHeader h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+/* Stock Count Update */
+.stockCount {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+  padding: 15px 20px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .searchInput {
+    font-size: 16px;
+    /* Verhindert Zoom auf iOS */
+    padding: 10px 12px;
+    padding-left: 35px;
+    padding-right: 35px;
+  }
+
+  .searchIcon {
+    font-size: 16px;
+  }
+
+  .clearButton {
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+  }
+}
+
+/* Hover-Effekte für bessere UX */
+.searchContainer:hover .searchInput {
+  border-color: #9ca3af;
+}
+
+.searchInput:not(:focus):hover {
+  background: #f9fafb;
+}
+
+/* Animation für Suchergebnisse */
+.stockList {
+  transition: all 0.3s ease;
+}
+
+.noResults {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* Gebühren-Breakdown Styles */
 .feeBreakdown {
@@ -65,11 +473,13 @@
   font-size: 12px;
   color: #64748b;
   text-align: right;
+  padding-bottom: 1.2rem;
 }
 
 .tradingButtons {
   display: flex;
   gap: 15px;
+  padding-bottom: 1.5rem;
 }
 
 /* Preis-Info Erweiterung */
@@ -87,6 +497,7 @@
 
 .priceInfo span {
   font-size: 14px;
+  color: black;
 }
 
 /* Responsive Design für neue Elemente */
@@ -314,7 +725,7 @@
   height: 80px;
   object-fit: contain;
   border-radius: 8px;
-  background: white;
+  background: transparent;
   padding: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -469,6 +880,15 @@
   }
 }
 
+.lockContent {
+  color: black;
+  border-radius: 8px;
+  text-align: center;
+  font-size: x-large;
+  max-width: 300px;
+  padding-right: 3rem;
+}
+
 .factItem {
   display: flex;
   justify-content: space-between;
@@ -609,7 +1029,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 12px;
+  font-size: 18px;
   color: #64748b;
   text-align: right;
 }
@@ -1349,6 +1769,7 @@
   align-items: center;
   gap: 20px;
   margin-bottom: 30px;
+  padding-right: 2rem;
 }
 
 .balanceDisplay {
@@ -1385,6 +1806,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
   margin-bottom: 16px;
+  padding-left: 1rem;
 }
 
 .investmentInfo {
@@ -1408,6 +1830,7 @@
 .tradingButtons {
   display: flex;
   gap: 15px;
+  padding-right: 1rem;
 }
 
 .buyButton {

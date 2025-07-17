@@ -67,7 +67,7 @@ const CompanyInfo: React.FC<CompanyInfoProps> = ({
         <div className={styles.companyInfoContainer}>
             <div className={styles.companyInfoHeader}>
                 <h3 className={styles.companyInfoTitle}>
-                    <span className={styles.companyInfoIcon}>🏢</span>
+                    <span className={styles.companyInfoIcon}></span>
                     Unternehmensinformationen
                 </h3>
                 <button
@@ -116,14 +116,14 @@ const CompanyInfo: React.FC<CompanyInfoProps> = ({
 
                         <div className={styles.companyDetails}>
                             <div className={styles.companySection}>
-                                <h5 className={styles.sectionTitle}>📋 Über das Unternehmen</h5>
+                                <h5 className={styles.sectionTitle}>Über das Unternehmen</h5>
                                 <p className={styles.companyDescription}>
                                     {companyData.description}
                                 </p>
                             </div>
 
                             <div className={styles.companySection}>
-                                <h5 className={styles.sectionTitle}>📖 Geschichte</h5>
+                                <h5 className={styles.sectionTitle}>Geschichte</h5>
                                 <p className={styles.companyHistory}>
                                     {companyData.history}
                                 </p>
