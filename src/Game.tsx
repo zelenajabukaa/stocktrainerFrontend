@@ -364,7 +364,7 @@ const Game: React.FC = () => {
 
       // ✅ WICHTIG: Trading-Status IMMER aktualisieren
       setHasTraded(true);
-      const currentOffset = viewMode === 'monthly' ? monthlyWeekOffset : yearlyWeekOffset;
+      const currentOffset = yearlyWeekOffset;
       setFirstTradingWeek(currentOffset); // Immer auf aktuelle Woche setzen
     }
 
@@ -400,7 +400,7 @@ const Game: React.FC = () => {
 
       // ✅ WICHTIG: Trading-Status IMMER aktualisieren
       setHasTraded(true);
-      const currentOffset = viewMode === 'monthly' ? monthlyWeekOffset : yearlyWeekOffset;
+      const currentOffset = yearlyWeekOffset;
       setFirstTradingWeek(currentOffset); // Immer auf aktuelle Woche setzen
     }
 
