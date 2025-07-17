@@ -30,9 +30,18 @@ const Header: React.FC = () => {
     xp: 0,
   });
 
+  const [userId, setUserId] = useState<number | null>(null);
+
+  // Profil laden (username, level, coins)
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) return;
+    const userData = localStorage.getItem('user');
+    if (!token || !userData) return;
+
+    try {
+      const userObj = JSON.parse(userData);
+      if (userObj?.id) setUserId(userObj.id);
+    } catch {}
 
     fetch('http://localhost:3000/api/profile', {
       headers: {
@@ -43,12 +52,12 @@ const Header: React.FC = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.user) {
-          setUser({
+          setUser((prev) => ({
+            ...prev,
             username: data.user.username ?? '',
             level: data.user.level ?? 0,
             ingameCurrency: data.user.ingameCurrency ?? 0,
-            xp: data.user.xp_points ?? 0,
-          });
+          }));
         }
       })
       .catch(() => {
@@ -56,70 +65,75 @@ const Header: React.FC = () => {
       });
   }, []);
 
-  // 🖼️ Avatar-Bilder
-  const avatarImages = [
-    avatar1,
-    avatar2,
-    avatar3,
-    avatar4,
-    avatar5,
-    avatar6,
-    avatar7,
-    avatar8,
-    avatar9,
-  ];
-
-  // 🎭 Benutzer-Avatare laden
-  const [userAvatars, setUserAvatars] = useState<any[]>([]);
+  // XP aus abgeschlossenen Quests laden
   useEffect(() => {
-    async function fetchUserAvatars() {
-      let userId: number | null = null;
-      try {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-          const userObj = JSON.parse(userData);
-          if (userObj.id) userId = Number(userObj.id);
-        }
-      } catch {}
-      if (!userId) return;
+    async function fetchUserXP() {
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('user');
+      let uid: number | null = null;
+
+      if (userData) {
+        try {
+          const parsed = JSON.parse(userData);
+          uid = parsed?.id;
+        } catch {}
+      }
+
+      if (!token || !uid) return;
 
       try {
-        const token = localStorage.getItem('token');
-        const res = await fetch(`http://localhost:3000/api/users/${userId}/avatars`, {
-          method: 'GET',
+        const res = await fetch(`http://localhost:3000/api/users/${uid}/completed-xp`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
 
-        const text = await res.text();
-        try {
-          const data = JSON.parse(text);
-          setUserAvatars(Array.isArray(data) ? data : []);
-        } catch (err) {
-          console.error('❌ Fehler beim Parsen der Avatare:', err);
+        const data = await res.json();
+        if (data?.xp !== undefined) {
+          setUser(prev => ({ ...prev, xp: data.xp }));
         }
-      } catch {
-        console.error('❌ Fehler beim Laden der Avatare');
-        setUserAvatars([]);
+      } catch (err) {
+        console.error('❌ Fehler beim Laden der XP:', err);
       }
     }
 
-    fetchUserAvatars();
+    fetchUserXP();
   }, []);
 
-  // 🎯 Aktuellen Avatar anzeigen
-  let selectedAvatarImg = null;
-  const selected = userAvatars.find((a) => Number(a.selected) === 1);
-  if (selected && typeof selected.avatar_id === 'number') {
-    const idx = selected.avatar_id - 4;
-    if (idx >= 0 && idx < avatarImages.length) {
-      selectedAvatarImg = avatarImages[idx];
-    }
-  }
+  const avatarImages = [
+    avatar1, avatar2, avatar3, avatar4, avatar5,
+    avatar6, avatar7, avatar8, avatar9,
+  ];
 
-  // 🚪 Logout
+  // Avatar laden
+  const [userAvatars, setUserAvatars] = useState<any[]>([]);
+  useEffect(() => {
+    if (!userId) return;
+    const token = localStorage.getItem('token');
+
+    fetch(`http://localhost:3000/api/users/${userId}/avatars`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setUserAvatars(Array.isArray(data) ? data : []);
+      })
+      .catch(() => {
+        console.error('❌ Fehler beim Laden der Avatare');
+        setUserAvatars([]);
+      });
+  }, [userId]);
+
+  const selectedAvatar = userAvatars.find((a) => Number(a.selected) === 1);
+  const selectedAvatarImg =
+    selectedAvatar && typeof selectedAvatar.avatar_id === 'number'
+      ? avatarImages[selectedAvatar.avatar_id - 4] ?? null
+      : null;
+
   async function handleLogout() {
     try {
       await fetch('http://localhost:3000/api/logout', {
@@ -131,12 +145,11 @@ const Header: React.FC = () => {
       localStorage.removeItem('user');
       localStorage.removeItem('token');
       navigate('/');
-    } catch (e) {
+    } catch {
       alert('Logout fehlgeschlagen');
     }
   }
 
-  // ✋ Dropdown schließen bei Klick außerhalb
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
