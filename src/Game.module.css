@@ -452,6 +452,10 @@
   border-color: #cbd5e1;
 }
 
+.currentModeOffset {
+  color: #047857;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .shiftControls {

@@ -716,10 +716,7 @@ const Game: React.FC = () => {
                   {/* Zeige beide Offsets an */}
                   <div className={styles.offsetDisplay}>
                     <span className={styles.currentModeOffset}>
-                      {viewMode === 'monthly' ? 'M' : 'Y'}: +{getCurrentOffset()}W
-                    </span>
-                    <span className={styles.otherModeOffset}>
-                      {viewMode === 'monthly' ? 'Y' : 'M'}: +{viewMode === 'monthly' ? yearlyWeekOffset : monthlyWeekOffset}W
+                      Woche: {getCurrentOffset()}
                     </span>
                   </div>
 
