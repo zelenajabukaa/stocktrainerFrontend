@@ -9,12 +9,13 @@ interface Quest {
   xp: number;
   money: number;
   needed_amount: number;
- 
 }
 
 const Quests: React.FC = () => {
   const [quests, setQuests] = useState<Quest[]>([]);
+  const [completedQuestIds, setCompletedQuestIds] = useState<string[]>([]);
 
+  // Quests laden
   useEffect(() => {
     fetch('http://localhost:3000/api/quests')
       .then(res => {
@@ -32,7 +33,34 @@ const Quests: React.FC = () => {
       });
   }, []);
 
-  const completedQuestIds: string[] = []; // ← Kann später aus Userdaten kommen
+  // Erledigte Quests des Users laden
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.warn('⚠️ Kein Token im LocalStorage gefunden');
+      return;
+    }
+
+    fetch('http://localhost:3000/api/me/completed-quests', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP-Fehler: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        const ids = data.map((entry: { quest_id: string }) => entry.quest_id);
+        console.log('Erledigte Quests:', ids);
+        setCompletedQuestIds(ids);
+      })
+      .catch(err => {
+        console.error('Fehler beim Laden der erledigten Quests:', err);
+      });
+  }, []);
 
   // Hilfsfunktion: Nur die nächste Quest pro Gruppe anzeigen
   function getNextQuestsPerGroup(quests: Quest[], completed: string[]): Quest[] {
@@ -65,8 +93,7 @@ const Quests: React.FC = () => {
 
   const level = 1;
   const ingameCurrency = 0;
-    
-console.log('Quests im Frontend:', quests);
+
   return (
     <div className={styles.questsContainer}>
       <Header username={username} level={level} ingameCurrency={ingameCurrency} />
@@ -77,7 +104,6 @@ console.log('Quests im Frontend:', quests);
         {visibleQuests.map((quest) => (
           <li key={quest.id} className={styles.questItem}>
             <div className={styles.questInfo}>
-        
               <span className={styles.questDescription}>{quest.description}</span>
             </div>
             <div className={styles.questRewards}>
