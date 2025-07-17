@@ -82,6 +82,11 @@ const Quests: React.FC = () => {
   const completedCount = completedQuestIds.length;
   const progress = totalQuests > 0 ? (completedCount / totalQuests) * 100 : 0;
 
+  // Debug-Log für erledigte Quests
+  useEffect(() => {
+    console.log('DEBUG: State completedQuestIds:', completedQuestIds);
+  }, [completedQuestIds]);
+
   return (
     <div className={styles.questsContainer}>
       <Header/>
