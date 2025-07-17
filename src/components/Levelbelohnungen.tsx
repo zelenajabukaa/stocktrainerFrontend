@@ -37,20 +37,11 @@ const rewards = [
 ];
 
 const Levelbelohnungen: React.FC = () => {
-  let username = "Username";
-  try {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      const userObj = JSON.parse(userData);
-      if (userObj.username) username = userObj.username;
-    }
-  } catch {}
-  const level = 1;
-  const ingameCurrency = 0;
+  // Keine Userdaten/Props mehr nötig, alles kommt aus Header selbst
 
   return (
     <div className={styles.battlepassFullPage}>
-      <Header username={username} level={level} ingameCurrency={ingameCurrency} />
+      <Header/>
       <h2 className={styles.battlepassTitle}>Levelbelohnungen</h2>
       <div className={styles.levelsRowFull}>
         {rewards.map((item) => {
