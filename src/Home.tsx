@@ -144,6 +144,7 @@ const Home: React.FC = () => {
     if (label === 'Neues Spiel') navigate('/game/monthly');
     else if (label === 'Quests') navigate('/quests');
     else if (label === 'Levelbelohnungen') navigate('/levelbelohnungen');
+    else if (label === 'Abzeichen') navigate('/user/successes');
   };
 
   return (
