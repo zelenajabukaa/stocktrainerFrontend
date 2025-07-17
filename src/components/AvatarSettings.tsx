@@ -10,17 +10,18 @@ import avatar6 from '../../public/avatar/avatar6.png';
 import avatar7 from '../../public/avatar/avatar7.png';
 import avatar8 from '../../public/avatar/avatar8.png';
 import avatar9 from '../../public/avatar/avatar9.png';
+import coin from '../assets/coin.png';
 
 const AvatarSettings: React.FC = () => {
   const avatarImages = [
     avatar1,
     avatar2,
     avatar3,
-    avatar4,
-    avatar5,
     avatar6,
     avatar7,
     avatar8,
+    avatar5,
+    avatar4,
     avatar9,
   ];
 
@@ -77,7 +78,7 @@ const AvatarSettings: React.FC = () => {
 
   return (
     <div className={styles.avatarSettingsContainer}>
-      <Header username={username} level={level} ingameCurrency={ingameCurrency} />
+      <Header/>
 
       <div className={styles.avatarSettingsContent}>
         <h2 className={styles.avatarTitle}>Avatar</h2>
@@ -97,43 +98,61 @@ const AvatarSettings: React.FC = () => {
                   draggable={false}
                   style={isUnlocked ? {} : { filter: 'grayscale(1)', opacity: 0.5 }}
                 />
-                <button
-                  className={styles.avatarSelectButton}
-                  disabled={!isUnlocked || isSelected}
-                  style={isSelected ? { backgroundColor: 'gray', cursor: 'default' } : {}}
-                  onClick={async () => {
-                    if (!userId || !isUnlocked || isSelected) return;
-                    // Button-Status sofort lokal anpassen
-                    setUserAvatars(prev => prev.map(a =>
-                      Number(a.avatar_id) === avatar_id
-                        ? { ...a, selected: 1 }
-                        : { ...a, selected: 0 }
-                    ));
-                    try {
-                      const token = localStorage.getItem('token');
-                      const res = await fetch(`http://localhost:3000/api/users/${userId}/avatars/${avatar_id}/select`, {
-                        method: 'PUT',
-                        headers: {
-                          'Content-Type': 'application/json',
-                          'Authorization': `Bearer ${token}`,
-                        },
-                      });
-                      if (res.ok) {
-                        window.location.reload(); // Seite neu laden, damit Header das neue Profilbild anzeigt
-                      } else {
-                        alert('Avatar konnte nicht ausgewählt werden.');
+                {/* Geld-Button für mittlere Reihe (Avatare 4, 5, 6) wenn NICHT freigeschaltet */}
+                {!isUnlocked && (i === avatarImages.length - 4 || i === avatarImages.length - 5 || i === avatarImages.length - 6) ? (
+                  <button
+                    className={styles.avatarSelectButton}
+                    disabled
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                  >
+                    {i === avatarImages.length - 6 ? '10.000' : i === avatarImages.length - 5 ? '30.000' : '60.000'}
+                    <img src={coin} alt="Münzen" style={{ width: 20, height: 20 }} />
+                  </button>
+                ) : (
+                  <button
+                    className={styles.avatarSelectButton}
+                    disabled={!isUnlocked || isSelected}
+                    style={isSelected ? { backgroundColor: 'gray', cursor: 'default' } : {}}
+                    onClick={async () => {
+                      if (!userId || !isUnlocked || isSelected) return;
+                      // Button-Status sofort lokal anpassen
+                      setUserAvatars(prev => prev.map(a =>
+                        Number(a.avatar_id) === avatar_id
+                          ? { ...a, selected: 1 }
+                          : { ...a, selected: 0 }
+                      ));
+                      try {
+                        const token = localStorage.getItem('token');
+                        const res = await fetch(`http://localhost:3000/api/users/${userId}/avatars/${avatar_id}/select`, {
+                          method: 'PUT',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                          },
+                        });
+                        if (res.ok) {
+                          window.location.reload(); // Seite neu laden, damit Header das neue Profilbild anzeigt
+                        } else {
+                          alert('Avatar konnte nicht ausgewählt werden.');
+                        }
+                      } catch (err) {
+                        alert('Fehler beim Auswählen des Avatars.');
                       }
-                    } catch (err) {
-                      alert('Fehler beim Auswählen des Avatars.');
-                    }
-                  }}
-                >
-                  {!isUnlocked
-                    ? 'Nicht freigeschaltet'
-                    : isSelected
-                      ? 'Ausgewählt'
-                      : 'Auswählen'}
-                </button>
+                    }}
+                  >
+                    {!isUnlocked
+                      ? (i === avatarImages.length - 3
+                          ? 'ab Level 3'
+                          : i === avatarImages.length - 2
+                            ? 'ab Level 8'
+                            : i === avatarImages.length - 1
+                              ? 'ab Level 20'
+                              : 'Nicht freigeschaltet')
+                      : isSelected
+                        ? 'Ausgewählt'
+                        : 'Auswählen'}
+                  </button>
+                )}
               </div>
             );
           })}
