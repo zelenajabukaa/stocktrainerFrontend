@@ -373,6 +373,7 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 10px;
+  padding-left: 2rem;
 }
 
 .feeInfo {

@@ -37,9 +37,47 @@ const Game: React.FC = () => {
   const [tempCapitalInput, setTempCapitalInput] = useState<string>('');
   const [tempShareAmount, setTempShareAmount] = useState<string>('');
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
-  const [monthlyWeekOffset, setMonthlyWeekOffset] = useState<number>(0);
+  const [monthlyWeekOffset, setMonthlyWeekOffset] = useState<number>(-48);
   const [yearlyWeekOffset, setYearlyWeekOffset] = useState<number>(0);
-  const [maxWeekOffset, setMaxWeekOffset] = useState<number>(0);
+  const [hasTraded, setHasTraded] = useState<boolean>(false);
+  const [firstTradingWeek, setFirstTradingWeek] = useState<number>(Infinity);
+
+  // Rundensystem States
+  const [gameFinished, setGameFinished] = useState<boolean>(false);
+  const [showFinishPopup, setShowFinishPopup] = useState<boolean>(false);
+  const [finalResults, setFinalResults] = useState<{
+    startCapital: number;
+    finalValue: number;
+    percentageChange: number;
+    profit: number;
+  } | null>(null);
+
+
+  // useEffect für Finish-Überprüfung
+  useEffect(() => {
+    const checkFinish = () => {
+      const currentOffset = yearlyWeekOffset;
+
+      if (currentOffset == -53 && !gameFinished) {
+        const finalPortfolioValue = calculateTotalValue();
+        const profit = finalPortfolioValue - startCapital;
+        const percentageChange = ((finalPortfolioValue - startCapital) / startCapital) * 100;
+
+        setFinalResults({
+          startCapital,
+          finalValue: finalPortfolioValue,
+          percentageChange,
+          profit
+        });
+
+        setGameFinished(true);
+        setShowFinishPopup(true);
+      }
+    };
+
+    checkFinish();
+  }, [monthlyWeekOffset, yearlyWeekOffset, viewMode, gameFinished, startCapital]);
+
 
   useEffect(() => {
     const initializeStocks = async (): Promise<void> => {
@@ -108,36 +146,26 @@ const Game: React.FC = () => {
     return displayData[displayData.length - 1].close; // Rechtester Punkt
   };
 
-
   // Funktion um den aktuellen Offset basierend auf viewMode zu bekommen
   const getCurrentOffset = (): number => {
     return viewMode === 'monthly' ? monthlyWeekOffset : yearlyWeekOffset;
   };
 
-
-
   const getCurrentStockHolding = (): StockHolding | undefined => {
     return stockHoldings.find(holding => holding.symbol === selectedStock);
   };
 
-  const getTotalInvestedAmount = (): number => {
-    return stockHoldings.reduce((total, holding) => {
-      return total + (holding.shares * holding.averagePrice);
-    }, 0);
-  };
-
-  const calculateMaxWeekOffset = (): number => {
-    if (!stockData || stockData.length === 0) return 0;
-
-    if (viewMode === 'monthly') {
-      // Für 4-Wochen-Ansicht: Gesamtwochen - 4 Wochen
-      const totalWeeks = Math.floor(stockData.length / 7);
-      return Math.max(0, totalWeeks - 4);
-    } else {
-      // Für Jahresansicht: Gesamtwochen - 52 Wochen (1 Jahr)
-      const totalWeeks = Math.floor(stockData.length / 7);
-      return Math.max(0, totalWeeks - 52);
+  // Funktion: Überprüfe ob Trading in der aktuellen Woche erlaubt ist
+  const isTradingAllowed = (): boolean => {
+    if (!hasTraded) {
+      return true; // Noch nie gehandelt - überall erlaubt
     }
+
+    // Verwende den aktuellen Offset basierend auf viewMode
+    const currentOffset = yearlyWeekOffset;
+
+    // ✅ KORREKT: Wenn schon gehandelt wurde, nur in der ersten Trading-Woche oder SPÄTER erlaubt
+    return currentOffset <= firstTradingWeek;
   };
 
   let TRADING_START_YEAR = 2020; // Startjahr für Trading-Daten
@@ -155,6 +183,8 @@ const Game: React.FC = () => {
       item.date.getFullYear() === TRADING_START_YEAR
     );
 
+    console.log(stockData)
+
     if (startYearIndex === -1) {
       console.error(`Startjahr ${TRADING_START_YEAR} nicht in den Daten gefunden`);
       return [];
@@ -165,7 +195,7 @@ const Game: React.FC = () => {
 
     if (viewMode === 'monthly') {
       // Letzte 4 Wochen vor dem Endpunkt
-      const daysToShow = 28;
+      const daysToShow = 29;
       const startIndex = Math.max(0, endIndex - daysToShow);
       result = stockData.slice(startIndex, endIndex);
     } else {
@@ -175,28 +205,28 @@ const Game: React.FC = () => {
       result = stockData.slice(startIndex, endIndex);
     }
 
-    return result; // Chronologisch, älteste zuerst
+    return result.reverse(); // Chronologisch, älteste zuerst
   };
 
 
   // Synchrone Shift-Handler - beide Modi werden gleichzeitig erhöht
   const handleShiftForward = (): void => {
-    const maxMonthlyOffset = Math.floor(stockData.length / 7) - 4;
-    const maxYearlyOffset = Math.floor(stockData.length / 7) - 52;
+    if (gameFinished) return; // Verhindere weitere Shifts nach Finish
 
-    // Prüfe ob beide Modi noch Platz für +1 Woche haben
+    const maxMonthlyOffset = Math.min(52, Math.floor(stockData.length / 7) - 4);
+    const maxYearlyOffset = Math.min(52, Math.floor(stockData.length / 7) - 52);
+
     if (monthlyWeekOffset < maxMonthlyOffset && yearlyWeekOffset < maxYearlyOffset) {
-      setMonthlyWeekOffset(prev => prev + 1);
-      setYearlyWeekOffset(prev => prev + 1);
-    }
-  };
-
-  const handleShiftBackward = (): void => {
-    // Beide Modi gleichzeitig reduzieren, aber nicht unter 0
-    if (monthlyWeekOffset > 0 && yearlyWeekOffset > 0) {
       setMonthlyWeekOffset(prev => prev - 1);
       setYearlyWeekOffset(prev => prev - 1);
     }
+  };
+
+
+
+  const handleShiftBackward = (): void => {
+    setMonthlyWeekOffset(prev => prev + 1);
+    setYearlyWeekOffset(prev => prev + 1);
   };
 
 
@@ -246,50 +276,6 @@ const Game: React.FC = () => {
     return totalValue;
   };
 
-  // Neue Funktion: Gruppiere Daten nach Woche
-  const groupDataByWeek = (data: StockDataPoint[]): GroupedStockData => {
-    const grouped: GroupedStockData = {};
-    data.forEach(point => {
-      const year = point.date.getFullYear();
-      // ISO Woche berechnen
-      const tempDate = new Date(point.date.getTime());
-      tempDate.setHours(0, 0, 0, 0);
-      tempDate.setDate(tempDate.getDate() + 4 - (tempDate.getDay() || 7));
-      const yearStart = new Date(tempDate.getFullYear(), 0, 1);
-      const weekNo = Math.ceil((((tempDate.getTime() - yearStart.getTime()) / 86400000) + yearStart.getDay() + 1) / 7);
-      const weekKey = `${year}-KW${weekNo}`;
-      if (!grouped[weekKey]) grouped[weekKey] = [];
-      grouped[weekKey].push(point);
-    });
-    return grouped;
-  };
-
-  // Gruppiere Daten für die letzten 4 Wochen
-  const getLast4WeeksData = (data: StockDataPoint[]): StockDataPoint[] => {
-    if (data.length === 0) return [];
-    const sorted = [...data].sort((a, b) => b.date.getTime() - a.date.getTime());
-    const lastDate = sorted[0].date;
-    const fourWeeksAgo = new Date(lastDate);
-    fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 27); // 4 Wochen = 28 Tage
-    return sorted.filter(point => point.date >= fourWeeksAgo);
-  };
-
-  // Gruppiere Daten für das letzte Jahr
-  const getLastYearData = (data: StockDataPoint[]): StockDataPoint[] => {
-    if (data.length === 0) return [];
-    const sorted = [...data].sort((a, b) => b.date.getTime() - a.date.getTime());
-    const lastDate = sorted[0].date;
-    const oneYearAgo = new Date(lastDate);
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-    return sorted.filter(point => point.date >= oneYearAgo);
-  };
-
-  // Daten je nach Ansicht
-  const currentPeriodData = viewMode === 'monthly' ? getLast4WeeksData(stockData) : getLastYearData(stockData);
-  // const availablePeriods = viewMode === 'monthly' ? availableMonths : Object.keys(groupDataByWeek(stockData)).sort();
-  const currentPeriod = viewMode === 'monthly' ? currentMonth : currentMonth; // currentMonth wird für beide genutzt
-  const setCurrentPeriod = setCurrentMonth; // Alias für Klarheit
-
   // Handler Functions
   const handleStockSelect = (symbol: string): void => {
     setSelectedStock(symbol);
@@ -298,10 +284,6 @@ const Game: React.FC = () => {
 
   const handleCompanyInfoToggle = (): void => {
     setShowCompanyInfo(!showCompanyInfo);
-  };
-
-  const handleMonthChange = (month: string): void => {
-    setCurrentMonth(month);
   };
 
   const handleStartCapitalSubmit = (): void => {
@@ -351,10 +333,13 @@ const Game: React.FC = () => {
   };
 
   const handleBuySubmit = (): void => {
+    if (!isTradingAllowed()) return;
+
     const shares = parseInt(tempShareAmount);
     const currentPrice = getCurrentStockPrice();
+    const subtotal = shares * currentPrice;
     const fee = calculateBuyFee(shares);
-    const totalCost = shares * currentPrice + fee;
+    const totalCost = subtotal + fee;
 
     if (shares > 0 && totalCost <= currentBalance) {
       setCurrentBalance(prev => prev - totalCost);
@@ -363,9 +348,8 @@ const Game: React.FC = () => {
         const existingHolding = prev.find(h => h.symbol === selectedStock);
 
         if (existingHolding) {
-          // Berechne neuen Durchschnittspreis
           const totalShares = existingHolding.shares + shares;
-          const totalValue = (existingHolding.shares * existingHolding.averagePrice) + (shares * currentPrice);
+          const totalValue = (existingHolding.shares * existingHolding.averagePrice) + subtotal;
           const newAveragePrice = totalValue / totalShares;
 
           return prev.map(h =>
@@ -374,22 +358,30 @@ const Game: React.FC = () => {
               : h
           );
         } else {
-          // Neue Aktie hinzufügen
           return [...prev, { symbol: selectedStock, shares, averagePrice: currentPrice }];
         }
       });
+
+      // ✅ WICHTIG: Trading-Status IMMER aktualisieren
+      setHasTraded(true);
+      const currentOffset = viewMode === 'monthly' ? monthlyWeekOffset : yearlyWeekOffset;
+      setFirstTradingWeek(currentOffset); // Immer auf aktuelle Woche setzen
     }
 
     setShowBuyPopup(false);
     setTempShareAmount('');
   };
 
+
   const handleSellSubmit = (): void => {
+    if (!isTradingAllowed()) return;
+
     const shares = parseInt(tempShareAmount);
     const currentPrice = getCurrentStockPrice();
-    const currentHolding = getCurrentStockHolding();
+    const subtotal = shares * currentPrice;
     const fee = calculateSellFee(shares);
-    const totalRevenue = shares * currentPrice - fee;
+    const totalRevenue = subtotal - fee;
+    const currentHolding = getCurrentStockHolding();
 
     if (shares > 0 && currentHolding && shares <= currentHolding.shares) {
       setCurrentBalance(prev => prev + totalRevenue);
@@ -400,28 +392,25 @@ const Game: React.FC = () => {
             const newShares = h.shares - shares;
             return newShares > 0
               ? { ...h, shares: newShares }
-              : null; // Entferne Holding wenn keine Aktien mehr
+              : null;
           }
           return h;
         }).filter(Boolean) as StockHolding[];
       });
+
+      // ✅ WICHTIG: Trading-Status IMMER aktualisieren
+      setHasTraded(true);
+      const currentOffset = viewMode === 'monthly' ? monthlyWeekOffset : yearlyWeekOffset;
+      setFirstTradingWeek(currentOffset); // Immer auf aktuelle Woche setzen
     }
 
     setShowSellPopup(false);
     setTempShareAmount('');
   };
 
+
   const getCurrentStockInfo = (): StockInfo | undefined => {
     return availableStocks.find(s => s.symbol === selectedStock);
-  };
-
-  const formatMonthDisplay = (monthKey: string): string => {
-    const [year, month] = monthKey.split('-');
-    const date = new Date(parseInt(year), parseInt(month) - 1);
-    return date.toLocaleDateString('de-DE', {
-      year: 'numeric',
-      month: 'long'
-    });
   };
 
   // Berechnungen für Popups
@@ -503,7 +492,7 @@ const Game: React.FC = () => {
         {showStartCapitalPopup && (
           <div className={styles.popupOverlay}>
             <div className={styles.popup}>
-              <h2>💰 Startkapital festlegen</h2>
+              <h2>Startkapital festlegen</h2>
               <p>Wie viel Geld möchtest du für das Trading verwenden?</p>
               <input
                 type="number"
@@ -554,7 +543,7 @@ const Game: React.FC = () => {
         {showBuyPopup && (
           <div className={styles.popupOverlay}>
             <div className={styles.popup}>
-              <h2>📈 Aktien kaufen</h2>
+              <h2>Aktien kaufen</h2>
               <p>Wie viele {currentStockInfo?.name} Aktien möchtest du kaufen?</p>
               <div className={styles.priceInfo}>
                 <span>Aktueller Preis: <strong>{currentPrice.toFixed(2)}€</strong></span>
@@ -615,7 +604,7 @@ const Game: React.FC = () => {
         {showSellPopup && (
           <div className={styles.popupOverlay}>
             <div className={styles.popup}>
-              <h2>📉 Aktien verkaufen</h2>
+              <h2>Aktien verkaufen</h2>
               <p>Wie viele {currentStockInfo?.name} Aktien möchtest du verkaufen?</p>
               <div className={styles.priceInfo}>
                 <span>Aktueller Preis: <strong>{currentPrice.toFixed(2)}€</strong></span>
@@ -683,8 +672,15 @@ const Game: React.FC = () => {
 
           <main className={styles.mainContent}>
             <header className={styles.appHeader}>
-              <h1>📈 {currentStockInfo?.name || 'Trading'} Dashboard</h1>
-              <p>Interaktive Aktienkurs-Analyse mit monatlicher Navigation</p>
+              <h1>{currentStockInfo?.name || 'Trading'}</h1>
+              <img
+                src={`/logos/${currentStockInfo?.name.toLowerCase() || 'default'}.png`}
+                className={styles.logoImage}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                }}
+              />
             </header>
 
             {/* Erweiterte Navigation Container */}
@@ -703,42 +699,51 @@ const Game: React.FC = () => {
                   Letztes Jahr
                 </button>
 
-                {/* Erweiterte Shift-Controls mit Modi-Info */}
+                {/* Erweiterte Shift-Controls mit Finish-Button */}
                 <div className={styles.shiftControls}>
                   <button
                     className={styles.shiftButton}
                     onClick={handleShiftBackward}
-                    disabled={monthlyWeekOffset === 0 || yearlyWeekOffset === 0}
+                    disabled={monthlyWeekOffset === 0 || yearlyWeekOffset === 0 || gameFinished}
                   >
                     ◀
                   </button>
 
-                  {/* Zeige beide Offsets an */}
                   <div className={styles.offsetDisplay}>
                     <span className={styles.currentModeOffset}>
-                      {viewMode === 'monthly' ? 'M' : 'Y'}: +{getCurrentOffset()}W
+                      Woche: {Math.abs(yearlyWeekOffset)}
                     </span>
-                    <span className={styles.otherModeOffset}>
-                      {viewMode === 'monthly' ? 'Y' : 'M'}: +{viewMode === 'monthly' ? yearlyWeekOffset : monthlyWeekOffset}W
-                    </span>
+
                   </div>
 
-                  <button
-                    className={styles.shiftButton}
-                    onClick={handleShiftForward}
-                    disabled={
-                      monthlyWeekOffset >= Math.floor(stockData.length / 7) - 4 ||
-                      yearlyWeekOffset >= Math.floor(stockData.length / 7) - 52
-                    }
-                  >
-                    ▶
-                  </button>
+                  {/* Bedingter Button mit korrekter 52-Wochen-Logik */}
+                  {(yearlyWeekOffset <= -52) ? (
+                    <button
+                      className={styles.finishButton}
+                      onClick={handleShiftForward}
+                    >
+                      🏁 Finish
+                    </button>
+                  ) : (
+                    <button
+                      className={styles.shiftButton}
+                      onClick={handleShiftForward}
+                      disabled={
+                        monthlyWeekOffset >= 52 ||
+                        yearlyWeekOffset >= 52 ||
+                        gameFinished
+                      }
+                    >
+                      ▶
+                    </button>
+                  )}
                 </div>
+
               </div>
 
               <div className={styles.balanceDisplay}>
-                <span className={styles.balanceLabel}>Startkapital:</span>
-                <span className={styles.balanceValue}>{startCapital.toFixed(2)}€</span>
+                <span className={styles.balanceLabel}>Bargeld:</span>
+                <span className={styles.balanceValue}>{currentBalance.toFixed(2)}€</span>
               </div>
             </div>
 
@@ -749,7 +754,7 @@ const Game: React.FC = () => {
               stockColor={currentStockInfo?.color || '#2563eb'}
             />
             <div className={styles.tradingPanel}>
-              <div className={styles.stockPosition} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '35%' }}>
+              <div className={styles.stockPosition}>
                 <div className={styles.positionInfo}>
                   <span className={styles.positionLabel}>Besitzt:</span>
                   <span className={styles.positionValue}>
@@ -761,31 +766,43 @@ const Game: React.FC = () => {
                   <span className={styles.positionValue}>{currentPrice.toFixed(2)}€</span>
                 </div>
                 <div className={styles.positionInfo}>
-                  <span className={styles.positionLabel}>Bargeld:</span>
-                  <span className={styles.positionValue}>{currentBalance.toFixed(2)}€</span>
+                  <span className={styles.positionLabel}>Startkapital:</span>
+                  <span className={styles.positionValue}>{startCapital.toFixed(2)}€</span>
                 </div>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 24, justifyContent: 'flex-end', width: '100%' }}>
-                <div className={styles.tradingButtons}>
-                  <button
-                    onClick={handleBuyClick}
-                    className={styles.buyButton}
-                    disabled={getMaxBuyableShares() === 0}
-                  >
-                    📈 Kaufen
-                  </button>
-                  <button
-                    onClick={handleSellClick}
-                    className={styles.sellButton}
-                    disabled={getMaxSellableShares() === 0}
-                  >
-                    📉 Verkaufen
-                  </button>
-                </div>
-                <div className={styles.feeInfo} style={{ minWidth: 120, textAlign: 'right' }}>
-                  <span>Kaufgebühr: {currentStockInfo?.buyFee ?? 0}%</span>
-                  <span>Verkaufsgebühr: {currentStockInfo?.sellFee ?? 0}%</span>
-                </div>
+
+              {/* ✅ FESTE HÖHE für Trading-Info - verhindert Layout-Sprung */}
+              <div className={styles.tradingInfoContainer}>
+                {isTradingAllowed() ? (
+                  <div className={styles.tradingInfo}>
+                    <div className={styles.feeInfo}>
+                      <span>Kaufgebühr: {currentStockInfo?.buyFee}%</span>
+                      <span>Verkaufsgebühr: {currentStockInfo?.sellFee}%</span>
+                    </div>
+
+                    <div className={styles.tradingButtons}>
+                      <button
+                        onClick={handleBuyClick}
+                        className={styles.buyButton}
+                        disabled={getMaxBuyableShares() === 0}
+                      >
+                        Kaufen
+                      </button>
+                      <button
+                        onClick={handleSellClick}
+                        className={styles.sellButton}
+                        disabled={getMaxSellableShares() === 0}
+                      >
+                        Verkaufen
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={styles.lockContent}>
+                    <span className={styles.lockIcon}>🔒</span>
+                    <span className={styles.lockText}>Trading gesperrt</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -818,7 +835,7 @@ const Game: React.FC = () => {
                   <div className={styles.statItem}>
                     <span className={styles.statLabel}>Entwicklung:</span>
                     <span className={`${styles.statValue} ${displayData.length > 1 &&
-                      displayData[displayData.length - 1].close > displayData[0].close // ✅ Letzter > Erster
+                      displayData[displayData.length - 1].close > displayData[0].close
                       ? styles.statValuePositive : styles.statValueNegative
                       }`}>
                       {displayData.length > 1 ? (
@@ -832,6 +849,83 @@ const Game: React.FC = () => {
           </main>
         </div>
       </div>
+      {/* ✅ NEU: Finish-Popup */}
+      {showFinishPopup && finalResults && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.finishPopup}>
+            <div className={styles.finishHeader}>
+              <h2 className={styles.finishTitle}>Spiel beendet!</h2>
+              <p className={styles.finishSubtitle}>52 Wochen Trading abgeschlossen</p>
+            </div>
+
+            <div className={styles.finishContent}>
+              <div className={styles.resultCard}>
+                <div className={styles.resultRow}>
+                  <span className={styles.resultLabel}>Startkapital:</span>
+                  <span className={styles.resultValue}>{finalResults.startCapital.toFixed(2)}€</span>
+                </div>
+
+                <div className={styles.resultRow}>
+                  <span className={styles.resultLabel}>Endwert Portfolio:</span>
+                  <span className={styles.resultValue}>{finalResults.finalValue.toFixed(2)}€</span>
+                </div>
+
+                <div className={styles.resultDivider}></div>
+
+                <div className={styles.resultRow}>
+                  <span className={styles.resultLabel}>Gewinn/Verlust:</span>
+                  <span className={`${styles.resultValue} ${finalResults.profit >= 0 ? styles.resultPositive : styles.resultNegative
+                    }`}>
+                    {finalResults.profit >= 0 ? '+' : ''}{finalResults.profit.toFixed(2)}€
+                  </span>
+                </div>
+
+                <div className={styles.resultRow}>
+                  <span className={styles.resultLabel}>Prozentuale Änderung:</span>
+                  <span className={`${styles.resultValue} ${styles.resultPercentage} ${finalResults.percentageChange >= 0 ? styles.resultPositive : styles.resultNegative
+                    }`}>
+                    {finalResults.percentageChange >= 0 ? '+' : ''}{finalResults.percentageChange.toFixed(2)}%
+                  </span>
+                </div>
+              </div>
+
+              <div className={styles.performanceIndicator}>
+                {finalResults.percentageChange >= 20 ? (
+                  <div className={styles.performanceExcellent}>
+                    <span className={styles.performanceText}>Exzellente Performance!</span>
+                  </div>
+                ) : finalResults.percentageChange >= 10 ? (
+                  <div className={styles.performanceGood}>
+                    <span className={styles.performanceText}>Gute Performance!</span>
+                  </div>
+                ) : finalResults.percentageChange > 0 ? (
+                  <div className={styles.performanceNeutral}>
+                    <span className={styles.performanceText}>Positive Performance</span>
+                  </div>
+                ) : finalResults.percentageChange == 0 ? (
+                  <div className={styles.performanceNeutral}>
+                    <span className={styles.performanceText}>Hast du überhaupt gespielt?</span>
+                  </div>
+                ) : (
+                  <div className={styles.performancePoor}>
+                    <span className={styles.performanceText}>Verlust gemacht</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.finishActions}>
+              <button
+                onClick={() => window.location.href = '/home'}
+                className={styles.finishCloseButton}
+              >
+                Schließen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
