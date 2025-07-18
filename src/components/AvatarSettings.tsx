@@ -22,8 +22,9 @@ const AvatarSettings: React.FC = () => {
     { id: 9, src: avatar6, price: 10000 },
     { id: 10, src: avatar7, price: 30000 },
     { id: 11, src: avatar8, price: 60000 },
-    { id: 8, src: avatar4, level: 3 },
-    { id: 7, src: avatar5, level: 8 },
+    { id: 8, src: avatar5, level: 3},
+    { id: 7, src: avatar4, level: 8},
+
     { id: 12, src: avatar9, level: 20 },
   ];
 
