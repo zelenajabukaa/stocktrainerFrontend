@@ -18,12 +18,7 @@ const Header: React.FC = () => {
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  const [user, setUser] = useState<{
-    username: string;
-    level: number;
-    ingameCurrency: number;
-    xp: number;
-  }>({
+  const [user, setUser] = useState({
     username: '',
     level: 0,
     ingameCurrency: 0,
@@ -32,7 +27,6 @@ const Header: React.FC = () => {
 
   const [userId, setUserId] = useState<number | null>(null);
 
-  // Profil laden (username, level, coins)
   useEffect(() => {
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
@@ -64,40 +58,7 @@ const Header: React.FC = () => {
         console.error('❌ Fehler beim Laden des Profils');
       });
   }, []);
-  function calculateLevel(xp: number) {
-  const xpTable = [
-    { level: 1, xp: 100 },
-    { level: 2, xp: 300 },
-    { level: 3, xp: 500 },
-    { level: 4, xp: 1000 },
-    { level: 5, xp: 1500 },
-    { level: 6, xp: 2200 },
-    { level: 7, xp: 2800 },
-    { level: 8, xp: 3500 },
-    { level: 9, xp: 4500 },
-    { level: 10, xp: 5800 },
-    { level: 11, xp: 7000 },
-    { level: 12, xp: 8500 },
-    { level: 13, xp: 10000 },
-    { level: 14, xp: 12000 },
-    { level: 15, xp: 14500 },
-    { level: 16, xp: 17500 },
-    { level: 17, xp: 20000 },
-    { level: 18, xp: 23000 },
-    { level: 19, xp: 27000 },
-    { level: 20, xp: 32450 },
-  ];
 
-  let currentLevel = 0;
-  for (const entry of xpTable) {
-    if (xp >= entry.xp) currentLevel = entry.level;
-    else break;
-  }
-  return currentLevel;
-}
-
-
-  // XP aus abgeschlossenen Quests laden
   useEffect(() => {
     async function fetchUserXP() {
       const token = localStorage.getItem('token');
@@ -123,7 +84,11 @@ const Header: React.FC = () => {
 
         const data = await res.json();
         if (data?.xp !== undefined) {
-          setUser(prev => ({ ...prev, xp: data.xp }));
+          setUser((prev) => ({
+            ...prev,
+            xp: data.xp,
+            level: data.level ?? calculateLevel(data.xp),
+          }));
         }
       } catch (err) {
         console.error('❌ Fehler beim Laden der XP:', err);
@@ -133,12 +98,29 @@ const Header: React.FC = () => {
     fetchUserXP();
   }, []);
 
+  function calculateLevel(xp: number) {
+    const xpTable = [
+      { level: 1, xp: 100 }, { level: 2, xp: 300 }, { level: 3, xp: 500 },
+      { level: 4, xp: 1000 }, { level: 5, xp: 1500 }, { level: 6, xp: 2200 },
+      { level: 7, xp: 2800 }, { level: 8, xp: 3500 }, { level: 9, xp: 4500 },
+      { level: 10, xp: 5800 }, { level: 11, xp: 7000 }, { level: 12, xp: 8500 },
+      { level: 13, xp: 10000 }, { level: 14, xp: 12000 }, { level: 15, xp: 14500 },
+      { level: 16, xp: 17500 }, { level: 17, xp: 20000 }, { level: 18, xp: 23000 },
+      { level: 19, xp: 27000 }, { level: 20, xp: 32450 },
+    ];
+    let currentLevel = 0;
+    for (const entry of xpTable) {
+      if (xp >= entry.xp) currentLevel = entry.level;
+      else break;
+    }
+    return currentLevel;
+  }
+
   const avatarImages = [
     avatar1, avatar2, avatar3, avatar4, avatar5,
     avatar6, avatar7, avatar8, avatar9,
   ];
 
-  // Avatar laden
   const [userAvatars, setUserAvatars] = useState<any[]>([]);
   useEffect(() => {
     if (!userId) return;
@@ -203,7 +185,7 @@ const Header: React.FC = () => {
           <img src={coin} alt="Coin" />
           {user.ingameCurrency}
         </div>
-        <div className={styles.levelBadge}>Lvl {calculateLevel(user.xp)}</div>
+        <div className={styles.levelBadge}>Lvl {user.level}</div>
         <div className={styles.levelBadge}>XP {user.xp}</div>
       </div>
 
@@ -237,7 +219,8 @@ const Header: React.FC = () => {
         {open && (
           <div className={styles.menuDropdown}>
             <button className={styles.menuItem} onClick={() => navigate('/user/settings')}>
-              Einstellungen</button>
+              Einstellungen
+            </button>
             <button className={styles.menuItem} onClick={() => navigate('/user/avatar')}>
               Avatar ändern
             </button>
