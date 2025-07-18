@@ -1,65 +1,87 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../css/Successes.module.css';
 import Header from './Header';
 
-const successTypes = [
-  {
-    key: 'activity',
-    label: 'Activity',
-    current: 8,
-    max: 8,
-    image: '/successes/activity.png', // <--- Bildpfad
-    desc: 'Complete general platform actions such as logging in, viewing pages, or exploring features.'
-  },
-  {
-    key: 'buy',
-    label: 'Buy',
-    current: 1,
-    max: 9,
-    image: '/successes/buy.png',
-    desc: 'Earn achievements by purchasing stocks and expanding your portfolio.'
-  },
-  {
-    key: 'diversify',
-    label: 'Diversify',
-    current: 0,
-    max: 6,
-    image: '/successes/diversify.png',
-    desc: 'Unlock rewards for investing in different industries or companies.'
-  },
-  {
-    key: 'sell',
-    label: 'Sell',
-    current: 0,
-    max: 9,
-    image: '/successes/sell.png',
-    desc: 'Reach milestones by selling stocks and realizing profits (or losses).'
-  },
-  {
-    key: 'special',
-    label: 'Special',
-    current: 0,
-    max: 7,
-    image: '/successes/special.png',
-    desc: 'Achieve unique challenges or rare in-game actions — only for the most dedicated traders!'
-  },
-];
+interface Quest {
+  id: string;
+  group: string;
+  description: string;
+  xp: number;
+  money: number;
+  needed_amount: number;
+}
 
 const Successes: React.FC = () => {
+  const [quests, setQuests] = useState<Quest[]>([]);
+  const [completedIds, setCompletedIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const successCategories = [
+    { key: 'activity', label: 'Activity', image: '/successes/activity.png', desc: 'Complete general platform actions such as logging in, viewing pages, or exploring features.' },
+    { key: 'buy', label: 'Buy', image: '/successes/buy.png', desc: 'Earn achievements by purchasing stocks and expanding your portfolio.' },
+    { key: 'diversify', label: 'Diversify', image: '/successes/diversify.png', desc: 'Unlock rewards for investing in different industries or companies.' },
+    { key: 'sell', label: 'Sell', image: '/successes/sell.png', desc: 'Reach milestones by selling stocks and realizing profits (or losses).' },
+    { key: 'special', label: 'Special', image: '/successes/special.png', desc: 'Achieve unique challenges or rare in-game actions — only for the most dedicated traders!' },
+  ];
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (!token) return;
+
+    const fetchData = async () => {
+      try {
+        const questRes = await fetch('http://localhost:3000/api/quests', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const questData = await questRes.json();
+
+        const completedRes = await fetch('http://localhost:3000/api/me/completed-quests', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const completedData = await completedRes.json();
+        const completedIds = completedData.map((q: { quest_id: string }) => q.quest_id);
+
+        setQuests(questData);
+        setCompletedIds(completedIds);
+        setLoading(false);
+      } catch (error) {
+        console.error('Fehler beim Laden der Quests:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div>Lade Erfolge...</div>;
+  }
+
+  const categoriesWithProgress = successCategories.map((cat) => {
+    const questsInGroup = quests.filter(q => q.group === cat.key);
+    const completedInGroup = questsInGroup.filter(q => completedIds.includes(q.id));
+    return {
+      ...cat,
+      current: completedInGroup.length,
+      max: questsInGroup.length,
+    };
+  });
+
   return (
     <div className={styles.successesContainer}>
-      <Header username="Username" level={1} ingameCurrency={0} />
+      <Header />
       <h2 className={styles.successesTitle}>Abzeichen</h2>
 
       <div className={styles.successesGrid}>
-        {successTypes.map((type, idx) => {
-          const isUnlocked = idx === 0 || type.current > 0;
-          const isComplete = type.current === type.max;
-          const progressPercent = Math.min((type.current / type.max) * 100, 100);
+        {categoriesWithProgress.map((cat, idx) => {
+          const isUnlocked = idx === 0 || cat.current > 0;
+          const isComplete = cat.current === cat.max;
+          const progressPercent = Math.min((cat.current / cat.max) * 100, 100);
 
           return (
             <div
-              key={type.key}
+              key={cat.key}
               className={
                 styles.successCard +
                 ' ' + styles.successCardLarge +
@@ -75,22 +97,19 @@ const Successes: React.FC = () => {
                   display: 'block',
                 }}
               >
-                {type.label}
+                {cat.label}
               </span>
 
-              {/* Nur wenn Bild existiert */}
-              {type.image && (
-                <img
-                  src={type.image}
-                  alt={`${type.label} Badge`}
-                  style={{
-                    width: '100%',
-                    height: 'auto',
-                    borderRadius: '1rem',
-                    marginBottom: '1rem',
-                  }}
-                />
-              )}
+              <img
+                src={cat.image}
+                alt={`${cat.label} Badge`}
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: '1rem',
+                  marginBottom: '1rem',
+                }}
+              />
 
               <div className={styles.progressBarWrapper}>
                 <div
@@ -114,11 +133,11 @@ const Successes: React.FC = () => {
                   className={styles.progressBarText}
                   style={!isUnlocked ? { opacity: 0.5 } : {}}
                 >
-                  {isUnlocked ? `${type.current} / ${type.max}` : `0 / ${type.max}`}
+                  {isUnlocked ? `${cat.current} / ${cat.max}` : `0 / ${cat.max}`}
                 </span>
               </div>
 
-              <span className={styles.successDesc}>{type.desc}</span>
+              <span className={styles.successDesc}>{cat.desc}</span>
 
               {!isUnlocked && (
                 <span className={styles.lockedText}>Locked</span>
