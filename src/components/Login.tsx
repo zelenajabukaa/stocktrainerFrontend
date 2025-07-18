@@ -42,16 +42,16 @@ const Login: React.FC = () => {
     stockLinesRef.current.forEach(line => {
       let currentX = -100;
       let currentY = line.baseY;
-      
+
       while (currentX <= canvas.width + 100) {
-        line.points.push({ 
-          x: currentX, 
+        line.points.push({
+          x: currentX,
           y: currentY
         });
-        
+
         // Nächster Punkt mit Richtungsänderung
         currentX += line.stepSize;
-        
+
         // Entscheide ob Richtung wechseln
         line.changeCounter++;
         if (line.changeCounter >= line.changeInterval) {
@@ -59,7 +59,7 @@ const Login: React.FC = () => {
           line.changeCounter = 0;
           line.changeInterval = 2 + Math.random() * 6; // Neue Wechselfrequenz
         }
-        
+
         // Berechne neue Y-Position
         const change = line.direction * (Math.random() * line.volatility);
         currentY = Math.max(50, Math.min(canvas.height - 50, currentY + change));
@@ -82,7 +82,7 @@ const Login: React.FC = () => {
         while (line.points.length === 0 || line.points[line.points.length - 1].x < canvas.width + 100) {
           const lastPoint = line.points[line.points.length - 1];
           const newX = lastPoint ? lastPoint.x + line.stepSize : canvas.width + 100;
-          
+
           // Entscheide ob Richtung wechseln
           line.changeCounter++;
           if (line.changeCounter >= line.changeInterval) {
@@ -90,14 +90,14 @@ const Login: React.FC = () => {
             line.changeCounter = 0;
             line.changeInterval = 2 + Math.random() * 6; // Neue Wechselfrequenz
           }
-          
+
           // Berechne neue Y-Position basierend auf Richtung
           const lastY = lastPoint ? lastPoint.y : line.baseY;
           const change = line.direction * (10 + Math.random() * line.volatility);
           const newY = Math.max(50, Math.min(canvas.height - 50, lastY + change));
-          
-          line.points.push({ 
-            x: newX, 
+
+          line.points.push({
+            x: newX,
             y: newY
           });
         }
@@ -112,12 +112,12 @@ const Login: React.FC = () => {
           for (let i = 0; i < line.points.length - 1; i++) {
             const point1 = line.points[i];
             const point2 = line.points[i + 1];
-            
+
             if (point1.x > -50 && point1.x < canvas.width + 50) {
               // Bestimme Farbe basierend auf Richtung (hoch/runter)
               const isGoingUp = point2.y < point1.y; // Y-Achse ist umgekehrt
               const color = isGoingUp ? '#00ff88' : '#ff4444'; // Grün für hoch, Rot für runter
-              
+
               ctx.strokeStyle = color;
               ctx.beginPath();
               ctx.moveTo(point1.x, point1.y);
@@ -201,22 +201,22 @@ const Login: React.FC = () => {
         ref={canvasRef}
         className={styles.stockCanvas}
       />
-      
+
       {/* Gradient Overlay für bessere Lesbarkeit */}
       <div className={styles.gradientOverlay} />
-      
+
       {/* Login Container */}
       <div className={styles.loginContainer}>
         {/* Titel */}
         <div className={styles.loginTitleFixed}>
           <h1>Stocktrainer</h1>
         </div>
-        
+
         {/* Form Wrapper */}
         <div className={styles.loginFormWrapper}>
           <form className={styles.loginForm} onSubmit={handleSubmit}>
             <h2>{isRegistering ? 'Registrieren' : 'Login'}</h2>
-            
+
             <input
               type="text"
               placeholder="Username"
@@ -225,7 +225,7 @@ const Login: React.FC = () => {
               autoComplete="username"
               disabled={loading}
             />
-            
+
             <input
               type="password"
               placeholder="Password"
@@ -234,10 +234,10 @@ const Login: React.FC = () => {
               autoComplete={isRegistering ? "new-password" : "current-password"}
               disabled={loading}
             />
-            
+
             <button type="submit" disabled={loading}>
-              {loading 
-                ? (isRegistering ? 'Registriere...' : 'Logge ein...') 
+              {loading
+                ? (isRegistering ? 'Registriere...' : 'Logge ein...')
                 : (isRegistering ? 'Registrieren' : 'Login')}
             </button>
 
@@ -247,8 +247,8 @@ const Login: React.FC = () => {
               disabled={loading}
               className={styles.toggleButton}
             >
-              {isRegistering 
-                ? 'Bereits registriert? Zum Login' 
+              {isRegistering
+                ? 'Bereits registriert? Zum Login'
                 : 'Noch kein Account? Registrieren'}
             </button>
           </form>

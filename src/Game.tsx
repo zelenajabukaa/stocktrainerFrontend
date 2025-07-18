@@ -34,7 +34,6 @@ const Game: React.FC = () => {
   const [showStartCapitalPopup, setShowStartCapitalPopup] = useState<boolean>(true);
   const [showBuyPopup, setShowBuyPopup] = useState<boolean>(false);
   const [showSellPopup, setShowSellPopup] = useState<boolean>(false);
-  const [tempCapitalInput, setTempCapitalInput] = useState<string>('');
   const [tempShareAmount, setTempShareAmount] = useState<string>('');
   const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
   const [monthlyWeekOffset, setMonthlyWeekOffset] = useState<number>(-48);
@@ -51,6 +50,120 @@ const Game: React.FC = () => {
     percentageChange: number;
     profit: number;
   } | null>(null);
+
+  const [showCapitalPopup, setShowCapitalPopup] = useState(true);
+  const [tempCapitalInput, setTempCapitalInput] = useState('');
+  const [maxStartingCapital, setMaxStartingCapital] = useState<number>(1000);
+  const [userLevel, setUserLevel] = useState<number>(0);
+
+  // Berechne maximales Startkapital basierend auf Level
+  useEffect(() => {
+    const maxCapital = getMaxStartingCapital(userLevel);
+    setMaxStartingCapital(maxCapital);
+  }, [userLevel]);
+
+
+
+  const rawRewards = [
+    { level: 1, reward: 'NKE' },
+    { level: 2, reward: 'PEP' },
+    { level: 4, reward: 'HON' },
+    { level: 6, reward: 'PYPL' },
+    { level: 7, reward: 'AAPL' },
+    { level: 9, reward: 'MCD' },
+    { level: 10, reward: 'UNH' },
+    { level: 11, reward: 'V' },
+    { level: 13, reward: 'BA' },
+    { level: 14, reward: 'AMZN' },
+    { level: 15, reward: 'TSLA' },
+    { level: 16, reward: 'META' },
+    { level: 17, reward: 'MA' },
+    { level: 18, reward: 'MSFT' },
+    { level: 19, reward: 'NFLX' },
+  ];
+
+
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    fetch('http://localhost:3000/api/profile', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.user?.level) {
+          setUserLevel(data.user.level);
+        }
+      })
+      .catch(err => {
+        console.error('Fehler beim Abrufen des Levels:', err);
+      });
+  }, []);
+
+  const getRequiredLevelForStock = (stockSymbol: string): number | null => {
+    const reward = rawRewards.find(r => r.reward === stockSymbol);
+    return reward ? reward.level : null;
+  };
+
+
+  const getMaxStartingCapital = (userLevel: number): number => {
+    // Grundkapital: 1000€
+    const baseCapital = 1000;
+
+    // Grundbonus: 500€ pro Level
+    const levelBonus = userLevel * 500;
+
+    // 5-Level-Bonus: 1000€ alle 5 Level
+    const fiveLevelBonus = Math.floor(userLevel / 5) * 1000;
+
+    // 10-Level-Bonus: 5000€ alle 10 Level
+    const tenLevelBonus = Math.floor(userLevel / 10) * 5000;
+
+    return baseCapital + levelBonus + fiveLevelBonus + tenLevelBonus;
+  };
+
+  // Beispiel für bessere Übersicht - optional
+  const getCapitalBreakdown = (userLevel: number) => {
+    const baseCapital = 1000;
+    const levelBonus = userLevel * 500;
+    const fiveLevelBonus = Math.floor(userLevel / 5) * 1000;
+    const tenLevelBonus = Math.floor(userLevel / 10) * 5000;
+    const total = baseCapital + levelBonus + fiveLevelBonus + tenLevelBonus;
+
+    return {
+      baseCapital,
+      levelBonus,
+      fiveLevelBonus,
+      tenLevelBonus,
+      total
+    };
+  };
+
+  // In deiner handleCapitalSubmit Funktion
+  const handleCapitalSubmit = () => {
+    const amount = parseFloat(tempCapitalInput);
+    const maxCapital = getMaxStartingCapital(userLevel);
+
+    if (isNaN(amount) || amount <= 0) {
+      alert('Bitte geben Sie einen gültigen Betrag ein.');
+      return;
+    }
+
+    if (amount > maxCapital) {
+      alert(`Das maximale Startkapital für Level ${userLevel} beträgt ${maxCapital.toLocaleString()}€`);
+      return;
+    }
+
+    setStartCapital(amount);
+    setCurrentBalance(amount);
+    setShowCapitalPopup(false);
+    setTempCapitalInput('');
+  };
+
 
 
   // useEffect für Finish-Überprüfung
@@ -496,32 +609,92 @@ const Game: React.FC = () => {
       <div style={{ position: 'fixed', inset: 0, zIndex: 0, background: '#f3f3f3ff', width: '100vw', height: '100vh' }} />
       <div className={styles.gameContainer} style={{ position: 'relative', zIndex: 1 }}>
         {/* Startkapital Popup bleibt gleich... */}
-        {showStartCapitalPopup && (
+        {showCapitalPopup && (
           <div className={styles.popupOverlay}>
             <div className={styles.popup}>
               <h2>Startkapital festlegen</h2>
               <p>Wie viel Geld möchtest du für das Trading verwenden?</p>
+
+              {/* Erweiterte Level Info mit Breakdown */}
+              <div className={styles.levelCapitalInfo}>
+                <div className={styles.levelDisplay}>
+                  <span className={styles.levelLabel}>Dein Level:</span>
+                  <span className={styles.levelValue}>{userLevel}</span>
+                </div>
+
+                {/* Detaillierte Kapital-Aufschlüsselung */}
+                <div className={styles.capitalBreakdown}>
+                  <div className={styles.breakdownItem}>
+                    <span>Grundkapital:</span>
+                    <span>1.000€</span>
+                  </div>
+                  <div className={styles.breakdownItem}>
+                    <span>Level-Bonus ({userLevel} × 500€):</span>
+                    <span>{(userLevel * 500).toLocaleString()}€</span>
+                  </div>
+                  {Math.floor(userLevel / 5) > 0 && (
+                    <div className={styles.breakdownItem}>
+                      <span>5-Level-Bonus ({Math.floor(userLevel / 5)} × 1.000€):</span>
+                      <span>{(Math.floor(userLevel / 5) * 1000).toLocaleString()}€</span>
+                    </div>
+                  )}
+                  {Math.floor(userLevel / 10) > 0 && (
+                    <div className={styles.breakdownItem}>
+                      <span>10-Level-Bonus ({Math.floor(userLevel / 10)} × 5.000€):</span>
+                      <span>{(Math.floor(userLevel / 10) * 5000).toLocaleString()}€</span>
+                    </div>
+                  )}
+                  <div className={styles.breakdownTotal}>
+                    <span>Maximales Startkapital:</span>
+                    <span>{maxStartingCapital.toLocaleString()}€</span>
+                  </div>
+                </div>
+              </div>
+
               <input
                 type="number"
                 value={tempCapitalInput}
                 onChange={(e) => setTempCapitalInput(e.target.value)}
-                placeholder="z.B. 10000"
+                placeholder={`z.B. ${Math.min(25000, maxStartingCapital)}`}
                 className={styles.popupInput}
                 min="1"
+                max={maxStartingCapital}
                 step="0.01"
               />
+
+              {/* Validierungs-Hinweis */}
+              {tempCapitalInput && parseFloat(tempCapitalInput) > maxStartingCapital && (
+                <div className={styles.validationError}>
+                  ⚠️ Betrag überschreitet das maximale Startkapital von {maxStartingCapital.toLocaleString()}€
+                </div>
+              )}
+
               <div className={styles.popupButtons}>
                 <button
-                  onClick={handleStartCapitalSubmit}
+                  onClick={handleCapitalSubmit}
                   className={styles.popupButtonPrimary}
-                  disabled={!tempCapitalInput || parseFloat(tempCapitalInput) <= 0}
+                  disabled={
+                    !tempCapitalInput ||
+                    parseFloat(tempCapitalInput) <= 0 ||
+                    parseFloat(tempCapitalInput) > maxStartingCapital
+                  }
                 >
                   Bestätigen
+                </button>
+                <button
+                  onClick={() => {
+                    setShowCapitalPopup(false);
+                    setTempCapitalInput('');
+                  }}
+                  className={styles.popupButtonSecondary}
+                >
+                  Abbrechen
                 </button>
               </div>
             </div>
           </div>
         )}
+
 
         {/* NEU: Company Info Button */}
         <div className={styles.companyInfoButtonContainer}>
@@ -675,7 +848,10 @@ const Game: React.FC = () => {
             availableStocks={availableStocks}
             selectedStock={selectedStock}
             onStockSelect={handleStockSelect}
+            userLevel={userLevel}
+            getRequiredLevelForStock={getRequiredLevelForStock}
           />
+
 
           <main className={styles.mainContent}>
             <header className={styles.appHeader}>

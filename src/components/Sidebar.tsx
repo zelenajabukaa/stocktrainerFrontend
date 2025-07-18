@@ -6,102 +6,114 @@ interface SidebarProps {
     availableStocks: StockInfo[];
     selectedStock: string;
     onStockSelect: (symbol: string) => void;
+    userLevel: number;
+    getRequiredLevelForStock: (symbol: string) => number | null;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
     availableStocks,
     selectedStock,
-    onStockSelect
+    onStockSelect,
+    userLevel,
+    getRequiredLevelForStock
 }) => {
-    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [searchTerm, setSearchTerm] = useState('');
 
-    // Gefilterte Aktien basierend auf Suchbegriff
     const filteredStocks = useMemo(() => {
-        if (!searchTerm.trim()) {
-            return availableStocks;
-        }
+        let stocks = searchTerm.trim()
+            ? availableStocks.filter(stock =>
+                stock.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                stock.name.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+            : availableStocks;
 
-        const searchLower = searchTerm.toLowerCase();
-        return availableStocks.filter(stock =>
-            stock.symbol.toLowerCase().includes(searchLower) ||
-            stock.name.toLowerCase().includes(searchLower)
-        );
-    }, [availableStocks, searchTerm]);
+        // Sortierung: Erst verfügbare Aktien, dann nach Level
+        return stocks.sort((a, b) => {
+            const levelA = getRequiredLevelForStock(a.symbol);
+            const levelB = getRequiredLevelForStock(b.symbol);
 
-    // Suchfeld leeren
+            // Aktien ohne Level-Anforderung (von Anfang an verfügbar) kommen zuerst
+            if (levelA === null && levelB === null) {
+                return a.symbol.localeCompare(b.symbol);
+            }
+            if (levelA === null) return -1;
+            if (levelB === null) return 1;
+
+            // Beide haben Level-Anforderungen - nach Level sortieren
+            return levelA - levelB;
+        });
+    }, [availableStocks, searchTerm, getRequiredLevelForStock]);
+
     const clearSearch = () => {
         setSearchTerm('');
     };
 
-    return (
-        <aside className={styles.sidebar}>
-            <div className={styles.sidebarHeader}>
-                <h3>Aktien</h3>
+    const isStockUnlocked = (stockSymbol: string): boolean => {
+        const requiredLevel = getRequiredLevelForStock(stockSymbol);
+        return requiredLevel === null || userLevel >= requiredLevel;
+    };
 
-                {/* ✅ NEU: Suchleiste */}
+    return (
+        <div className={styles.sidebar}>
+            <div className={styles.sidebarHeader}>
+                <h3>Aktien auswählen</h3>
                 <div className={styles.searchContainer}>
                     <div className={styles.searchInputWrapper}>
                         <input
                             type="text"
-                            placeholder="Aktien suchen..."
+                            placeholder="Aktie suchen..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className={styles.searchInput}
                         />
                         {searchTerm && (
-                            <button
-                                onClick={clearSearch}
-                                className={styles.clearButton}
-                                title="Suche löschen"
-                            >
-                                ✕
+                            <button onClick={clearSearch} className={styles.clearButton}>
+                                ×
                             </button>
                         )}
-                    </div>
-
-                    {/* Such-Icon */}
-                    <div className={styles.searchIcon}>
-                        🔍
                     </div>
                 </div>
             </div>
 
             <div className={styles.stockList}>
-                {filteredStocks.length > 0 ? (
-                    filteredStocks.map((stock) => (
+                {filteredStocks.map((stock) => {
+                    const isUnlocked = isStockUnlocked(stock.symbol);
+                    const requiredLevel = getRequiredLevelForStock(stock.symbol);
+
+                    return (
                         <button
                             key={stock.symbol}
+                            onClick={() => isUnlocked && onStockSelect(stock.symbol)}
                             className={`${styles.stockItem} ${selectedStock === stock.symbol ? styles.stockItemActive : ''
-                                }`}
-                            onClick={() => onStockSelect(stock.symbol)}
+                                } ${!isUnlocked ? styles.stockItemLocked : ''}`}
+                            disabled={!isUnlocked}
                         >
-                            <div
-                                className={styles.stockColorIndicator}
-                                style={{ backgroundColor: stock.color }}
-                            />
+                            <div className={styles.stockColorIndicator}
+                                style={{ backgroundColor: stock.color }} />
                             <div className={styles.stockInfo}>
-                                <span className={styles.stockSymbol}>{stock.symbol}</span>
-                                <span className={styles.stockName}>{stock.name}</span>
+                                <div className={styles.stockSymbol}>{stock.symbol}</div>
+                                <div className={styles.stockName}>{stock.name}</div>
                             </div>
+
+                            {!isUnlocked && (
+                                <div className={styles.lockOverlay}>
+                                    <div className={styles.lockIcon}>🔒</div>
+                                    <div className={styles.lockText}>
+                                        Level {requiredLevel} erforderlich
+                                    </div>
+                                </div>
+                            )}
                         </button>
-                    ))
-                ) : (
-                    <div className={styles.noResults}>
-                        <span className={styles.noResultsIcon}></span>
-                        <p className={styles.noResultsText}>
-                            Keine Aktien gefunden für "{searchTerm}"
-                        </p>
-                    </div>
-                )}
+                    );
+                })}
             </div>
 
             <div className={styles.sidebarFooter}>
                 <p className={styles.stockCount}>
-                    {filteredStocks.length} von {availableStocks.length} Aktien
-                    {searchTerm && ` (gefiltert)`}
+                    {filteredStocks.length} Aktien verfügbar
                 </p>
             </div>
-        </aside>
+        </div>
     );
 };
 
