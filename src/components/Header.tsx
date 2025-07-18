@@ -25,78 +25,62 @@ const Header: React.FC = () => {
     xp: 0,
   });
 
-  const [userId, setUserId] = useState<number | null>(null);
+  const userData = localStorage.getItem('user');
+  const userId = userData ? JSON.parse(userData)?.id : null;
+
+  const avatarImages = [
+    avatar1, avatar2, avatar3, avatar4, avatar5,
+    avatar6, avatar7, avatar8, avatar9,
+  ];
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userData = localStorage.getItem('user');
-    if (!token || !userData) return;
-
-    try {
-      const userObj = JSON.parse(userData);
-      if (userObj?.id) setUserId(userObj.id);
-    } catch {}
-
-    fetch('http://localhost:3000/api/profile', {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user) {
-          setUser((prev) => ({
-            ...prev,
-            username: data.user.username ?? '',
-            level: data.user.level ?? 0,
-            ingameCurrency: data.user.ingameCurrency ?? 0,
-          }));
-        }
-      })
-      .catch(() => {
-        console.error('❌ Fehler beim Laden des Profils');
-      });
-  }, []);
-
-  useEffect(() => {
-    async function fetchUserXP() {
+    async function fetchUserProfileAndXP() {
       const token = localStorage.getItem('token');
-      const userData = localStorage.getItem('user');
-      let uid: number | null = null;
+      if (!token || !userId) return;
 
-      if (userData) {
-        try {
-          const parsed = JSON.parse(userData);
-          uid = parsed?.id;
-        } catch {}
-      }
-
-      if (!token || !uid) return;
-
+      // 1. Profil holen (Coins, Level, Username)
       try {
-        const res = await fetch(`http://localhost:3000/api/users/${uid}/completed-xp`, {
+        const resProfile = await fetch(`http://localhost:3000/api/profile`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         });
-
-        const data = await res.json();
-        if (data?.xp !== undefined) {
+        const profileData = await resProfile.json();
+        if (profileData?.user) {
           setUser((prev) => ({
             ...prev,
-            xp: data.xp,
-            level: data.level ?? calculateLevel(data.xp),
+            username: profileData.user.username ?? prev.username,
+            level: profileData.user.level ?? prev.level,
+            ingameCurrency: profileData.user.ingameCurrency ?? prev.ingameCurrency,
+          }));
+        }
+      } catch (err) {
+        console.error('❌ Fehler beim Laden des Profils:', err);
+      }
+
+      // 2. XP holen und Level ggf. aktualisieren
+      try {
+        const resXP = await fetch(`http://localhost:3000/api/users/${userId}/completed-xp`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const xpData = await resXP.json();
+        if (xpData?.xp !== undefined) {
+          setUser((prev) => ({
+            ...prev,
+            xp: xpData.xp,
+            level: xpData.level ?? calculateLevel(xpData.xp),
           }));
         }
       } catch (err) {
         console.error('❌ Fehler beim Laden der XP:', err);
       }
     }
-
-    fetchUserXP();
-  }, []);
+    fetchUserProfileAndXP();
+  }, [userId]);
 
   function calculateLevel(xp: number) {
     const xpTable = [
@@ -115,11 +99,6 @@ const Header: React.FC = () => {
     }
     return currentLevel;
   }
-
-  const avatarImages = [
-    avatar1, avatar2, avatar3, avatar4, avatar5,
-    avatar6, avatar7, avatar8, avatar9,
-  ];
 
   const [userAvatars, setUserAvatars] = useState<any[]>([]);
   useEffect(() => {
