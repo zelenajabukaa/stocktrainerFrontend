@@ -75,7 +75,9 @@ const Levelbelohnungen: React.FC = () => {
           } else if (item.reward.includes('Aktie')) {
             const match = item.reward.match(/^(.*) Aktie$/);
             if (match && match[1]) {
-              const logoName = match[1].replace(/ /g, '');
+              let logoName = match[1].replace(/ /g, '');
+              // Spezialfall für UnitedHealthGroup
+              if (logoName.toLowerCase() === 'unitedhealthgroup') logoName = 'unitedhealth';
               imgSrc = `/public/logos/${logoName.toLowerCase()}.png`;
             } else {
               imgSrc = '/public/logos/stock.png';
