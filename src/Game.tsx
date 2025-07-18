@@ -157,12 +157,12 @@ const Game: React.FC = () => {
 
   // Funktion: Überprüfe ob Trading in der aktuellen Woche erlaubt ist
   const isTradingAllowed = (): boolean => {
-    if (!hasTraded) {
-      return true; // Noch nie gehandelt - überall erlaubt
-    }
 
     // Verwende den aktuellen Offset basierend auf viewMode
     const currentOffset = yearlyWeekOffset;
+    if (currentOffset < firstTradingWeek) {
+      setFirstTradingWeek(currentOffset);
+    }
 
     // ✅ KORREKT: Wenn schon gehandelt wurde, nur in der ersten Trading-Woche oder SPÄTER erlaubt
     return currentOffset <= firstTradingWeek;
@@ -335,11 +335,16 @@ const Game: React.FC = () => {
   const handleBuySubmit = (): void => {
     if (!isTradingAllowed()) return;
 
+    const buySound = new Audio('/sounds/buy2.mp3');
+    buySound.play().catch((err) => console.error('Sound konnte nicht abgespielt werden:', err));
+    console.log("sound wird abgespielt");
+
     const shares = parseInt(tempShareAmount);
     const currentPrice = getCurrentStockPrice();
     const subtotal = shares * currentPrice;
     const fee = calculateBuyFee(shares);
     const totalCost = subtotal + fee;
+
 
     if (shares > 0 && totalCost <= currentBalance) {
       setCurrentBalance(prev => prev - totalCost);
@@ -365,7 +370,6 @@ const Game: React.FC = () => {
       // ✅ WICHTIG: Trading-Status IMMER aktualisieren
       setHasTraded(true);
       const currentOffset = yearlyWeekOffset;
-      setFirstTradingWeek(currentOffset); // Immer auf aktuelle Woche setzen
     }
 
     setShowBuyPopup(false);
@@ -375,6 +379,10 @@ const Game: React.FC = () => {
 
   const handleSellSubmit = (): void => {
     if (!isTradingAllowed()) return;
+
+    const buySound = new Audio('/sounds/buy.mp3');
+    buySound.play().catch((err) => console.error('Sound konnte nicht abgespielt werden:', err));
+    console.log("sound wird abgespielt");
 
     const shares = parseInt(tempShareAmount);
     const currentPrice = getCurrentStockPrice();
@@ -401,7 +409,6 @@ const Game: React.FC = () => {
       // ✅ WICHTIG: Trading-Status IMMER aktualisieren
       setHasTraded(true);
       const currentOffset = yearlyWeekOffset;
-      setFirstTradingWeek(currentOffset); // Immer auf aktuelle Woche setzen
     }
 
     setShowSellPopup(false);
