@@ -209,6 +209,9 @@ const Header: React.FC = () => {
             <button className={styles.menuItem} onClick={() => navigate('/user/avatar')}>
               Avatar ändern
             </button>
+              <button className={styles.menuItem} onClick={() => navigate('/friends')}>
+              Freunde
+            </button>
             <button className={styles.menuItem} onClick={() => navigate('/informations')}>
               Informationen
             </button>
