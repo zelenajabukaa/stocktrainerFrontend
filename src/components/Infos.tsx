@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './Infos.module.css';
+import styles from '../css/Infos.module.css';
 
 const Infos: React.FC = () => {
   const navigate = useNavigate();
