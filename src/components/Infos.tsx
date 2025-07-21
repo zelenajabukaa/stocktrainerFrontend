@@ -20,7 +20,7 @@ const Infos: React.FC = () => {
             <ul style={{ marginTop: 8, marginBottom: 8 }}>
               <li><b>Kauf-Quests:</b> Kaufe eine bestimmte Anzahl von Aktien.</li>
               <li><b>Verkaufs-Quests:</b> Verkaufe eine bestimmte Anzahl von Aktien.</li>
-              <li><b>Haltedauer-Quests:</b> Halte bestimmte Aktien über einen Zeitraum.</li>
+              <li><b>Diversität-Quests:</b> Halte Aktien von verschiedenen Firmen gleichzeitig.</li>
               <li><b>Gewinn-Quests:</b> Erziele einen bestimmten Gewinn mit deinen Trades.</li>
               <li><b>Aktivitäts-Quests:</b> Führe eine bestimmte Anzahl von Trades in einem Zeitraum aus.</li>
             </ul>

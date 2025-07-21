@@ -1,0 +1,163 @@
+/* Tabs */
+.tabContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.tabButton {
+  flex: 1;
+  text-align: center;
+  padding: 12px 0;
+  font-weight: 600;
+  font-size: 1rem;
+  background: #e5e7eb;
+  border: none;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.tabButtonActive {
+  background: #2563eb;
+  color: white;
+}
+
+/* Hauptcontainer */
+.friendsContainer {
+  max-width: 520px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 24px;
+}
+
+/* Titel */
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #2563eb;
+}
+
+/* Suchleiste */
+.searchBarContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.searchBar {
+  width: 80%;
+  max-width: 320px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+  background: #f7f7fa;
+  transition: border 0.2s;
+}
+.searchBar:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+/* Listen */
+.friendsList,
+.searchResultsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.friendItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #2563eb;
+  cursor: pointer;
+}
+
+.name {
+  flex: 1;
+  margin-left: 12px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Level Anzeige */
+.level {
+  font-weight: 600;
+  color: #4b5563;
+  margin-right: 12px;
+  white-space: nowrap;
+}
+
+/* Profil Button */
+.profileBtn {
+  padding: 6px 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.profileBtn:hover {
+  background: #1d4ed8;
+}
+
+/* Anfrage Buttons */
+.requestButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.requestBtn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: white;
+}
+
+.requestBtnAccept {
+  background: #10b981;
+}
+.requestBtnAccept:hover {
+  background: #059669;
+}
+
+.requestBtnDecline {
+  background: #ef4444;
+}
+.requestBtnDecline:hover {
+  background: #dc2626;
+}
+
+/* Zustandspunkte */
+.online {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.offline {
+  color: #bdbdbd;
+  font-weight: 600;
+}
