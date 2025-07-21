@@ -164,7 +164,13 @@ const Header: React.FC = () => {
           <img src={coin} alt="Coin" />
           {user.ingameCurrency}
         </div>
-        <div className={styles.levelBadge}>Lvl {user.level}</div>
+        <div
+          className={styles.levelBadge}
+          style={{ cursor: 'pointer' }}
+          onClick={() => navigate('/levelbelohnungen')}
+        >
+          Lvl {user.level}
+        </div>
         <div className={styles.levelBadge}>XP {user.xp}</div>
       </div>
 
