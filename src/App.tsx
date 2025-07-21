@@ -12,12 +12,13 @@ import Levelbelohnungen from "./components/Levelbelohnungen.tsx";
 import Successes from "./components/Successes.tsx";
 import Auswertungen from "./components/Auswertungen.tsx";
 import Infos from './components/Infos';
+import Friends from "./components/Friends.tsx";
 
 const App: React.FC = () => {
   return (
     <Routes>
       <Route path="/test/quests" element={<Quests />} />
-      <Route path="/user/avatar" element={<AvatarSettings />} />
+      <Route path="/user/avatar" element={<PrivateRoute><AvatarSettings /></PrivateRoute>} />
       <Route path="/user/settings" element={<PrivateRoute><Settings /></PrivateRoute>} /> {/* ← NEU */}
       <Route path="/user/successes" element={<Successes />} />
       <Route path="/game/monthly" element={<Game />} />
@@ -28,7 +29,8 @@ const App: React.FC = () => {
       <Route path="/quests" element={<PrivateRoute><Quests /></PrivateRoute>} />
       <Route path="/levelbelohnungen" element={<PrivateRoute><Levelbelohnungen /></PrivateRoute>} />
       <Route path="/auswertungen" element={<PrivateRoute><Auswertungen /></PrivateRoute>} />
-      <Route path="/informations" element={<Infos />} />
+      <Route path="/informations" element={<PrivateRoute><Infos /></PrivateRoute>} />
+      <Route path="/friends" element={<PrivateRoute><Friends /></PrivateRoute>} />
     </Routes>
   );
 };
