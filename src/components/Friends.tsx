@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../css/Friends.module.css';
 import Header from './Header';
 
@@ -9,45 +9,133 @@ interface Friend {
   level: number;
 }
 
-const dummyFriends: Friend[] = [
-  { id: 1, name: 'Anna', avatar: '/avatar/avatar1.png', level: 12 },
-  { id: 2, name: 'Ben', avatar: '/avatar/avatar2.png', level: 10 },
-  { id: 3, name: 'Clara', avatar: '/avatar/avatar3.png', level: 15 },
-  { id: 4, name: 'David', avatar: '/avatar/avatar4.png', level: 8 },
-];
-
-const dummyRequests: Friend[] = [
-  { id: 5, name: 'Eva', avatar: '/avatar/avatar5.png', level: 10 },
-  { id: 6, name: 'Felix', avatar: '/avatar/avatar6.png', level: 9 },
-  { id: 7, name: 'Gina', avatar: '/avatar/avatar7.png', level: 11 },
-];
-
 const Friends: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'freunde' | 'anfragen'>('freunde');
-  const [friends, setFriends] = useState<Friend[]>(dummyFriends);
-  const [requests, setRequests] = useState<Friend[]>(dummyRequests);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [requests, setRequests] = useState<Friend[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Friend[]>([]);
+  const [sentRequests, setSentRequests] = useState<number[]>([]);
+
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    if (!token) return;
+
+    fetch('http://localhost:3000/api/friends', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(setFriends)
+      .catch(console.error);
+
+    fetch('http://localhost:3000/api/friend-requests', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(setRequests)
+      .catch(console.error);
+  }, [token]);
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+    try {
+      const res = await fetch(`http://localhost:3000/api/users/search?query=${encodeURIComponent(searchQuery)}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setSearchResults(data);
+    } catch (err) {
+      console.error('Fehler bei Suche', err);
+    }
+  };
+
+  const handleSendRequest = async (receiverId: number) => {
+    try {
+      await fetch('http://localhost:3000/api/friend-requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ receiverId })
+      });
+      setSentRequests(prev => [...prev, receiverId]);
+    } catch (err) {
+      console.error('Fehler beim Senden', err);
+    }
+  };
 
   const handleProfileClick = (id: number) => {
     alert(`Gehe zum Profil von ID ${id}`);
-    // z. B. navigate(`/profile/${id}`);
   };
 
-  const handleAccept = (id: number) => {
-    const accepted = requests.find(r => r.id === id);
-    if (accepted) {
-      setFriends(prev => [...prev, accepted]);
+  const handleAccept = async (requestId: number) => {
+    try {
+      await fetch(`http://localhost:3000/api/friend-requests/${requestId}/accept`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const accepted = requests.find(r => r.id === requestId);
+      if (accepted) {
+        setFriends(prev => [...prev, accepted]);
+      }
+      setRequests(prev => prev.filter(r => r.id !== requestId));
+    } catch (error) {
+      console.error('Fehler beim Akzeptieren', error);
     }
-    setRequests(prev => prev.filter(r => r.id !== id));
   };
 
-  const handleDecline = (id: number) => {
-    alert(`Anfrage von ID ${id} abgelehnt`);
-    setRequests(prev => prev.filter(r => r.id !== id));
+  const handleDecline = async (requestId: number) => {
+    try {
+      await fetch(`http://localhost:3000/api/friend-requests/${requestId}/decline`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setRequests(prev => prev.filter(r => r.id !== requestId));
+    } catch (error) {
+      console.error('Fehler beim Ablehnen', error);
+    }
   };
 
   return (
     <div className={styles.pageBg}>
       <Header />
+      <h1 className={styles.friendsTitle}>Freunde</h1>
+
+      {/* 🔍 Suchleiste */}
+      <div className={styles.searchContainer}>
+        <input
+          type="text"
+          placeholder="Nutzer suchen..."
+          className={styles.searchInput}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+        />
+        <button onClick={handleSearch} className={styles.searchButton}>Suchen</button>
+
+        {searchResults.length > 0 && (
+          <ul className={styles.friendsList}>
+            {searchResults.map(user => (
+              <li key={user.id} className={styles.friendItem}>
+                <img src={user.avatar} alt={user.name} className={styles.avatar} />
+                <span className={styles.name}>{user.name}</span>
+                <span className={styles.level}>LvL {user.level}</span>
+                <button
+                  disabled={sentRequests.includes(user.id)}
+                  className={styles.addFriendBtn}
+                  onClick={() => handleSendRequest(user.id)}
+                >
+                  {sentRequests.includes(user.id) ? 'Gesendet' : 'Anfrage senden'}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Tabs + Inhalte */}
       <div className={styles.cardMain}>
         <div className={styles.tabContainer}>
           <button
