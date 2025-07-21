@@ -1,3 +1,4 @@
+import Leaderboard from './Leaderboard';
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./Home";
@@ -31,6 +32,7 @@ const App: React.FC = () => {
       <Route path="/auswertungen" element={<PrivateRoute><Auswertungen /></PrivateRoute>} />
       <Route path="/informations" element={<PrivateRoute><Infos /></PrivateRoute>} />
       <Route path="/friends" element={<PrivateRoute><Friends /></PrivateRoute>} />
+      <Route path="/leaderboard" element={<Leaderboard />} />
     </Routes>
   );
 };
