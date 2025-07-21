@@ -61,14 +61,12 @@ const Auswertungen: React.FC = () => {
             <div className={styles.auswertungDate}>
               {new Date(item.end_date).toLocaleDateString()}
             </div>
-            <div className={styles.auswertungTitle}>
-              Auswertung #{item.id}
-            </div>
+          
             <div className={styles.auswertungDesc}>
               {item.message || 'Keine Beschreibung vorhanden.'}
             </div>
             <div className={styles.auswertungChange}>
-              Gewinn: {item.profit_margin} | Veränderung: {item.prozentuale_aenderung}% | Startbudget: {item.start_budget} | Endbudget: {item.end_budget}   
+              Gewinn: {item.profit_margin}Fr     Veränderung: {item.prozentuale_aenderung}%     Startbudget: {item.start_budget}     Endbudget: {item.end_budget}   
             </div>
           </div>
         ))}
