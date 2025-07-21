@@ -1,0 +1,231 @@
+/* Infos.module.css */
+
+.infos-bg {
+  background-color: #0f172a;
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  color: #e2e8f0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.infos-container {
+  max-width: 900px;
+  width: 100%;
+  background: rgba(30, 41, 59, 0.9);
+  border-radius: 16px;
+  padding: 3rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(71, 85, 105, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+.infos-title {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #e2e8f0;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 1rem;
+  text-align: center;
+}
+
+.infos-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6, #10b981);
+  border-radius: 2px;
+}
+
+.infos-text {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+  color: #cbd5e1;
+  text-align: center;
+}
+
+.infos-section-title {
+  font-size: 1.8rem;
+  margin: 3rem 0 1.5rem;
+  color: #e2e8f0;
+  font-weight: 600;
+  border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+  padding-bottom: 0.5rem;
+}
+
+.infos-section-title-small {
+  font-size: 1.5rem;
+  margin: 2.5rem 0 1.2rem;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.infos-section-title-tiny {
+  font-size: 1.3rem;
+  margin: 2rem 0 1rem;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.infos-list, .infos-ol {
+  margin: 1.2rem 0 2rem 2rem;
+  line-height: 1.7;
+  color: #cbd5e1;
+}
+
+.infos-list li, .infos-ol li {
+  margin-bottom: 0.8rem;
+  padding-left: 0.5rem;
+}
+
+.infos-list ul {
+  margin: 0.8rem 0 0.8rem 2rem;
+  list-style-type: circle;
+}
+
+.infos-list b {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+.infos-support {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  margin: 2.5rem 0 3rem;
+  color: #cbd5e1;
+  text-align: center;
+}
+
+.infos-btn {
+  background: #1e40af;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: block;
+  margin: 0 auto;
+  width: fit-content;
+  box-shadow: 0 4px 16px rgba(30, 64, 175, 0.3);
+}
+
+.infos-btn:hover {
+  background: #1e3a8a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(30, 64, 175, 0.4);
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 768px) {
+  .infos-bg {
+    padding: 1.5rem;
+  }
+  
+  .infos-container {
+    padding: 2rem;
+  }
+  
+  .infos-title {
+    font-size: 2rem;
+  }
+  
+  .infos-section-title {
+    font-size: 1.6rem;
+  }
+  
+  .infos-section-title-small {
+    font-size: 1.4rem;
+  }
+  
+  .infos-text, .infos-support {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .infos-bg {
+    padding: 1rem;
+  }
+  
+  .infos-container {
+    padding: 1.5rem;
+  }
+  
+  .infos-list, .infos-ol {
+    margin-left: 1.5rem;
+  }
+  
+  .infos-list ul {
+    margin-left: 1.5rem;
+  }
+  
+  .infos-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Infos.module.css */
+
+.infos-bg {
+  background-color: #0f172a;
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+  color: #e2e8f0;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  position: relative; /* Wichtig für Z-Index-Hierarchie */
+  z-index: 10; /* Höher als Canvas-Ebene */
+}
+
+.infos-container {
+  max-width: 900px;
+  width: 100%;
+  background: rgba(15, 23, 42, 0.95); /* Dunklerer Hintergrund mit mehr Deckkraft */
+  border-radius: 16px;
+  padding: 3rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(100, 130, 200, 0.3);
+  position: relative;
+  z-index: 20; /* Sicher über allen Hintergründen */
+}
+
+/* Schriftkontraste verbessert */
+.infos-title {
+  font-size: 2.5rem;
+  color: #ffffff; /* Reines Weiß für besseren Kontrast */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.infos-text, 
+.infos-list, 
+.infos-ol, 
+.infos-support {
+  color: #e2e8f0; /* Hellerer Text */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Hervorhebungen */
+.infos-list b {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 768px) {
+  .infos-container {
+    padding: 2rem;
+    background: rgba(15, 23, 42, 0.98); /* Auf Mobil noch deckender */
+  }
+}
