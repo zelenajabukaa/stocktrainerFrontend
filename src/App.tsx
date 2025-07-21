@@ -10,6 +10,7 @@ import AvatarSettings from "./components/AvatarSettings.tsx";
 import Settings from "./components/Settings.tsx"; // ← NEU HINZUGEFÜGT
 import Levelbelohnungen from "./components/Levelbelohnungen.tsx";
 import Successes from "./components/Successes.tsx";
+import Infos from './components/Infos';
 
 const App: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
       <Route path="/game" element={<PrivateRoute><Game /></PrivateRoute>} />
       <Route path="/quests" element={<PrivateRoute><Quests /></PrivateRoute>} />
       <Route path="/levelbelohnungen" element={<PrivateRoute><Levelbelohnungen /></PrivateRoute>} />
+      <Route path="/informations" element={<Infos />} />
     </Routes>
   );
 };
