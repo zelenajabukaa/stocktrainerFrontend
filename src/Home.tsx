@@ -137,6 +137,7 @@ const Home: React.FC = () => {
     else if (label === 'Quests') navigate('/quests');
     else if (label === 'Levelbelohnungen') navigate('/levelbelohnungen');
     else if (label === 'Abzeichen') navigate('/user/successes');
+    else if (label === 'Auswertungen') navigate('/auswertungen');
   };
 
   const [stats, setStats] = useState<any>(null);

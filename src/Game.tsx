@@ -185,6 +185,31 @@ const Game: React.FC = () => {
 
         setGameFinished(true);
         setShowFinishPopup(true);
+        const token = localStorage.getItem('token');
+if (token) {
+  fetch('http://localhost:3000/api/evaluations', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      start_budget: startCapital,
+      end_budget: finalPortfolioValue,
+      profit_margin: profit,
+      prozentuale_aenderung: percentageChange,
+      message: `Auswertung gespeichert: ${profit >= 0 ? '+' : ''}${percentageChange.toFixed(2)}%`
+    })
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Fehler beim Speichern der Auswertung');
+    console.log('Auswertung erfolgreich gespeichert');
+  })
+  .catch(err => {
+    console.error('Fehler beim Speichern der Auswertung:', err);
+  });
+}
+
       }
     };
 
