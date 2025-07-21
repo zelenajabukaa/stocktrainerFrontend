@@ -184,7 +184,11 @@ const Login: React.FC = () => {
       localStorage.setItem("user", JSON.stringify(data.user));
 
       console.log(`${isRegistering ? 'Registrierung' : 'Login'} erfolgreich:`, data.user);
-      navigate("/home");
+      if (isRegistering) {
+        navigate("/informations");
+      } else {
+        navigate("/home");
+      }
 
     } catch (error) {
       console.error(`Fehler beim ${isRegistering ? 'Registrieren' : 'Login'}:`, error);
