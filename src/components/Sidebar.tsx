@@ -98,7 +98,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             {!isUnlocked && (
                                 <div className={styles.lockOverlay}>
                                     <div className={styles.lockIcon}>🔒</div>
-                                    <div className={styles.lockText}>
+                                    <div className={styles.lockText2}>
                                         Level {requiredLevel} erforderlich
                                     </div>
                                 </div>

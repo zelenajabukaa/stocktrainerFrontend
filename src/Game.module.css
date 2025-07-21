@@ -136,6 +136,13 @@
   padding: 0 4px;
 }
 
+.lockText2 {
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.2;
+  padding: 0 4px;
+}
+
 /* Responsive Design für Lock-Overlay */
 @media (max-width: 768px) {
   .lockIcon {
