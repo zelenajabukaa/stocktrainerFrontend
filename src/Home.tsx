@@ -178,7 +178,7 @@ const Home: React.FC = () => {
         <div></div>
         <div className="center-col">
           <div className="username">{username}</div>
-          <button className="friends-btn" onClick={() => navigate('/')}>Freunde</button>
+          <button className="friends-btn" onClick={() => navigate('/leaderboard')}>Leaderboard</button>
         </div>
       </div>
 
