@@ -140,10 +140,14 @@ const Home: React.FC = () => {
   };
 
   const [stats, setStats] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) return;
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
 
     fetch('http://localhost:3000/api/stats', {
       headers: {
@@ -152,8 +156,14 @@ const Home: React.FC = () => {
       },
     })
       .then(res => res.json())
-      .then(data => setStats(data))
-      .catch(() => setStats(null));
+      .then(data => {
+        setStats(data);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setStats(null);
+        setIsLoading(false);
+      });
   }, []);
 
   return (
@@ -173,45 +183,75 @@ const Home: React.FC = () => {
 
       <div className="main-content">
         <div className="card card-main" style={{ minHeight: '520px', paddingTop: 36, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' }}>
-          <h2 style={{ fontSize: '2.6rem', fontWeight: 900, letterSpacing: '0.03em', margin: 0, marginBottom: 18, textAlign: 'center' }}>Stats</h2>
-          <div style={{ fontSize: '1.13rem', color: '#fff', opacity: 0.85, marginBottom: 32, textAlign: 'center', maxWidth: 700 }}>
+          <h2 className="stats-title">Stats</h2>
+          <div className="stats-description">
             Here you can see your most important trading statistics and personal records. Track your progress and compare your best results!
           </div>
-          {stats && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 38, width: '100%', maxWidth: 1400, flex: 1, alignItems: 'stretch', justifyItems: 'center' }}>
-              {/* weektrades */}
-              <div style={{ background: 'rgba(255,255,255,0.13)', borderRadius: 18, minWidth: 180, height: 'calc(100% - 16px)', padding: '38px 18px', textAlign: 'center', boxShadow: '0 2px 12px rgba(0,0,0,0.10)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-                <div style={{ fontWeight: 700, fontSize: '1.35rem', marginBottom: 12 }}>Most Trades in a Week</div>
-                <div style={{ fontSize: '2.3rem', fontWeight: 900, color: '#2563eb', marginBottom: 16 }}>{stats.weekTrades ?? '-'}</div>
-                <div style={{ fontSize: '1.09rem', color: '#fff', opacity: 0.85 }}>Meiste Trades in einer Woche</div>
+          
+          {isLoading ? (
+            <div className="loading-stats">
+              <div className="loading-spinner"></div>
+              Loading your epic stats...
+            </div>
+          ) : stats ? (
+            <div className="stats-grid">
+              {/* Most Trades in a Week */}
+              <div className="stats-card">
+                <div className="floating-particle"></div>
+                <div className="floating-particle"></div>
+                <div className="floating-particle"></div>
+                <div className="stats-card-title">Most Trades in a Week</div>
+                <div className="stats-card-value">{stats.weekTrades ?? '-'}</div>
+                <div className="stats-card-description">Meiste Trades in einer Woche</div>
               </div>
-              {/* totalStocksBought */}
-              <div style={{ background: 'rgba(255,255,255,0.13)', borderRadius: 18, minWidth: 180, height: 'calc(100% - 16px)', padding: '38px 18px', textAlign: 'center', boxShadow: '0 2px 12px rgba(0,0,0,0.10)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-                <div style={{ fontWeight: 700, fontSize: '1.35rem', marginBottom: 12 }}>Total Stocks Bought</div>
-                <div style={{ fontSize: '2.3rem', fontWeight: 900, color: '#2563eb', marginBottom: 16 }}>{stats.totalStocksBought ?? '-'}</div>
-                <div style={{ fontSize: '1.09rem', color: '#fff', opacity: 0.85 }}>Totale Aktien gekauft</div>
+
+              {/* Total Stocks Bought */}
+              <div className="stats-card">
+                <div className="floating-particle"></div>
+                <div className="floating-particle"></div>
+                <div className="floating-particle"></div>
+                <div className="stats-card-title">Total Stocks Bought</div>
+                <div className="stats-card-value">{stats.totalStocksBought ?? '-'}</div>
+                <div className="stats-card-description">Totale Aktien gekauft</div>
               </div>
-              {/* holdShares */}
-              <div style={{ background: 'rgba(255,255,255,0.13)', borderRadius: 18, minWidth: 180, height: 'calc(100% - 16px)', padding: '38px 18px', textAlign: 'center', boxShadow: '0 2px 12px rgba(0,0,0,0.10)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-                <div style={{ fontWeight: 700, fontSize: '1.35rem', marginBottom: 12 }}>Hold Different Shares</div>
-                <div style={{ fontSize: '2.3rem', fontWeight: 900, color: '#2563eb', marginBottom: 16 }}>{stats.holdShares ?? '-'}</div>
-                <div style={{ fontSize: '1.09rem', color: '#fff', opacity: 0.85 }}>Von unterschiedlichen Aktienkursen Aktien gleichzeitig haben</div>
+
+              {/* Hold Different Shares */}
+              <div className="stats-card">
+                <div className="floating-particle"></div>
+                <div className="floating-particle"></div>
+                <div className="floating-particle"></div>
+                <div className="stats-card-title">Hold Different Shares</div>
+                <div className="stats-card-value">{stats.holdShares ?? '-'}</div>
+                <div className="stats-card-description">Von unterschiedlichen Aktienkursen Aktien gleichzeitig haben</div>
               </div>
-              {/* totalStocksSelled */}
-              <div style={{ background: 'rgba(255,255,255,0.13)', borderRadius: 18, minWidth: 180, height: 'calc(100% - 16px)', padding: '38px 18px', textAlign: 'center', boxShadow: '0 2px 12px rgba(0,0,0,0.10)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-                <div style={{ fontWeight: 700, fontSize: '1.35rem', marginBottom: 12 }}>Total Stocks Sold</div>
-                <div style={{ fontSize: '2.3rem', fontWeight: 900, color: '#2563eb', marginBottom: 16 }}>{stats.totalStocksSelled ?? '-'}</div>
-                <div style={{ fontSize: '1.09rem', color: '#fff', opacity: 0.85 }}>Total verkaufte Aktien</div>
+
+              {/* Total Stocks Sold */}
+              <div className="stats-card">
+                <div className="floating-particle"></div>
+                <div className="floating-particle"></div>
+                <div className="floating-particle"></div>
+                <div className="stats-card-title">Total Stocks Sold</div>
+                <div className="stats-card-value">{stats.totalStocksSelled ?? '-'}</div>
+                <div className="stats-card-description">Total verkaufte Aktien</div>
               </div>
-              {/* percentageProfit */}
-              <div style={{ background: 'rgba(255,255,255,0.13)', borderRadius: 18, minWidth: 180, height: 'calc(100% - 16px)', padding: '38px 18px', textAlign: 'center', boxShadow: '0 2px 12px rgba(0,0,0,0.10)', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-                <div style={{ fontWeight: 700, fontSize: '1.35rem', marginBottom: 12 }}>Highest Percentage Profit</div>
-                <div style={{ fontSize: '2.3rem', fontWeight: 900, color: '#2563eb', marginBottom: 16 }}>{stats.percentageProfit ?? '-'}</div>
-                <div style={{ fontSize: '1.09rem', color: '#fff', opacity: 0.85 }}>Höchste prozentuale Profit</div>
+
+              {/* Highest Percentage Profit */}
+              <div className="stats-card">
+                <div className="floating-particle"></div>
+                <div className="floating-particle"></div>
+                <div className="floating-particle"></div>
+                <div className="stats-card-title">Highest Percentage Profit</div>
+                <div className="stats-card-value">{stats.percentageProfit ?? '-'}</div>
+                <div className="stats-card-description">Höchste prozentuale Profit</div>
               </div>
+            </div>
+          ) : (
+            <div className="error-message">
+              Failed to load stats. Please try again later.
             </div>
           )}
         </div>
+        
         <div className="card card-side card-side-vertical">
           <div className="sidebar-btns sidebar-btns-fill">
             {['Neues Spiel', 'Levelbelohnungen', 'Quests', 'Abzeichen', 'Auswertungen'].map((label, idx) => (
