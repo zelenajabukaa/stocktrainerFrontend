@@ -17,6 +17,8 @@ interface StockHolding {
 }
 
 const Game: React.FC = () => {
+
+  //------------------------------------------------------------------------------USE STATES----------------------------------------------------------------------------------------------
   const [availableStocks, setAvailableStocks] = useState<StockInfo[]>([]);
   const [selectedStock, setSelectedStock] = useState<string>('');
   const [stockData, setStockData] = useState<StockDataPoint[]>([]);
@@ -40,6 +42,7 @@ const Game: React.FC = () => {
   const [yearlyWeekOffset, setYearlyWeekOffset] = useState<number>(0);
   const [hasTraded, setHasTraded] = useState<boolean>(false);
   const [firstTradingWeek, setFirstTradingWeek] = useState<number>(Infinity);
+  const [lastTradingWeek, setLastTradingWeek] = useState<number>(Infinity);
 
   // Rundensystem States
   const [gameFinished, setGameFinished] = useState<boolean>(false);
@@ -55,14 +58,17 @@ const Game: React.FC = () => {
   const [tempCapitalInput, setTempCapitalInput] = useState('');
   const [maxStartingCapital, setMaxStartingCapital] = useState<number>(1000);
   const [userLevel, setUserLevel] = useState<number>(0);
+  const [percentageProfit, setPercentageProfit] = useState<number | null>(null);
+  const [allTimeWeekTrades, setAllTimeWeekTrades] = useState<number | null>(null);
+  const [totalStocksBought, setTotalStocksBought] = useState<number | null>(null);
+  const [totalStocksSelled, setTotalStocksSelled] = useState<number | null>(null);
+  const [holdShares, setHoldShares] = useState<number | null>(null);
+  const [currentWeekTrades, setCurrentWeekTrades] = useState<number>(0);  // Aktuelle Woche
+  const [maxWeekTrades, setMaxWeekTrades] = useState<number>(0);          // Höchster Wert ever
 
-  // Berechne maximales Startkapital basierend auf Level
-  useEffect(() => {
-    const maxCapital = getMaxStartingCapital(userLevel);
-    setMaxStartingCapital(maxCapital);
-  }, [userLevel]);
 
 
+  //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   const rawRewards = [
     { level: 1, reward: 'NKE' },
@@ -82,7 +88,13 @@ const Game: React.FC = () => {
     { level: 19, reward: 'NFLX' },
   ];
 
+  //--------------------------------------------------------------------------------USE EFFECT--------------------------------------------------------------------------------------------
 
+  // Berechne maximales Startkapital basierend auf Level
+  useEffect(() => {
+    const maxCapital = getMaxStartingCapital(userLevel);
+    setMaxStartingCapital(maxCapital);
+  }, [userLevel]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -109,6 +121,20 @@ const Game: React.FC = () => {
     return reward ? reward.level : null;
   };
 
+  // useEffect um holdShares automatisch zu aktualisieren wenn stockHoldings sich ändern
+  useEffect(() => {
+    const currentHoldShares = calculateHoldShares();
+    if (holdShares !== currentHoldShares && stockHoldings.length > 0) {
+      console.log(`🔄 HoldShares sync: ${holdShares} -> ${currentHoldShares}`);
+      updateHoldShares(currentHoldShares);
+    }
+  }, [stockHoldings]);
+
+  // Funktion um die Anzahl verschiedener Aktien zu berechnen
+  const calculateHoldShares = (): number => {
+    return stockHoldings.filter(holding => holding.shares > 0).length;
+  };
+
 
   const getMaxStartingCapital = (userLevel: number): number => {
     // Grundkapital: 1000€
@@ -126,22 +152,217 @@ const Game: React.FC = () => {
     return baseCapital + levelBonus + fiveLevelBonus + tenLevelBonus;
   };
 
-  // Beispiel für bessere Übersicht - optional
-  const getCapitalBreakdown = (userLevel: number) => {
-    const baseCapital = 1000;
-    const levelBonus = userLevel * 500;
-    const fiveLevelBonus = Math.floor(userLevel / 5) * 1000;
-    const tenLevelBonus = Math.floor(userLevel / 10) * 5000;
-    const total = baseCapital + levelBonus + fiveLevelBonus + tenLevelBonus;
 
-    return {
-      baseCapital,
-      levelBonus,
-      fiveLevelBonus,
-      tenLevelBonus,
-      total
-    };
+  // Stats laden
+  const loadUserStats = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch('http://localhost:3000/api/stats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (response.ok) {
+        const stats = await response.json();
+        setPercentageProfit(stats.percentageProfit);
+        setMaxWeekTrades(stats.weekTrades || 0);  // Lade den Rekord
+        setTotalStocksBought(stats.totalStocksBought);
+        setTotalStocksSelled(stats.totalStocksSelled);
+        setHoldShares(stats.holdShares);
+
+        console.log(`📊 Geladener WeekTrades-Rekord: ${stats.weekTrades}`);
+      }
+    } catch (error) {
+      console.error('Stats loading error:', error);
+    }
   };
+
+
+  const updatePercentageProfit = async (newPercentage: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const currentStats = await fetch('http://localhost:3000/api/stats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => res.json());
+
+      // Frontend-Logik: Nur senden wenn höher als aktueller Wert
+      if (percentageProfit === null || newPercentage > percentageProfit) {
+        await fetch('http://localhost:3000/api/stats', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            weekTrades: currentStats.weekTrades, // Nur wenn undefined
+            totalStocksBought: currentStats.totalStocksBought,  // Nur wenn undefined
+            totalStocksSelled: currentStats.totalStocksSelled,  // Nur wenn undefined
+            holdShares: currentStats.holdShares,                // Nur wenn undefined
+            percentageProfit: newPercentage
+          })
+        });
+
+        // Lokalen State aktualisieren
+        setPercentageProfit(newPercentage);
+      }
+    } catch (error) {
+      console.error('Stats update error:', error);
+    }
+  };
+
+  const updateWeekTradesIfHigher = async (newWeekTrades: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      // Aktuellen DB-Wert lesen
+      const currentStats = await fetch('http://localhost:3000/api/stats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => res.json());
+
+      const currentDbWeekTrades = currentStats.weekTrades || 0;
+
+      console.log(`🔍 DB weekTrades: ${currentDbWeekTrades}, Current week: ${newWeekTrades}`);
+
+      // NUR updaten wenn die aktuelle Woche höher ist als der DB-Rekord
+      if (newWeekTrades > currentDbWeekTrades) {
+        await fetch('http://localhost:3000/api/stats', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            weekTrades: newWeekTrades,  // Neuer Rekord!
+            totalStocksBought: currentStats.totalStocksBought,
+            totalStocksSelled: currentStats.totalStocksSelled,
+            holdShares: currentStats.holdShares,
+            percentageProfit: currentStats.percentageProfit
+          })
+        });
+
+        setMaxWeekTrades(newWeekTrades);
+        console.log(`🎉 NEUER WEEK-TRADES REKORD: ${currentDbWeekTrades} -> ${newWeekTrades}`);
+      } else {
+        console.log(`⏭️ Kein neuer Rekord: ${newWeekTrades} <= ${currentDbWeekTrades}`);
+      }
+
+    } catch (error) {
+      console.error('WeekTrades update error:', error);
+    }
+  };
+
+
+  const updateHoldShares = async (newHoldShares: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      // Aktuellen DB-Wert lesen
+      const currentStats = await fetch('http://localhost:3000/api/stats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => res.json());
+
+      const currentDbHoldShares = currentStats.holdShares || 0;
+
+      console.log(`🔍 DB holdShares: ${currentDbHoldShares}, Neue holdShares: ${newHoldShares}`);
+
+      // Nur speichern wenn höher als DB-Wert
+      if (newHoldShares > currentDbHoldShares) {
+        await fetch('http://localhost:3000/api/stats', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            weekTrades: currentStats.weekTrades,
+            totalStocksBought: currentStats.totalStocksBought,
+            totalStocksSelled: currentStats.totalStocksSelled,
+            holdShares: newHoldShares,
+            percentageProfit: currentStats.percentageProfit
+          })
+        });
+
+        console.log(`✅ Hold Shares aktualisiert: ${currentDbHoldShares} -> ${newHoldShares}`);
+        setHoldShares(newHoldShares);
+      } else {
+        console.log(`⏭️ Hold Shares NICHT aktualisiert: ${newHoldShares} <= ${currentDbHoldShares}`);
+        // Lokalen State mit höherem DB-Wert synchronisieren
+        setHoldShares(Math.max(currentDbHoldShares, newHoldShares));
+      }
+
+    } catch (error) {
+      console.error('HoldShares update error:', error);
+    }
+  };
+
+
+  // Separate Update-Funktionen für totalStocksBought und totalStocksSelled
+  const updateTotalStocksBought = async (newTotal: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const currentStats = await fetch('http://localhost:3000/api/stats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => res.json());
+
+      await fetch('http://localhost:3000/api/stats', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          weekTrades: currentStats.weekTrades,
+          totalStocksBought: newTotal,
+          totalStocksSelled: currentStats.totalStocksSelled,
+          holdShares: currentStats.holdShares,
+          percentageProfit: currentStats.percentageProfit
+        })
+      });
+
+      console.log(`✅ TotalStocksBought aktualisiert: ${newTotal}`);
+    } catch (error) {
+      console.error('TotalStocksBought update error:', error);
+    }
+  };
+
+  const updateTotalStocksSelled = async (newTotal: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const currentStats = await fetch('http://localhost:3000/api/stats', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(res => res.json());
+
+      await fetch('http://localhost:3000/api/stats', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          weekTrades: currentStats.weekTrades,
+          totalStocksBought: currentStats.totalStocksBought,
+          totalStocksSelled: newTotal,
+          holdShares: currentStats.holdShares,
+          percentageProfit: currentStats.percentageProfit
+        })
+      });
+
+      console.log(`✅ TotalStocksSelled aktualisiert: ${newTotal}`);
+    } catch (error) {
+      console.error('TotalStocksSelled update error:', error);
+    }
+  };
+
+
 
   // In deiner handleCapitalSubmit Funktion
   const handleCapitalSubmit = () => {
@@ -164,7 +385,10 @@ const Game: React.FC = () => {
     setTempCapitalInput('');
   };
 
-
+  // useEffect für Stats laden
+  useEffect(() => {
+    loadUserStats();
+  }, []);
 
   // useEffect für Finish-Überprüfung
   useEffect(() => {
@@ -182,6 +406,8 @@ const Game: React.FC = () => {
           percentageChange,
           profit
         });
+
+        updatePercentageProfit(percentageChange);
 
         setGameFinished(true);
         setShowFinishPopup(true);
@@ -295,8 +521,6 @@ const Game: React.FC = () => {
     const startYearIndex = stockData.findIndex(item =>
       item.date.getFullYear() === TRADING_START_YEAR
     );
-
-    console.log(stockData)
 
     if (startYearIndex === -1) {
       console.error(`Startjahr ${TRADING_START_YEAR} nicht in den Daten gefunden`);
@@ -458,14 +682,45 @@ const Game: React.FC = () => {
     const fee = calculateBuyFee(shares);
     const totalCost = subtotal + fee;
 
+    const newTotalBought = (totalStocksBought || 0) + shares;
+    setTotalStocksBought(newTotalBought);
+    updateTotalStocksBought(newTotalBought); // Sofort in DB speichern
+
+    // Week Trades Logik korrigieren
+    if (yearlyWeekOffset === lastTradingWeek) {
+      // Gleiche Woche - Trades zur aktuellen Woche addieren
+      const newCurrentWeekTrades = currentWeekTrades + shares;
+      setCurrentWeekTrades(newCurrentWeekTrades);
+
+      console.log(`Current Week Trades: ${newCurrentWeekTrades}`);
+
+      // Nur DB updaten wenn es ein neuer Rekord ist
+      updateWeekTradesIfHigher(newCurrentWeekTrades);
+
+    } else {
+      // Neue Woche erkannt - aktuelle Woche zurücksetzen
+      console.log(`Wechsel von Woche ${lastTradingWeek} zu ${yearlyWeekOffset}`);
+      setLastTradingWeek(yearlyWeekOffset);
+      setCurrentWeekTrades(shares);  // Neue Woche startet mit shares
+
+      console.log(`Neue Woche gestartet mit: ${shares} trades`);
+
+      // Auch bei neuer Woche prüfen ob es ein Rekord ist
+      updateWeekTradesIfHigher(shares);
+    }
+
+    //updateTotalStocks(); // Aktualisiere die Gesamtanzahl der gekauften Aktien
 
     if (shares > 0 && totalCost <= currentBalance) {
       setCurrentBalance(prev => prev - totalCost);
+
+      let oldHoldShares = calculateHoldShares(); // Vor dem Trade berechnen
 
       setStockHoldings(prev => {
         const existingHolding = prev.find(h => h.symbol === selectedStock);
 
         if (existingHolding) {
+          // Nachkauf - keine neue Diversifikation
           const totalShares = existingHolding.shares + shares;
           const totalValue = (existingHolding.shares * existingHolding.averagePrice) + subtotal;
           const newAveragePrice = totalValue / totalShares;
@@ -476,18 +731,24 @@ const Game: React.FC = () => {
               : h
           );
         } else {
-          return [...prev, { symbol: selectedStock, shares, averagePrice: currentPrice }];
+          // Neue Aktie - Diversifikation erhöht sich
+          const newHoldings = [...prev, { symbol: selectedStock, shares, averagePrice: currentPrice }];
+          const newHoldShares = newHoldings.length;
+
+          console.log(`📊 Neue Aktie hinzugefügt: ${oldHoldShares} -> ${newHoldShares}`);
+          updateHoldShares(newHoldShares); // Nur bei neuer Aktie updaten
+
+          return newHoldings;
         }
       });
 
-      // ✅ WICHTIG: Trading-Status IMMER aktualisieren
       setHasTraded(true);
-      const currentOffset = yearlyWeekOffset;
     }
 
     setShowBuyPopup(false);
     setTempShareAmount('');
   };
+
 
 
   const handleSellSubmit = (): void => {
@@ -504,6 +765,10 @@ const Game: React.FC = () => {
     const totalRevenue = subtotal - fee;
     const currentHolding = getCurrentStockHolding();
 
+    const newTotalSelled = (totalStocksSelled || 0) + shares;
+    setTotalStocksSelled(newTotalSelled);
+    updateTotalStocksSelled(newTotalSelled); // Sofort in DB speichern
+
     if (shares > 0 && currentHolding && shares <= currentHolding.shares) {
       setCurrentBalance(prev => prev + totalRevenue);
 
@@ -519,9 +784,7 @@ const Game: React.FC = () => {
         }).filter(Boolean) as StockHolding[];
       });
 
-      // ✅ WICHTIG: Trading-Status IMMER aktualisieren
       setHasTraded(true);
-      const currentOffset = yearlyWeekOffset;
     }
 
     setShowSellPopup(false);
@@ -594,15 +857,6 @@ const Game: React.FC = () => {
   const currentPrice = getCurrentStockPrice();
   const currentHolding = getCurrentStockHolding();
   const displayData = getShiftedData();
-
-  console.log('DEBUG:', {
-    dataLength: displayData.length,
-    firstPrice: displayData[0]?.close,
-    lastPrice: displayData[displayData.length - 1]?.close,
-    firstDate: displayData[0]?.dateString,
-    lastDate: displayData[displayData.length - 1]?.dateString
-  });
-
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
