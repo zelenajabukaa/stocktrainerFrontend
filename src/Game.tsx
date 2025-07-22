@@ -9,6 +9,7 @@ import type { StockDataPoint, GroupedStockData } from './utils/csvParser';
 import type { StockInfo } from './utils/stockLoader';
 import styles from './Game.module.css';
 import Header from './components/Header';
+import PurchaseSuccessEffect from './components/PurchaseSuccessEffect';
 
 interface StockHolding {
   symbol: string;
@@ -43,6 +44,8 @@ const Game: React.FC = () => {
   const [hasTraded, setHasTraded] = useState<boolean>(false);
   const [firstTradingWeek, setFirstTradingWeek] = useState<number>(Infinity);
   const [lastTradingWeek, setLastTradingWeek] = useState<number>(Infinity);
+  const [showPurchaseEffect, setShowPurchaseEffect] = useState(false);
+  const [lastPurchase, setLastPurchase] = useState({ symbol: '', shares: 0 });
 
   // Rundensystem States
   const [gameFinished, setGameFinished] = useState<boolean>(false);
@@ -59,13 +62,14 @@ const Game: React.FC = () => {
   const [maxStartingCapital, setMaxStartingCapital] = useState<number>(1000);
   const [userLevel, setUserLevel] = useState<number>(0);
   const [percentageProfit, setPercentageProfit] = useState<number | null>(null);
-  const [allTimeWeekTrades, setAllTimeWeekTrades] = useState<number | null>(null);
   const [totalStocksBought, setTotalStocksBought] = useState<number | null>(null);
   const [totalStocksSelled, setTotalStocksSelled] = useState<number | null>(null);
   const [holdShares, setHoldShares] = useState<number | null>(null);
   const [currentWeekTrades, setCurrentWeekTrades] = useState<number>(0);  // Aktuelle Woche
   const [maxWeekTrades, setMaxWeekTrades] = useState<number>(0);          // Höchster Wert ever
 
+
+  const [weekTrades, setWeekTrades] = useState<number>(0);
 
 
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -707,45 +711,38 @@ const Game: React.FC = () => {
     const fee = calculateBuyFee(shares);
     const totalCost = subtotal + fee;
 
-    const newTotalBought = (totalStocksBought || 0) + shares;
-    setTotalStocksBought(newTotalBought);
-    updateTotalStocksBought(newTotalBought); // Sofort in DB speichern
-
-    // Week Trades Logik korrigieren
+    // Week Trades Logik - nur State setzen, NICHT DB updaten
     if (yearlyWeekOffset === lastTradingWeek) {
-      // Gleiche Woche - Trades zur aktuellen Woche addieren
       const newCurrentWeekTrades = currentWeekTrades + shares;
       setCurrentWeekTrades(newCurrentWeekTrades);
-
       console.log(`Current Week Trades: ${newCurrentWeekTrades}`);
-
-      // Nur DB updaten wenn es ein neuer Rekord ist
-      updateWeekTradesIfHigher(newCurrentWeekTrades);
-
     } else {
-      // Neue Woche erkannt - aktuelle Woche zurücksetzen
       console.log(`Wechsel von Woche ${lastTradingWeek} zu ${yearlyWeekOffset}`);
       setLastTradingWeek(yearlyWeekOffset);
-      setCurrentWeekTrades(shares);  // Neue Woche startet mit shares
-
+      setCurrentWeekTrades(shares);
       console.log(`Neue Woche gestartet mit: ${shares} trades`);
-
-      // Auch bei neuer Woche prüfen ob es ein Rekord ist
-      updateWeekTradesIfHigher(shares);
     }
-
-    //updateTotalStocks(); // Aktualisiere die Gesamtanzahl der gekauften Aktien
 
     if (shares > 0 && totalCost <= currentBalance) {
       setCurrentBalance(prev => prev - totalCost);
 
-      let oldHoldShares = calculateHoldShares(); // Vor dem Trade berechnen
+      // ALLE Stats-Updates INNERHALB des Trading-Blocks
+      const newTotalBought = (totalStocksBought || 0) + shares;
+      setTotalStocksBought(newTotalBought);
+      updateTotalStocksBought(newTotalBought);
+
+      // Week Trades DB-Update HIER (geschützt im Trading-Block)
+      const currentWeekTradesValue = yearlyWeekOffset === lastTradingWeek
+        ? currentWeekTrades + shares
+        : shares;
+      updateWeekTradesIfHigher(currentWeekTradesValue);
+
+      let oldHoldShares = calculateHoldShares();
 
       setStockHoldings(prev => {
         const existingHolding = prev.find(h => h.symbol === selectedStock);
 
         if (existingHolding) {
-          // Nachkauf - keine neue Diversifikation
           const totalShares = existingHolding.shares + shares;
           const totalValue = (existingHolding.shares * existingHolding.averagePrice) + subtotal;
           const newAveragePrice = totalValue / totalShares;
@@ -756,12 +753,11 @@ const Game: React.FC = () => {
               : h
           );
         } else {
-          // Neue Aktie - Diversifikation erhöht sich
           const newHoldings = [...prev, { symbol: selectedStock, shares, averagePrice: currentPrice }];
           const newHoldShares = newHoldings.length;
 
           console.log(`📊 Neue Aktie hinzugefügt: ${oldHoldShares} -> ${newHoldShares}`);
-          updateHoldShares(newHoldShares); // Nur bei neuer Aktie updaten
+          updateHoldShares(newHoldShares);
 
           return newHoldings;
         }
@@ -772,8 +768,12 @@ const Game: React.FC = () => {
 
     setShowBuyPopup(false);
     setTempShareAmount('');
-  };
 
+    // Event für Quest-System mit ausreichender Verzögerung
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('statsUpdated'));
+    }, 3000);
+  };
 
 
   const handleSellSubmit = (): void => {
@@ -814,6 +814,10 @@ const Game: React.FC = () => {
 
     setShowSellPopup(false);
     setTempShareAmount('');
+
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('statsUpdated'));
+    }, 500);
   };
 
 
