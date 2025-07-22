@@ -72,15 +72,4 @@ export const fetchUserProfile = async (): Promise<User | null> => {
     }
 };
 
-export const fetchUserQuests = async (userId: number): Promise<Quest[]> => {
-    try {
-        const response = await apiCall(`${BASE_URL}/users/${userId}/quests`);
-        if (!response) return [];
 
-        const quests = await response.json();
-        return quests;
-    } catch (error) {
-        console.error("Fehler beim Abrufen der Quests:", error);
-        return [];
-    }
-};

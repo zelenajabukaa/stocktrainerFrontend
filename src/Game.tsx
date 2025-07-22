@@ -176,6 +176,7 @@ const Game: React.FC = () => {
         setHoldShares(stats.holdShares);
 
         console.log(`📊 Geladener WeekTrades-Rekord: ${stats.weekTrades}`);
+        console.log(`📊 TOTALE STOCKS BOUGHT GELADEN: ${stats.totalStocksBought}`);
       }
     } catch (error) {
       console.error('Stats loading error:', error);
@@ -698,7 +699,7 @@ const Game: React.FC = () => {
     return subtotal * (stockInfo.sellFee / 100);
   };
 
-  const handleBuySubmit = (): void => {
+  const handleBuySubmit = async (): Promise<void> => {
     if (!isTradingAllowed()) return;
 
     const buySound = new Audio('/sounds/buy2.mp3');
@@ -711,31 +712,28 @@ const Game: React.FC = () => {
     const fee = calculateBuyFee(shares);
     const totalCost = subtotal + fee;
 
-    // Week Trades Logik - nur State setzen, NICHT DB updaten
-    if (yearlyWeekOffset === lastTradingWeek) {
-      const newCurrentWeekTrades = currentWeekTrades + shares;
-      setCurrentWeekTrades(newCurrentWeekTrades);
-      console.log(`Current Week Trades: ${newCurrentWeekTrades}`);
-    } else {
-      console.log(`Wechsel von Woche ${lastTradingWeek} zu ${yearlyWeekOffset}`);
-      setLastTradingWeek(yearlyWeekOffset);
-      setCurrentWeekTrades(shares);
-      console.log(`Neue Woche gestartet mit: ${shares} trades`);
-    }
-
     if (shares > 0 && totalCost <= currentBalance) {
       setCurrentBalance(prev => prev - totalCost);
 
       // ALLE Stats-Updates INNERHALB des Trading-Blocks
       const newTotalBought = (totalStocksBought || 0) + shares;
       setTotalStocksBought(newTotalBought);
-      updateTotalStocksBought(newTotalBought);
+      console.log("TOTALE AKTIEN GERADE NACH KAUF: ", newTotalBought);
+      await updateTotalStocksBought(newTotalBought);
 
-      // Week Trades DB-Update HIER (geschützt im Trading-Block)
-      const currentWeekTradesValue = yearlyWeekOffset === lastTradingWeek
-        ? currentWeekTrades + shares
-        : shares;
-      updateWeekTradesIfHigher(currentWeekTradesValue);
+      // Week Trades Logic
+      if (yearlyWeekOffset === lastTradingWeek) {
+        const newCurrentWeekTrades = currentWeekTrades + shares;
+        setCurrentWeekTrades(newCurrentWeekTrades);
+        console.log(`Current Week Trades: ${newCurrentWeekTrades}`);
+        await updateWeekTradesIfHigher(newCurrentWeekTrades);
+      } else {
+        console.log(`Wechsel von Woche ${lastTradingWeek} zu ${yearlyWeekOffset}`);
+        setLastTradingWeek(yearlyWeekOffset);
+        setCurrentWeekTrades(shares);
+        console.log(`Neue Woche gestartet mit: ${shares} trades`);
+        await updateWeekTradesIfHigher(shares);
+      }
 
       let oldHoldShares = calculateHoldShares();
 
@@ -769,14 +767,11 @@ const Game: React.FC = () => {
     setShowBuyPopup(false);
     setTempShareAmount('');
 
-    // Event für Quest-System mit ausreichender Verzögerung
-    setTimeout(() => {
-      window.dispatchEvent(new CustomEvent('statsUpdated'));
-    }, 3000);
+    // Event für Quest-System: Jetzt direkt nach Stats-Update dispatchen
+    window.dispatchEvent(new CustomEvent('statsUpdated'));
   };
 
-
-  const handleSellSubmit = (): void => {
+  const handleSellSubmit = async (): Promise<void> => {
     if (!isTradingAllowed()) return;
 
     const buySound = new Audio('/sounds/buy.mp3');
@@ -792,7 +787,7 @@ const Game: React.FC = () => {
 
     const newTotalSelled = (totalStocksSelled || 0) + shares;
     setTotalStocksSelled(newTotalSelled);
-    updateTotalStocksSelled(newTotalSelled); // Sofort in DB speichern
+    await updateTotalStocksSelled(newTotalSelled); // Sofort in DB speichern
 
     if (shares > 0 && currentHolding && shares <= currentHolding.shares) {
       setCurrentBalance(prev => prev + totalRevenue);
@@ -815,9 +810,8 @@ const Game: React.FC = () => {
     setShowSellPopup(false);
     setTempShareAmount('');
 
-    setTimeout(() => {
-      window.dispatchEvent(new CustomEvent('statsUpdated'));
-    }, 500);
+    // Event für Quest-System: Jetzt direkt nach Stats-Update dispatchen
+    window.dispatchEvent(new CustomEvent('statsUpdated'));
   };
 
 

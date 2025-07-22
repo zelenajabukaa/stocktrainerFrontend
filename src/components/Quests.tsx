@@ -71,6 +71,7 @@ const Quests: React.FC = () => {
   const [quests, setQuests] = useState<Quest[]>([]);
   const [completedQuestIds, setCompletedQuestIds] = useState<string[]>([]);
   const [userStats, setUserStats] = useState<any>(null);
+  const [headerKey, setHeaderKey] = useState(0);
 
   // Quests laden
   useEffect(() => {
@@ -110,9 +111,10 @@ const Quests: React.FC = () => {
         return res.json();
       })
       .then(data => {
-        const ids = data.map((entry: { quest_id: string }) => entry.quest_id);
-        console.log('Erledigte Quests:', ids);
-        setCompletedQuestIds(ids);
+        const ids = data.map((entry: { quest_id: string }) => entry.quest_id as string);
+        const uniqueIds = [...new Set(ids)] as string[];
+        setCompletedQuestIds(uniqueIds);
+        console.log('Erledigte Quests:', uniqueIds);
       })
       .catch(err => {
         console.error('Fehler beim Laden der erledigten Quests:', err);
@@ -143,9 +145,26 @@ const Quests: React.FC = () => {
     loadUserStats();
 
     // Event Listener für Stats-Updates aus Game.tsx
+    // Entferne das unnötige Stats-Reload:
     const handleStatsUpdate = () => {
-      loadUserStats();
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      fetch('http://localhost:3000/api/me/completed-quests', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+        .then(res => res.json())
+        .then(data => {
+          const ids = data.map((entry: { quest_id: string }) => entry.quest_id as string);
+          const uniqueIds = [...new Set(ids)] as string[];
+          setCompletedQuestIds(uniqueIds);
+          console.log('Quest-IDs aktualisiert (unique):', uniqueIds);
+        })
+        .catch(error => {
+          console.error('Fehler beim Quest-Update:', error);
+        });
     };
+
+
 
     window.addEventListener('statsUpdated', handleStatsUpdate);
     return () => window.removeEventListener('statsUpdated', handleStatsUpdate);
@@ -173,11 +192,27 @@ const Quests: React.FC = () => {
   }, [quests, userStats, completedQuestIds]);
 
   // Mehrere Quests als abgeschlossen markieren
+  // KORRIGIERT in Quests.tsx:
+  const reloadCompletedQuests = () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch('http://localhost:3000/api/me/completed-quests', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => res.json())
+      .then(data => {
+        const ids = data.map((entry: { quest_id: string }) => entry.quest_id as string);
+        const uniqueIds = [...new Set(ids)] as string[];
+        setCompletedQuestIds(uniqueIds);
+      });
+  };
+
   const markMultipleQuestsCompleted = async (questIds: string[]) => {
     const token = localStorage.getItem('token');
     if (!token) return;
 
     try {
+      // NUR Quest-Completion - keine Stats-Manipulation
       await Promise.all(
         questIds.map(questId =>
           fetch('http://localhost:3000/api/me/complete-quest', {
@@ -191,17 +226,24 @@ const Quests: React.FC = () => {
         )
       );
 
-      // Lokalen State aktualisieren
-      setCompletedQuestIds(prev => {
-        const newIds = [...prev, ...questIds];
-        return [...new Set(newIds)]; // Duplikate entfernen
-      });
+      // Lokalen Quest-State aktualisieren
+      setCompletedQuestIds(prev => [...new Set([...prev, ...questIds])]);
 
-      console.log(`🎉 ${questIds.length} neue Quests abgeschlossen!`);
+      // Nach Claim sofort neu laden
+      reloadCompletedQuests();
+
+      // Header nach 2 Sekunden neu rendern
+      setTimeout(() => {
+        setHeaderKey(prev => prev + 1);
+      }, 2000);
+
+      console.log(` ${questIds.length} neue Quests abgeschlossen!`);
     } catch (error) {
       console.error('Fehler beim Abschließen der Quests:', error);
     }
   };
+
+
 
   // KORRIGIERTE Hilfsfunktion: Sequenzielle Quest-Anzeige
   function getSequentialQuestsPerGroup(quests: Quest[], completed: string[]): Quest[] {
@@ -251,7 +293,7 @@ const Quests: React.FC = () => {
 
   return (
     <div className={styles.questsContainer}>
-      <Header />
+      <Header key={headerKey} />
 
       <div className={styles.questsTitle}>Quests</div>
 
