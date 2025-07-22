@@ -5,8 +5,10 @@
   color: #e2e8f0;
   font-family: 'Rajdhani', 'Segoe UI', sans-serif;
   position: relative;
-  overflow-x: auto; /* Horizontales Scrolling aktivieren */
-  overflow-y: hidden; /* Vertikales Scrolling deaktivieren */
+  overflow-x: auto;
+  /* Horizontales Scrolling aktivieren */
+  overflow-y: hidden;
+  /* Vertikales Scrolling deaktivieren */
   padding-top: 80px;
   padding-bottom: 50px;
 }
@@ -18,7 +20,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: 
+  background:
     radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 30%),
     radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 30%),
     radial-gradient(circle at 50% 50%, rgba(30, 64, 175, 0.05) 0%, transparent 50%);
@@ -66,7 +68,8 @@
   margin: 0 auto;
   position: relative;
   z-index: 10;
-  transform: translateZ(0); /* Für bessere Performance */
+  transform: translateZ(0);
+  /* Für bessere Performance */
 }
 
 /* LEVEL TRACK STYLING */
@@ -77,10 +80,10 @@
   left: 0;
   width: 100%;
   height: 8px;
-  background: linear-gradient(90deg, 
-    rgba(30, 64, 175, 0.8) 0%, 
-    rgba(59, 130, 246, 0.8) 50%, 
-    rgba(139, 92, 246, 0.8) 100%);
+  background: linear-gradient(90deg,
+      rgba(30, 64, 175, 0.8) 0%,
+      rgba(59, 130, 246, 0.8) 50%,
+      rgba(139, 92, 246, 0.8) 100%);
   border-radius: 4px;
   box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
   z-index: -1;
@@ -97,7 +100,7 @@
   transform: translateY(0);
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   backdrop-filter: blur(10px);
-  box-shadow: 
+  box-shadow:
     0 5px 15px rgba(0, 0, 0, 0.3),
     inset 0 0 15px rgba(255, 255, 255, 0.05);
   min-width: 220px;
@@ -110,7 +113,7 @@
   composes: levelBox;
   background: linear-gradient(135deg, rgba(30, 64, 175, 0.6) 0%, rgba(55, 48, 163, 0.7) 100%);
   border: 3px solid rgba(91, 143, 249, 0.9);
-  box-shadow: 
+  box-shadow:
     0 0 35px rgba(59, 130, 246, 0.8),
     0 8px 30px rgba(0, 0, 0, 0.5),
     inset 0 0 25px rgba(255, 255, 255, 0.15),
@@ -121,7 +124,7 @@
 .levelBox:hover {
   transform: translateY(-8px) scale(1.03);
   border-color: rgba(91, 143, 249, 0.7);
-  box-shadow: 
+  box-shadow:
     0 10px 25px rgba(0, 0, 0, 0.4),
     0 0 30px rgba(59, 130, 246, 0.6),
     inset 0 0 20px rgba(255, 255, 255, 0.1);
@@ -135,20 +138,20 @@
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(135deg, 
-    rgba(30, 64, 175, 0) 0%, 
-    rgba(59, 130, 246, 0.3) 50%, 
-    rgba(139, 92, 246, 0.5) 100%);
+  background: linear-gradient(135deg,
+      rgba(30, 64, 175, 0) 0%,
+      rgba(59, 130, 246, 0.3) 50%,
+      rgba(139, 92, 246, 0.5) 100%);
   border-radius: 17px;
   z-index: -1;
 }
 
 /* VERSTÄRKTES GLOW FÜR FREIGESCHALTETE LEVEL */
 .levelBoxUnlocked::before {
-  background: linear-gradient(135deg, 
-    rgba(30, 64, 175, 0.7) 0%, 
-    rgba(59, 130, 246, 0.9) 50%, 
-    rgba(139, 92, 246, 1) 100%);
+  background: linear-gradient(135deg,
+      rgba(30, 64, 175, 0.7) 0%,
+      rgba(59, 130, 246, 0.9) 50%,
+      rgba(139, 92, 246, 1) 100%);
   box-shadow: 0 0 40px rgba(59, 130, 246, 0.6);
 }
 
@@ -287,27 +290,27 @@
   .battlepassTitle {
     font-size: 2.5rem;
   }
-  
+
   .levelBox {
     min-width: 180px;
     padding: 15px;
   }
-  
+
   .avatarImg {
     width: 80px;
     height: 80px;
   }
-  
+
   .reward {
     font-size: 1.1rem;
     min-height: 50px;
   }
-  
+
   .levelsRowFull {
     padding: 20px 30px;
     gap: 20px;
   }
-  
+
   .levelsRowFull::before {
     top: 60px;
     height: 6px;
@@ -319,35 +322,35 @@
     font-size: 2rem;
     letter-spacing: 1px;
   }
-  
+
   .levelBox {
     min-width: 160px;
     padding: 12px;
   }
-  
+
   .levelNumber {
     font-size: 1.1rem;
   }
-  
+
   .avatarImg {
     width: 70px;
     height: 70px;
   }
-  
+
   .reward {
     font-size: 0.95rem;
     min-height: 45px;
   }
-  
+
   .xp {
     font-size: 0.9rem;
   }
-  
+
   .levelsRowFull {
     padding: 20px 15px;
     gap: 15px;
   }
-  
+
   .levelsRowFull::before {
     top: 55px;
     height: 5px;
@@ -359,7 +362,7 @@
   position: relative;
   transform: scale(1.1);
   z-index: 4;
-  box-shadow: 
+  box-shadow:
     0 0 40px rgba(59, 130, 246, 0.9),
     0 15px 35px rgba(0, 0, 0, 0.6),
     inset 0 0 30px rgba(255, 255, 255, 0.25);
@@ -383,9 +386,17 @@
 
 /* ANIMATIONS */
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 .levelBoxUnlocked {
@@ -398,11 +409,68 @@
 
 /* PULSING ANIMATION FÜR FREIGESCHALTETE LEVEL */
 @keyframes pulse {
-  0% { box-shadow: 0 0 35px rgba(59, 130, 246, 0.8), 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(255, 255, 255, 0.15), 0 0 60px rgba(139, 92, 246, 0.4); }
-  50% { box-shadow: 0 0 45px rgba(59, 130, 246, 1), 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(255, 255, 255, 0.2), 0 0 80px rgba(139, 92, 246, 0.6); }
-  100% { box-shadow: 0 0 35px rgba(59, 130, 246, 0.8), 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(255, 255, 255, 0.15), 0 0 60px rgba(139, 92, 246, 0.4); }
+  0% {
+    box-shadow: 0 0 35px rgba(59, 130, 246, 0.8), 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(255, 255, 255, 0.15), 0 0 60px rgba(139, 92, 246, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 45px rgba(59, 130, 246, 1), 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(255, 255, 255, 0.2), 0 0 80px rgba(139, 92, 246, 0.6);
+  }
+
+  100% {
+    box-shadow: 0 0 35px rgba(59, 130, 246, 0.8), 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(255, 255, 255, 0.15), 0 0 60px rgba(139, 92, 246, 0.4);
+  }
 }
 
 .levelBoxUnlocked {
   animation: float 3s ease-in-out infinite, pulse 2s ease-in-out infinite;
+}
+
+.successToast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #22c55e;
+  color: #fff;
+  padding: 18px 36px;
+  border-radius: 32px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  box-shadow: 0 4px 24px rgba(34, 197, 94, 0.18);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 1;
+  animation: fadeInOut 2s;
+}
+
+.successCheck {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.95);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.05);
+  }
+
+  80% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.95);
+  }
 }
