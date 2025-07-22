@@ -7,6 +7,7 @@ interface Friend {
   name: string;
   avatar: string;
   level: number;
+  status?: 'friend' | 'sent' | 'incoming' | 'none';
 }
 
 const Friends: React.FC = () => {
@@ -37,18 +38,21 @@ const Friends: React.FC = () => {
       .catch(console.error);
   }, [token]);
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-    try {
-      const res = await fetch(`http://localhost:3000/api/users/search?query=${encodeURIComponent(searchQuery)}`, {
+  // 🔁 Live-Suche: Suche automatisch bei Eingabe mit kleiner Verzögerung
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (!searchQuery.trim()) return setSearchResults([]);
+
+      fetch(`http://localhost:3000/api/users/search?query=${encodeURIComponent(searchQuery)}`, {
         headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
-      setSearchResults(data);
-    } catch (err) {
-      console.error('Fehler bei Suche', err);
-    }
-  };
+      })
+        .then(res => res.json())
+        .then(setSearchResults)
+        .catch(console.error);
+    }, 300); // 300ms Verzögerung
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery, token]);
 
   const handleSendRequest = async (receiverId: number) => {
     try {
@@ -103,7 +107,7 @@ const Friends: React.FC = () => {
       <Header />
       <h1 className={styles.friendsTitle}>Freunde</h1>
 
-      {/* 🔍 Suchleiste */}
+      {/* 🔍 Live-Suchfeld */}
       <div className={styles.searchContainer}>
         <input
           type="text"
@@ -111,23 +115,26 @@ const Friends: React.FC = () => {
           className={styles.searchInput}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
         />
-        <button onClick={handleSearch} className={styles.searchButton}>Suchen</button>
 
         {searchResults.length > 0 && (
           <ul className={styles.friendsList}>
             {searchResults.map(user => (
               <li key={user.id} className={styles.friendItem}>
-                <img src={user.avatar} alt={user.name} className={styles.avatar} />
                 <span className={styles.name}>{user.name}</span>
                 <span className={styles.level}>LvL {user.level}</span>
                 <button
-                  disabled={sentRequests.includes(user.id)}
+                  disabled={user.status !== 'none'}
                   className={styles.addFriendBtn}
                   onClick={() => handleSendRequest(user.id)}
                 >
-                  {sentRequests.includes(user.id) ? 'Gesendet' : 'Anfrage senden'}
+                  {user.status === 'friend'
+                    ? 'Bereits befreundet'
+                    : user.status === 'sent'
+                    ? 'Gesendet'
+                    : user.status === 'incoming'
+                    ? 'Antwort ausstehend'
+                    : 'Anfrage senden'}
                 </button>
               </li>
             ))}
@@ -154,41 +161,25 @@ const Friends: React.FC = () => {
 
         {activeTab === 'freunde' && (
           <ul className={styles.friendsList}>
-            {[...friends]
-              .sort((a, b) => b.level - a.level)
-              .map(friend => (
-                <li key={friend.id} className={styles.friendItem}>
-                  <img
-                    src={friend.avatar}
-                    alt={friend.name}
-                    className={styles.avatar}
-                    onClick={() => handleProfileClick(friend.id)}
-                  />
-                  <span className={styles.name} onClick={() => handleProfileClick(friend.id)}>
-                    {friend.name}
-                  </span>
-                  <span className={styles.level}>LvL {friend.level}</span>
-                </li>
-              ))}
+            {[...friends].sort((a, b) => b.level - a.level).map(friend => (
+              <li key={friend.id} className={styles.friendItem} onClick={() => handleProfileClick(friend.id)} style={{ cursor: 'pointer' }}>
+                <span className={styles.name}>{friend.name}</span>
+                <span className={styles.level}>LvL {friend.level}</span>
+              </li>
+            ))}
           </ul>
         )}
 
         {activeTab === 'anfragen' && (
           <ul className={styles.friendsList}>
             {requests.map(request => (
-              <li key={request.id} className={styles.friendItem}>
-                <img
-                  src={request.avatar}
-                  alt={request.name}
-                  className={styles.avatar}
-                  onClick={() => handleProfileClick(request.id)}
-                />
-                <span className={styles.name} onClick={() => handleProfileClick(request.id)}>
+              <li key={request.id} className={styles.friendItem} onClick={() => handleProfileClick(request.id)} style={{ cursor: 'pointer' }}>
+                <span className={styles.name}>
                   {request.name} <span className={styles.levelSmall}>LvL {request.level}</span>
                 </span>
                 <div className={styles.requestButtons}>
-                  <button onClick={() => handleAccept(request.id)} className={styles.acceptBtn}>Ja</button>
-                  <button onClick={() => handleDecline(request.id)} className={styles.declineBtn}>Nein</button>
+                  <button onClick={e => { e.stopPropagation(); handleAccept(request.id); }} className={styles.acceptBtn}>Ja</button>
+                  <button onClick={e => { e.stopPropagation(); handleDecline(request.id); }} className={styles.declineBtn}>Nein</button>
                 </div>
               </li>
             ))}
