@@ -67,9 +67,8 @@
   min-width: 100%;
   margin: 0 auto;
   position: relative;
-  z-index: 10;
-  transform: translateZ(0);
-  /* Für bessere Performance */
+  z-index: 9;
+  transform: translateZ(0); /* Für bessere Performance */
 }
 
 /* LEVEL TRACK STYLING */
