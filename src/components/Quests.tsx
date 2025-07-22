@@ -11,9 +11,66 @@ interface Quest {
   needed_amount: number;
 }
 
+// Quest-Completion-Check basierend auf Stats
+const checkQuestCompletion = (quest: Quest, stats: any): boolean => {
+  switch (quest.id) {
+    // Activity Quests (weekTrades)
+    case 'activity_1': return stats.weekTrades >= 2;
+    case 'activity_2': return stats.weekTrades >= 10;
+    case 'activity_3': return stats.weekTrades >= 25;
+    case 'activity_4': return stats.weekTrades >= 50;
+    case 'activity_5': return stats.weekTrades >= 100;
+    case 'activity_6': return stats.weekTrades >= 175;
+    case 'activity_7': return stats.weekTrades >= 350;
+    case 'activity_8': return stats.weekTrades >= 500;
+
+    // Buy Quests (totalStocksBought)
+    case 'buy_1': return stats.totalStocksBought >= 1;
+    case 'buy_2': return stats.totalStocksBought >= 10;
+    case 'buy_3': return stats.totalStocksBought >= 50;
+    case 'buy_4': return stats.totalStocksBought >= 100;
+    case 'buy_5': return stats.totalStocksBought >= 500;
+    case 'buy_6': return stats.totalStocksBought >= 1000;
+    case 'buy_7': return stats.totalStocksBought >= 7500;
+    case 'buy_8': return stats.totalStocksBought >= 15000;
+    case 'buy_9': return stats.totalStocksBought >= 100000;
+
+    // Diversify Quests (holdShares)
+    case 'diversify_1': return stats.holdShares >= 2;
+    case 'diversify_2': return stats.holdShares >= 5;
+    case 'diversify_3': return stats.holdShares >= 10;
+    case 'diversify_4': return stats.holdShares >= 14;
+    case 'diversify_5': return stats.holdShares >= 19;
+    case 'diversify_6': return stats.holdShares >= 25;
+
+    // Sell Quests (totalStocksSelled)
+    case 'sell_1': return stats.totalStocksSelled >= 1;
+    case 'sell_2': return stats.totalStocksSelled >= 10;
+    case 'sell_3': return stats.totalStocksSelled >= 50;
+    case 'sell_4': return stats.totalStocksSelled >= 100;
+    case 'sell_5': return stats.totalStocksSelled >= 500;
+    case 'sell_6': return stats.totalStocksSelled >= 1000;
+    case 'sell_7': return stats.totalStocksSelled >= 7500;
+    case 'sell_8': return stats.totalStocksSelled >= 15000;
+    case 'sell_9': return stats.totalStocksSelled >= 100000;
+
+    // Special Quests (percentageProfit)
+    case 'special_1': return stats.percentageProfit >= 0;
+    case 'special_2': return stats.percentageProfit >= 10;
+    case 'special_3': return stats.percentageProfit >= 20;
+    case 'special_4': return stats.percentageProfit >= 50;
+    case 'special_5': return stats.percentageProfit >= 100;
+    case 'special_6': return stats.percentageProfit >= 200;
+    case 'special_7': return stats.percentageProfit >= 300;
+
+    default: return false;
+  }
+};
+
 const Quests: React.FC = () => {
   const [quests, setQuests] = useState<Quest[]>([]);
   const [completedQuestIds, setCompletedQuestIds] = useState<string[]>([]);
+  const [userStats, setUserStats] = useState<any>(null);
 
   // Quests laden
   useEffect(() => {
@@ -62,22 +119,127 @@ const Quests: React.FC = () => {
       });
   }, []);
 
-  // Hilfsfunktion: Nur die nächste Quest pro Gruppe anzeigen
-  function getNextQuestsPerGroup(quests: Quest[], completed: string[]): Quest[] {
+  // Stats laden
+  useEffect(() => {
+    const loadUserStats = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const response = await fetch('http://localhost:3000/api/stats', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const stats = await response.json();
+          setUserStats(stats);
+          console.log('Geladene Stats für Quests:', stats);
+        }
+      } catch (error) {
+        console.error('Fehler beim Laden der Stats:', error);
+      }
+    };
+
+    loadUserStats();
+
+    // Event Listener für Stats-Updates aus Game.tsx
+    const handleStatsUpdate = () => {
+      loadUserStats();
+    };
+
+    window.addEventListener('statsUpdated', handleStatsUpdate);
+    return () => window.removeEventListener('statsUpdated', handleStatsUpdate);
+  }, []);
+
+  // Quests automatisch abschließen basierend auf Stats
+  useEffect(() => {
+    if (!quests.length || !userStats) return;
+
+    const newlyCompleted: string[] = [];
+
+    quests.forEach(quest => {
+      const isAlreadyCompleted = completedQuestIds.includes(quest.id);
+      const shouldBeCompleted = checkQuestCompletion(quest, userStats);
+
+      if (!isAlreadyCompleted && shouldBeCompleted) {
+        newlyCompleted.push(quest.id);
+        console.log(`✅ Quest abgeschlossen: ${quest.description}`);
+      }
+    });
+
+    if (newlyCompleted.length > 0) {
+      markMultipleQuestsCompleted(newlyCompleted);
+    }
+  }, [quests, userStats, completedQuestIds]);
+
+  // Mehrere Quests als abgeschlossen markieren
+  const markMultipleQuestsCompleted = async (questIds: string[]) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      await Promise.all(
+        questIds.map(questId =>
+          fetch('http://localhost:3000/api/me/complete-quest', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ questId })
+          })
+        )
+      );
+
+      // Lokalen State aktualisieren
+      setCompletedQuestIds(prev => {
+        const newIds = [...prev, ...questIds];
+        return [...new Set(newIds)]; // Duplikate entfernen
+      });
+
+      console.log(`🎉 ${questIds.length} neue Quests abgeschlossen!`);
+    } catch (error) {
+      console.error('Fehler beim Abschließen der Quests:', error);
+    }
+  };
+
+  // KORRIGIERTE Hilfsfunktion: Sequenzielle Quest-Anzeige
+  function getSequentialQuestsPerGroup(quests: Quest[], completed: string[]): Quest[] {
     const groups: { [key: string]: Quest[] } = {};
     quests.forEach((quest) => {
       if (!groups[quest.group]) groups[quest.group] = [];
       groups[quest.group].push(quest);
     });
+
     const result: Quest[] = [];
+
     for (const group in groups) {
-      const next = groups[group].find((q) => !completed.includes(q.id));
-      if (next) result.push(next);
+      // Sortiere Quests nach needed_amount
+      const sortedGroup = groups[group].sort((a, b) => a.needed_amount - b.needed_amount);
+
+      // Finde die nächste unerledigte Quest in der Sequenz
+      for (let i = 0; i < sortedGroup.length; i++) {
+        const quest = sortedGroup[i];
+        const isCompleted = completed.includes(quest.id);
+
+        if (!isCompleted) {
+          // Prüfe ob alle vorherigen Quests abgeschlossen sind
+          const allPreviousCompleted = sortedGroup.slice(0, i).every(prevQuest =>
+            completed.includes(prevQuest.id)
+          );
+
+          if (allPreviousCompleted) {
+            result.push(quest);
+            break; // Nur eine Quest pro Gruppe anzeigen
+          }
+        }
+      }
     }
+
     return result;
   }
 
-  const visibleQuests = getNextQuestsPerGroup(quests, completedQuestIds);
+  const visibleQuests = getSequentialQuestsPerGroup(quests, completedQuestIds);
   const totalQuests = quests.length;
   const completedCount = completedQuestIds.length;
   const progress = totalQuests > 0 ? (completedCount / totalQuests) * 100 : 0;
@@ -89,7 +251,7 @@ const Quests: React.FC = () => {
 
   return (
     <div className={styles.questsContainer}>
-      <Header/>
+      <Header />
 
       <div className={styles.questsTitle}>Quests</div>
 
