@@ -888,8 +888,9 @@ const Game: React.FC = () => {
   const displayData = getShiftedData();
 
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, background: '#f3f3f3ff', width: '100vw', height: '100vh' }} />
+    <div style={{ position: 'relative', width: '100vw', minHeight: '80vh', marginTop: '78px' }}>
+      <Header/>
+      {/* Hintergrund-Overlay entfernt, da der Hintergrund jetzt über body und Container geregelt wird */}
       <div className={styles.gameContainer} style={{ position: 'relative', zIndex: 1 }}>
         {/* Startkapital Popup bleibt gleich... */}
         {showCapitalPopup && (
