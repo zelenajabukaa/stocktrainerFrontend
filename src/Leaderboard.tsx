@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Header from './components/Header';
-import './css/home.css';
+import './css/Leaderboard.css';
 
 const categories = [
-  // XP entfernt
   { key: 'percentageProfit', label: 'Highest Percentage Profit' },
   { key: 'totalStocksBought', label: 'Total Stocks Bought' },
   { key: 'weekTrades', label: 'Most Trades in a Week' },
@@ -22,7 +21,7 @@ const Leaderboard: React.FC = () => {
       setIsLoading(false);
       return;
     }
-    // Profil-Daten holen
+
     fetch('http://localhost:3000/api/profile', {
       headers: {
         'Content-Type': 'application/json',
@@ -30,13 +29,9 @@ const Leaderboard: React.FC = () => {
       },
     })
       .then(res => res.json())
-      .then(data => {
-        setOwnProfile(data.user ?? null);
-      })
-      .catch(() => {
-        setOwnProfile(null);
-      });
-    // Leaderboard-Daten holen
+      .then(data => setOwnProfile(data.user ?? null))
+      .catch(() => setOwnProfile(null));
+
     fetch('http://localhost:3000/api/stats/leaderboard', {
       headers: {
         'Content-Type': 'application/json',
@@ -53,7 +48,6 @@ const Leaderboard: React.FC = () => {
         setIsLoading(false);
       });
 
-    // Eigene Stats holen
     fetch('http://localhost:3000/api/stats/all', {
       headers: {
         'Content-Type': 'application/json',
@@ -61,110 +55,73 @@ const Leaderboard: React.FC = () => {
       },
     })
       .then(res => res.json())
-      .then(data => {
-        setOwnStats(data.stats ?? null);
-      })
-      .catch(() => {
-        setOwnStats(null);
-      });
+      .then(data => setOwnStats(data.stats ?? null))
+      .catch(() => setOwnStats(null));
   }, []);
 
+  const sortedUsers = [...users].sort((a, b) => {
+    let aVal = a[category] ?? 0;
+    let bVal = b[category] ?? 0;
+    if (category === 'percentageProfit') {
+      aVal = typeof aVal === 'string' ? parseFloat(aVal) : aVal;
+      bVal = typeof bVal === 'string' ? parseFloat(bVal) : bVal;
+    }
+    return bVal - aVal;
+  });
+
+  const top10 = sortedUsers.slice(0, 10);
+
+  let ownId = null;
+  try {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const userObj = JSON.parse(userData);
+      ownId = userObj.id;
+    }
+  } catch {}
+
   return (
-    <div className="main-bg">
+    <div className="leaderboard-bg">
       <Header />
-      <div className="main-content">
-        <div className="card card-main" style={{ minHeight: '520px', paddingTop: 36, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' }}>
-          <h2 className="stats-title">Leaderboard</h2>
-          <div className="stats-description">
+      <div className="leaderboard-container">
+        <div className="leaderboard-card">
+          <h2 className="leaderboard-title">Leaderboard</h2>
+          <div className="leaderboard-subtitle">
             Die besten Trader auf Stocktrainer! Vergleiche verschiedene Kategorien mit anderen Nutzern.
           </div>
-          <div style={{ margin: '18px 0 24px 0', textAlign: 'center' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
-              {categories.map(cat => (
-                <button
-                  key={cat.key}
-                  onClick={() => setCategory(cat.key)}
-                  style={{
-                    padding: '10px 24px',
-                    borderRadius: 8,
-                    border: 'none',
-                    background: category === cat.key ? 'linear-gradient(90deg,#2563eb 60%,#1e293b 100%)' : 'rgba(37,99,235,0.10)',
-                    color: category === cat.key ? '#fff' : '#2563eb',
-                    fontWeight: category === cat.key ? 700 : 500,
-                    fontSize: '1.07rem',
-                    boxShadow: category === cat.key ? '0 2px 12px #2563eb44' : 'none',
-                    cursor: 'pointer',
-                    transition: 'all 0.18s',
-                    outline: category === cat.key ? '2px solid #2563eb' : 'none',
-                  }}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
+          <div className="leaderboard-buttons">
+            {categories.map(cat => (
+              <button
+                key={cat.key}
+                className={`category-button ${category === cat.key ? 'active' : ''}`}
+                onClick={() => setCategory(cat.key)}
+              >
+                {cat.label}
+              </button>
+            ))}
           </div>
           {isLoading ? (
-            <div className="loading-stats">
-              <div className="loading-spinner"></div>
+            <div className="leaderboard-loading">
+              <div className="spinner"></div>
               Lade Leaderboard...
             </div>
           ) : (
-            <table className="leaderboard-table" style={{ width: '100%', maxWidth: 800, margin: '0 auto', background: 'rgba(255,255,255,0.10)', borderRadius: 12 }}>
+            <table className="leaderboard-table">
               <thead>
-                <tr style={{ color: '#2563eb', fontWeight: 700 }}>
-                  <th style={{ padding: '12px 0' }}>#</th>
+                <tr>
+                  <th>#</th>
                   <th>Username</th>
                   <th>{categories.find(cat => cat.key === category)?.label}</th>
                 </tr>
               </thead>
               <tbody>
-                {(() => {
-                  // Sortiere nach gewählter Kategorie
-                  const sorted = [...users].sort((a, b) => {
-                    let aVal = a[category] ?? 0;
-                    let bVal = b[category] ?? 0;
-                    if (category === 'percentageProfit') {
-                      aVal = typeof aVal === 'string' ? parseFloat(aVal) : aVal;
-                      bVal = typeof bVal === 'string' ? parseFloat(bVal) : bVal;
-                    }
-                    return bVal - aVal;
-                  });
-                  const top10 = sorted.slice(0, 10);
-                  let ownId = null;
-                  let ownUsername = '';
-                  try {
-                    const userData = localStorage.getItem('user');
-                    if (userData) {
-                      const userObj = JSON.parse(userData);
-                      ownId = userObj.id;
-                      ownUsername = userObj.username;
-                    }
-                  } catch {}
-                  let ownRank = null;
-                  if (ownId) {
-                    const foundIdx = sorted.findIndex(u => u.id === ownId);
-                    if (foundIdx !== -1) {
-                      ownRank = foundIdx + 1;
-                    }
-                  }
-                  // Eigener Wert aus ownStats für jede Kategorie
-                  let ownValue = '-';
-                  if (ownStats) {
-                    ownValue = ownStats[category] ?? '-';
-                  }
-                  // Prüfe, ob eigener User in den Top 10 ist
-                  return (
-                    <>
-                      {top10.map((user, idx) => (
-                        <tr key={user.id + '_' + idx} style={{ color: '#fff', fontWeight: idx === 0 ? 900 : 500, background: idx % 2 === 0 ? 'rgba(37,99,235,0.07)' : 'transparent' }}>
-                          <td style={{ textAlign: 'center' }}>{idx + 1}</td>
-                          <td style={{ textAlign: 'center' }}>{user.username}</td>
-                          <td style={{ textAlign: 'center' }}>{user[category] ?? '-'}</td>
-                        </tr>
-                      ))}
-                    </>
-                  );
-                })()}
+                {top10.map((user, idx) => (
+                  <tr key={user.id + '_' + idx} className={`rank-${idx + 1}`}>
+                    <td>{idx + 1}</td>
+                    <td>{user.username}</td>
+                    <td>{user[category] ?? '-'}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           )}
