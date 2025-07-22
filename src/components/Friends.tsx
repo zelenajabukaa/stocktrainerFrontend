@@ -5,7 +5,7 @@ import Header from './Header';
 interface Friend {
   id: number;
   name: string;
-  avatar: string;
+  avatar?: string;
   level: number;
   status?: 'friend' | 'sent' | 'incoming' | 'none';
 }
@@ -16,7 +16,6 @@ const Friends: React.FC = () => {
   const [requests, setRequests] = useState<Friend[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Friend[]>([]);
-  const [sentRequests, setSentRequests] = useState<number[]>([]);
 
   const token = localStorage.getItem('token');
 
@@ -38,7 +37,7 @@ const Friends: React.FC = () => {
       .catch(console.error);
   }, [token]);
 
-  // 🔁 Live-Suche: Suche automatisch bei Eingabe mit kleiner Verzögerung
+  // 🔁 Live-Suche
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       if (!searchQuery.trim()) return setSearchResults([]);
@@ -49,14 +48,14 @@ const Friends: React.FC = () => {
         .then(res => res.json())
         .then(setSearchResults)
         .catch(console.error);
-    }, 300); // 300ms Verzögerung
+    }, 300);
 
     return () => clearTimeout(delayDebounce);
   }, [searchQuery, token]);
 
   const handleSendRequest = async (receiverId: number) => {
     try {
-      await fetch('http://localhost:3000/api/friend-requests', {
+      const res = await fetch('http://localhost:3000/api/friend-requests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,10 +63,25 @@ const Friends: React.FC = () => {
         },
         body: JSON.stringify({ receiverId })
       });
-      setSentRequests(prev => [...prev, receiverId]);
+
+      if (res.ok) {
+        updateUserStatus(receiverId, 'sent');
+      } else {
+        const data = await res.json();
+        console.warn('Serverfehler:', data.message);
+        if (data.message.includes('bereits')) {
+          updateUserStatus(receiverId, 'sent'); // falls Backend schon ablehnt
+        }
+      }
     } catch (err) {
       console.error('Fehler beim Senden', err);
     }
+  };
+
+  const updateUserStatus = (userId: number, status: Friend['status']) => {
+    setSearchResults(prev =>
+      prev.map(u => (u.id === userId ? { ...u, status } : u))
+    );
   };
 
   const handleProfileClick = (id: number) => {
@@ -81,9 +95,7 @@ const Friends: React.FC = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       const accepted = requests.find(r => r.id === requestId);
-      if (accepted) {
-        setFriends(prev => [...prev, accepted]);
-      }
+      if (accepted) setFriends(prev => [...prev, accepted]);
       setRequests(prev => prev.filter(r => r.id !== requestId));
     } catch (error) {
       console.error('Fehler beim Akzeptieren', error);
@@ -107,7 +119,7 @@ const Friends: React.FC = () => {
       <Header />
       <h1 className={styles.friendsTitle}>Freunde</h1>
 
-      {/* 🔍 Live-Suchfeld */}
+      {/* 🔍 Live-Suche */}
       <div className={styles.searchContainer}>
         <input
           type="text"
