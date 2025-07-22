@@ -214,13 +214,7 @@ body {
   from { opacity: 0; transform: translateY(-30px) scale(0.95); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-.popup h2 {
-  color: var(--text-accent);
-  text-shadow: 0 0 8px var(--neon-main);
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 18px;
-}
+
 .popup p {
   color: var(--text-label);
   text-align: center;
