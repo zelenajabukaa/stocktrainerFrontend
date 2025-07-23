@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from '../css/Friends.module.css';
 import Header from './Header';
 
+
 interface Friend {
   id: number;
   name: string;
@@ -25,7 +26,7 @@ const Friends: React.FC = () => {
     navigate(`/profile/${friendId}`);
   };
 
-    const handleRemoveFriend = async (friendId: number) => {
+  const handleRemoveFriend = async (friendId: number) => {
     try {
       const res = await fetch(`http://localhost:3000/api/friends/${friendId}`, {
         method: 'DELETE',
@@ -194,12 +195,12 @@ const Friends: React.FC = () => {
         {activeTab === 'freunde' && (
           <ul className={styles.friendsList}>
             {[...friends].sort((a, b) => b.level - a.level).map(friend => (
-              <li key={friend.id} className={styles.friendItem}>
-                <div onClick={() => handleFriendClick(friend.id)} className={styles.nameLevelWrapper} style={{ cursor: 'pointer', flex: 1 }}>
+              <li key={friend.id} className={styles.friendItem} onClick={() => handleFriendClick(friend.id)} style={{ cursor: 'pointer' }}>
+                <div>
                   <span className={styles.name}>{friend.name}</span>
                   <span className={styles.level}>LvL {friend.level}</span>
                 </div>
-                <button onClick={() => handleRemoveFriend(friend.id)} className={styles.removeBtn} title="Freund entfernen">Entfernen</button>
+                <button onClick={(e) => { e.stopPropagation(); handleRemoveFriend(friend.id); }} className={styles.removeBtn} title="Freund entfernen">Entfernen</button>
               </li>
             ))}
           </ul>
