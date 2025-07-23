@@ -881,6 +881,29 @@ const Game: React.FC = () => {
   const currentHolding = getCurrentStockHolding();
   const displayData = getShiftedData();
 
+  // Hilfsfunktion für Logo-Dateinamen
+  const getLogoFilename = (stockInfo: StockInfo | undefined): string => {
+    if (!stockInfo) return 'default.png';
+    // Sonderfälle für Logo-Mapping
+    const name = stockInfo.name;
+    switch (name) {
+      case 'PepsiCo':
+        return 'pepsiCo.png';
+      case 'Coca-Cola':
+        return 'coca-cola.png';
+      case 'McDonalds':
+        return 'mcDonalds.png';
+      case 'MasterCard':
+        return 'masterCard.png';
+      case 'PayPal':
+        return 'payPal.png';
+      case 'UnitedHealth':
+        return 'unitedhealth.png';
+      default:
+        return `${name.toLowerCase()}.png`;
+    }
+  };
+
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '80vh', marginTop: '78px' }}>
       <Header />
@@ -1135,7 +1158,7 @@ const Game: React.FC = () => {
             <header className={styles.appHeader}>
               <h1>{currentStockInfo?.name || 'Trading'}</h1>
               <img
-                src={`/logos/${currentStockInfo?.name.toLowerCase() || 'default'}.png`}
+                src={`/logos/${getLogoFilename(currentStockInfo)}`}
                 className={styles.logoImage}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
