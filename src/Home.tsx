@@ -11,7 +11,7 @@ const Home: React.FC = () => {
       const userObj = JSON.parse(userData);
       if (userObj.username) username = userObj.username;
     }
-  } catch {}
+  } catch { }
   const level = 1;
   const ingameCurrency = 0;
   const navigate = useNavigate();
@@ -186,9 +186,9 @@ const Home: React.FC = () => {
         <div className="card card-main" style={{ minHeight: '520px', paddingTop: 36, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' }}>
           <h2 className="stats-title">Stats</h2>
           <div className="stats-description">
-            Here you can see your most important trading statistics and personal records. Track your progress and compare your best results!
+            Hier siehst du deine wichtigsten Handelsstatistiken und persönlichen Rekorde. Verfolge deinen Fortschritt und vergleiche deine besten Ergebnisse!
           </div>
-          
+
           {isLoading ? (
             <div className="loading-stats">
               <div className="loading-spinner"></div>
@@ -252,7 +252,7 @@ const Home: React.FC = () => {
             </div>
           )}
         </div>
-        
+
         <div className="card card-side card-side-vertical">
           <div className="sidebar-btns sidebar-btns-fill">
             {['Neues Spiel', 'Levelbelohnungen', 'Quests', 'Abzeichen', 'Auswertungen'].map((label, idx) => (
