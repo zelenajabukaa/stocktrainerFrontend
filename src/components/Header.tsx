@@ -160,7 +160,11 @@ const Header: React.FC = () => {
   return (
     <header className={styles.headerBar}>
       <div className={styles.leftInfo}>
-        <div className={styles.ingameCurrency}>
+        <div 
+          className={styles.ingameCurrency}
+          onClick={() => navigate('/shop')}
+          style={{ cursor: 'pointer' }}
+        >
           <img src={coin} alt="Coin" />
           {user.ingameCurrency}
         </div>
