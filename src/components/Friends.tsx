@@ -25,7 +25,7 @@ const Friends: React.FC = () => {
     navigate(`/profile/${friendId}`);
   };
 
-    const handleRemoveFriend = async (friendId: number) => {
+  const handleRemoveFriend = async (friendId: number) => {
     try {
       const res = await fetch(`http://localhost:3000/api/friends/${friendId}`, {
         method: 'DELETE',
@@ -195,10 +195,11 @@ const Friends: React.FC = () => {
           <ul className={styles.friendsList}>
             {[...friends].sort((a, b) => b.level - a.level).map(friend => (
               <li key={friend.id} className={styles.friendItem} onClick={() => handleFriendClick(friend.id)} style={{ cursor: 'pointer' }}>
+                <div>
                   <span className={styles.name}>{friend.name}</span>
                   <span className={styles.level}>LvL {friend.level}</span>
                 </div>
-                <button onClick={() => handleRemoveFriend(friend.id)} className={styles.removeBtn} title="Freund entfernen">Entfernen</button>
+                <button onClick={(e) => { e.stopPropagation(); handleRemoveFriend(friend.id); }} className={styles.removeBtn} title="Freund entfernen">Entfernen</button>
               </li>
             ))}
           </ul>
