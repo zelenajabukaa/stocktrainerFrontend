@@ -1,4 +1,4 @@
- import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../css/Quests.module.css';
 import Header from './Header';
 
@@ -235,7 +235,7 @@ const Quests: React.FC = () => {
       // Header nach 2 Sekunden neu rendern
       setTimeout(() => {
         setHeaderKey(prev => prev + 1);
-      }, 2000);
+      }, 1200);
 
       console.log(` ${questIds.length} neue Quests abgeschlossen!`);
     } catch (error) {

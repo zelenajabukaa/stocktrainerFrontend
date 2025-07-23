@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../css/Friends.module.css';
 import Header from './Header';
 
@@ -18,6 +19,11 @@ const Friends: React.FC = () => {
   const [searchResults, setSearchResults] = useState<Friend[]>([]);
 
   const token = localStorage.getItem('token');
+  const navigate = useNavigate();
+
+  const handleFriendClick = (friendId: number) => {
+    navigate(`/profile/${friendId}`);
+  };
 
     const handleRemoveFriend = async (friendId: number) => {
     try {
@@ -100,9 +106,7 @@ const Friends: React.FC = () => {
     );
   };
 
-  const handleProfileClick = (id: number) => {
-    alert(`Gehe zum Profil von ID ${id}`);
-  };
+
 
   const handleAccept = async (requestId: number) => {
     try {
@@ -159,10 +163,10 @@ const Friends: React.FC = () => {
                   {user.status === 'friend'
                     ? 'Bereits befreundet'
                     : user.status === 'sent'
-                    ? 'Gesendet'
-                    : user.status === 'incoming'
-                    ? 'Antwort ausstehend'
-                    : 'Anfrage senden'}
+                      ? 'Gesendet'
+                      : user.status === 'incoming'
+                        ? 'Antwort ausstehend'
+                        : 'Anfrage senden'}
                 </button>
               </li>
             ))}
@@ -190,8 +194,7 @@ const Friends: React.FC = () => {
         {activeTab === 'freunde' && (
           <ul className={styles.friendsList}>
             {[...friends].sort((a, b) => b.level - a.level).map(friend => (
-              <li key={friend.id} className={styles.friendItem}>
-                <div onClick={() => handleProfileClick(friend.id)} className={styles.nameLevelWrapper} style={{ cursor: 'pointer', flex: 1 }}>
+              <li key={friend.id} className={styles.friendItem} onClick={() => handleFriendClick(friend.id)} style={{ cursor: 'pointer' }}>
                   <span className={styles.name}>{friend.name}</span>
                   <span className={styles.level}>LvL {friend.level}</span>
                 </div>
@@ -204,7 +207,7 @@ const Friends: React.FC = () => {
         {activeTab === 'anfragen' && (
           <ul className={styles.friendsList}>
             {requests.map(request => (
-              <li key={request.id} className={styles.friendItem} onClick={() => handleProfileClick(request.id)} style={{ cursor: 'pointer' }}>
+              <li key={request.id} className={styles.friendItem} onClick={() => handleFriendClick(request.id)} style={{ cursor: 'pointer' }}>
                 <span className={styles.name}>
                   {request.name} <span className={styles.levelSmall}>LvL {request.level}</span>
                 </span>
