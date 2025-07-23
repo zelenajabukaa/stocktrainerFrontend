@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from '../css/Friends.module.css';
 import Header from './Header';
 
+
 interface Friend {
   id: number;
   name: string;
