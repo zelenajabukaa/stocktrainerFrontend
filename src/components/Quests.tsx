@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+ import React, { useEffect, useState } from 'react';
 import styles from '../css/Quests.module.css';
 import Header from './Header';
 
@@ -16,13 +16,13 @@ const checkQuestCompletion = (quest: Quest, stats: any): boolean => {
   switch (quest.id) {
     // Activity Quests (weekTrades)
     case 'activity_1': return stats.weekTrades >= 2;
-    case 'activity_2': return stats.weekTrades >= 10;
-    case 'activity_3': return stats.weekTrades >= 25;
-    case 'activity_4': return stats.weekTrades >= 50;
-    case 'activity_5': return stats.weekTrades >= 100;
-    case 'activity_6': return stats.weekTrades >= 175;
-    case 'activity_7': return stats.weekTrades >= 350;
-    case 'activity_8': return stats.weekTrades >= 500;
+    case 'activity_2': return stats.weekTrades >= 50;
+    case 'activity_3': return stats.weekTrades >= 100;
+    case 'activity_4': return stats.weekTrades >= 250;
+    case 'activity_5': return stats.weekTrades >= 750;
+    case 'activity_6': return stats.weekTrades >= 1000;
+    case 'activity_7': return stats.weekTrades >= 5000;
+    case 'activity_8': return stats.weekTrades >= 10000;
 
     // Buy Quests (totalStocksBought)
     case 'buy_1': return stats.totalStocksBought >= 1;
