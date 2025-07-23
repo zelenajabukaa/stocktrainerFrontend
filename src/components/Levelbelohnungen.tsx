@@ -168,7 +168,8 @@ const Levelbelohnungen: React.FC = () => {
           }
 
           // Claim-Button nur für XP/Münzen, nicht für Aktien/Avatare
-          const isClaimable = (item.xp > 0 || item.reward.includes('Münzen'));
+          const isClaimable = !item.reward.includes('Aktie');
+          const isAutoUnlocked = item.reward.includes('Aktie') && item.unlocked;
 
           return (
             <div
@@ -184,7 +185,7 @@ const Levelbelohnungen: React.FC = () => {
                   Belohnung abholen
                 </button>
               )}
-              {item.unlocked && (!isClaimable || claimedLevels.includes(item.level)) && (
+              {(item.unlocked && (isAutoUnlocked || claimedLevels.includes(item.level))) && (
                 <div className={styles.unlockedBadge}>Freigeschaltet</div>
               )}
             </div>
