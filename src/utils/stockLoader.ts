@@ -22,7 +22,7 @@ export const AVAILABLE_STOCKS: StockInfo[] = [
     { symbol: 'META', name: 'Meta', filename: 'meta.csv', color: '#9c9c9cff', buyFee: 0.6, sellFee: 0.4 },
     { symbol: 'MSFT', name: 'Microsoft', filename: 'microsoft.csv', color: '#0078d4', buyFee: 0.5, sellFee: 0.3 },
     { symbol: 'NFLX', name: 'Netflix', filename: 'netflix.csv', color: '#e50914', buyFee: 1.8, sellFee: 1.2 },
-    { symbol: 'NKE', name: 'Nike', filename: 'nike.csv', color: '#111111', buyFee: 0.4, sellFee: 0.2 },
+    { symbol: 'NKE', name: 'Nike', filename: 'nike.csv', color: '#ecf0ffff', buyFee: 0.4, sellFee: 0.2 },
     { symbol: 'ORCL', name: 'Oracle', filename: 'oracle.csv', color: '#f80000', buyFee: 0.9, sellFee: 0.6 },
     { symbol: 'PYPL', name: 'PayPal', filename: 'payPal.csv', color: '#003087', buyFee: 0.3, sellFee: 0.2 },
     { symbol: 'PEP', name: 'PepsiCo', filename: 'pepsiCo.csv', color: '#005cb4', buyFee: 0.8, sellFee: 0.5 },

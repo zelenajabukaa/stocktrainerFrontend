@@ -537,7 +537,7 @@ const Game: React.FC = () => {
     return currentOffset <= firstTradingWeek;
   };
 
-  let TRADING_START_YEAR = 2020; // Startjahr für Trading-Daten
+  const [TRADING_START_YEAR] = useState(() => (Math.random() < 0.5 ? 2020 : 2021));
 
   const getShiftedData = (): StockDataPoint[] => {
     if (!stockData || stockData.length === 0) return [];
@@ -881,9 +881,32 @@ const Game: React.FC = () => {
   const currentHolding = getCurrentStockHolding();
   const displayData = getShiftedData();
 
+  // Hilfsfunktion für Logo-Dateinamen
+  const getLogoFilename = (stockInfo: StockInfo | undefined): string => {
+    if (!stockInfo) return 'default.png';
+    // Sonderfälle für Logo-Mapping
+    const name = stockInfo.name;
+    switch (name) {
+      case 'PepsiCo':
+        return 'pepsiCo.png';
+      case 'Coca-Cola':
+        return 'coca-cola.png';
+      case 'McDonalds':
+        return 'mcDonalds.png';
+      case 'MasterCard':
+        return 'masterCard.png';
+      case 'PayPal':
+        return 'payPal.png';
+      case 'UnitedHealth':
+        return 'unitedhealth.png';
+      default:
+        return `${name.toLowerCase()}.png`;
+    }
+  };
+
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '80vh', marginTop: '78px' }}>
-      <Header/>
+      <Header />
       {/* Hintergrund-Overlay entfernt, da der Hintergrund jetzt über body und Container geregelt wird */}
       <div className={styles.gameContainer} style={{ position: 'relative', zIndex: 1 }}>
         {/* Startkapital Popup bleibt gleich... */}
@@ -1135,7 +1158,7 @@ const Game: React.FC = () => {
             <header className={styles.appHeader}>
               <h1>{currentStockInfo?.name || 'Trading'}</h1>
               <img
-                src={`/logos/${currentStockInfo?.name.toLowerCase() || 'default'}.png`}
+                src={`/logos/${getLogoFilename(currentStockInfo)}`}
                 className={styles.logoImage}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
