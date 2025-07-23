@@ -14,6 +14,7 @@ import Successes from "./components/Successes.tsx";
 import Auswertungen from "./components/Auswertungen.tsx";
 import Infos from './components/Infos';
 import Friends from "./components/Friends.tsx";
+import Profile from "./components/Profile.tsx";
 
 const App: React.FC = () => {
   return (
@@ -32,6 +33,7 @@ const App: React.FC = () => {
       <Route path="/auswertungen" element={<PrivateRoute><Auswertungen /></PrivateRoute>} />
       <Route path="/informations" element={<PrivateRoute><Infos /></PrivateRoute>} />
       <Route path="/friends" element={<PrivateRoute><Friends /></PrivateRoute>} />
+      <Route path="/profile/:userId" element={<PrivateRoute><Profile /></PrivateRoute>} />
       <Route path="/leaderboard" element={<Leaderboard />} />
     </Routes>
   );
