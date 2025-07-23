@@ -19,6 +19,22 @@ const Friends: React.FC = () => {
 
   const token = localStorage.getItem('token');
 
+    const handleRemoveFriend = async (friendId: number) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/friends/${friendId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setFriends((prev: Friend[]) => prev.filter((f: Friend) => f.id !== friendId));
+      } else {
+        // Fehlerbehandlung, z.B. Toast oder Log
+      }
+    } catch (err) {
+      // Fehlerbehandlung, z.B. Toast oder Log
+    }
+  };
+
   useEffect(() => {
     if (!token) return;
 
@@ -174,9 +190,12 @@ const Friends: React.FC = () => {
         {activeTab === 'freunde' && (
           <ul className={styles.friendsList}>
             {[...friends].sort((a, b) => b.level - a.level).map(friend => (
-              <li key={friend.id} className={styles.friendItem} onClick={() => handleProfileClick(friend.id)} style={{ cursor: 'pointer' }}>
-                <span className={styles.name}>{friend.name}</span>
-                <span className={styles.level}>LvL {friend.level}</span>
+              <li key={friend.id} className={styles.friendItem}>
+                <div onClick={() => handleProfileClick(friend.id)} className={styles.nameLevelWrapper} style={{ cursor: 'pointer', flex: 1 }}>
+                  <span className={styles.name}>{friend.name}</span>
+                  <span className={styles.level}>LvL {friend.level}</span>
+                </div>
+                <button onClick={() => handleRemoveFriend(friend.id)} className={styles.removeBtn} title="Freund entfernen">Entfernen</button>
               </li>
             ))}
           </ul>
