@@ -298,20 +298,67 @@ const Quests: React.FC = () => {
       <div className={styles.questsTitle}>Quests</div>
 
       <ul className={styles.questList}>
-        {visibleQuests.map((quest) => (
-          <li key={quest.id} className={styles.questItem}>
-            <div className={styles.questInfo}>
-              <span className={styles.questDescription}>{quest.description}</span>
-            </div>
-            <div className={styles.questRewards}>
-              {quest.money !== null && quest.money !== undefined && quest.money !== 0 ? (
-                <span className={styles.xpBadge}>{quest.money} €</span>
-              ) : (
-                <span className={styles.xpBadge}>XP: {quest.xp}</span>
-              )}
-            </div>
-          </li>
-        ))}
+        {visibleQuests.map((quest, idx) => {
+          // Fortschritt berechnen
+          let progressValue: number | null = null;
+          let progressMax: number | null = null;
+          if (userStats) {
+            switch (quest.group) {
+              case 'activity':
+                progressValue = userStats.weekTrades;
+                progressMax = quest.needed_amount;
+                break;
+              case 'buy':
+                progressValue = userStats.totalStocksBought;
+                progressMax = quest.needed_amount;
+                break;
+              case 'diversify':
+                progressValue = userStats.holdShares;
+                progressMax = quest.needed_amount;
+                break;
+              case 'sell':
+                progressValue = userStats.totalStocksSelled;
+                progressMax = quest.needed_amount;
+                break;
+              case 'special':
+                progressValue = userStats.percentageProfit;
+                progressMax = quest.needed_amount;
+                break;
+              default:
+                progressValue = null;
+                progressMax = null;
+            }
+          }
+
+          // Wenn es die letzte Quest ist, zeige den tatsächlichen Stat-Wert (auch wenn er über dem Ziel liegt)
+          const isLast = idx === visibleQuests.length - 1;
+          let shownValue = progressValue;
+          if (isLast && progressValue !== null && progressMax !== null) {
+            shownValue = progressValue;
+          } else if (progressValue !== null && progressMax !== null) {
+            shownValue = Math.min(progressValue, progressMax);
+          }
+
+          return (
+            <li key={quest.id} className={styles.questItem}>
+              <div className={styles.questInfo}>
+                <span className={styles.questDescription}>{quest.description}</span>
+                {progressValue !== null && progressMax !== null && (
+                  <span className={styles.questProgress}>
+                    Fortschritt: {shownValue} / {progressMax}
+                  </span>
+                )}
+              </div>
+              <div className={styles.questRewards}>
+                {quest.money !== null && quest.money !== undefined && quest.money !== 0 ? (
+                  <span className={styles.xpBadge}>{quest.money} €</span>
+                ) : (
+                  <span className={styles.xpBadge}>XP: {quest.xp}</span>
+                )}
+              </div>
+            </li>
+          );
+        })}
       </ul>
 
       <div className={styles.progressBarContainer}>
