@@ -537,7 +537,7 @@ const Game: React.FC = () => {
     return currentOffset <= firstTradingWeek;
   };
 
-  let TRADING_START_YEAR = 2020; // Startjahr für Trading-Daten
+  const [TRADING_START_YEAR] = useState(() => (Math.random() < 0.5 ? 2020 : 2021));
 
   const getShiftedData = (): StockDataPoint[] => {
     if (!stockData || stockData.length === 0) return [];
@@ -883,7 +883,7 @@ const Game: React.FC = () => {
 
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '80vh', marginTop: '78px' }}>
-      <Header/>
+      <Header />
       {/* Hintergrund-Overlay entfernt, da der Hintergrund jetzt über body und Container geregelt wird */}
       <div className={styles.gameContainer} style={{ position: 'relative', zIndex: 1 }}>
         {/* Startkapital Popup bleibt gleich... */}
