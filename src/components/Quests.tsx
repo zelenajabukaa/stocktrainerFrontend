@@ -26,14 +26,14 @@ const checkQuestCompletion = (quest: Quest, stats: any): boolean => {
 
     // Buy Quests (totalStocksBought)
     case 'buy_1': return stats.totalStocksBought >= 1;
-    case 'buy_2': return stats.totalStocksBought >= 10;
-    case 'buy_3': return stats.totalStocksBought >= 50;
-    case 'buy_4': return stats.totalStocksBought >= 100;
-    case 'buy_5': return stats.totalStocksBought >= 500;
-    case 'buy_6': return stats.totalStocksBought >= 1000;
-    case 'buy_7': return stats.totalStocksBought >= 7500;
-    case 'buy_8': return stats.totalStocksBought >= 15000;
-    case 'buy_9': return stats.totalStocksBought >= 100000;
+    case 'buy_2': return stats.totalStocksBought >= 100;
+    case 'buy_3': return stats.totalStocksBought >= 150;
+    case 'buy_4': return stats.totalStocksBought >= 300;
+    case 'buy_5': return stats.totalStocksBought >= 2000;
+    case 'buy_6': return stats.totalStocksBought >= 10000;
+    case 'buy_7': return stats.totalStocksBought >= 30000;
+    case 'buy_8': return stats.totalStocksBought >= 100000;
+    case 'buy_9': return stats.totalStocksBought >= 500000;
 
     // Diversify Quests (holdShares)
     case 'diversify_1': return stats.holdShares >= 2;
@@ -45,23 +45,23 @@ const checkQuestCompletion = (quest: Quest, stats: any): boolean => {
 
     // Sell Quests (totalStocksSelled)
     case 'sell_1': return stats.totalStocksSelled >= 1;
-    case 'sell_2': return stats.totalStocksSelled >= 10;
-    case 'sell_3': return stats.totalStocksSelled >= 50;
-    case 'sell_4': return stats.totalStocksSelled >= 100;
-    case 'sell_5': return stats.totalStocksSelled >= 500;
-    case 'sell_6': return stats.totalStocksSelled >= 1000;
-    case 'sell_7': return stats.totalStocksSelled >= 7500;
-    case 'sell_8': return stats.totalStocksSelled >= 15000;
-    case 'sell_9': return stats.totalStocksSelled >= 100000;
+    case 'sell_2': return stats.totalStocksSelled >= 100;
+    case 'sell_3': return stats.totalStocksSelled >= 150;
+    case 'sell_4': return stats.totalStocksSelled >= 300;
+    case 'sell_5': return stats.totalStocksSelled >= 2000;
+    case 'sell_6': return stats.totalStocksSelled >= 10000;
+    case 'sell_7': return stats.totalStocksSelled >= 30000;
+    case 'sell_8': return stats.totalStocksSelled >= 100000;
+    case 'sell_9': return stats.totalStocksSelled >= 500000;
 
     // Special Quests (percentageProfit)
-    case 'special_1': return stats.percentageProfit >= 0;
-    case 'special_2': return stats.percentageProfit >= 10;
-    case 'special_3': return stats.percentageProfit >= 20;
-    case 'special_4': return stats.percentageProfit >= 50;
-    case 'special_5': return stats.percentageProfit >= 100;
-    case 'special_6': return stats.percentageProfit >= 200;
-    case 'special_7': return stats.percentageProfit >= 300;
+    case 'special_1': return stats.percentageProfit >= 10;
+    case 'special_2': return stats.percentageProfit >= 50;
+    case 'special_3': return stats.percentageProfit >= 100;
+    case 'special_4': return stats.percentageProfit >= 150;
+    case 'special_5': return stats.percentageProfit >= 200;
+    case 'special_6': return stats.percentageProfit >= 300;
+    case 'special_7': return stats.percentageProfit >= 350;
 
     default: return false;
   }
