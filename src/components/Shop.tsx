@@ -18,6 +18,8 @@ const Shop: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'themes' | 'names'>('themes');
   const [userCoins, setUserCoins] = useState(0);
   const [nameShopItems, setNameShopItems] = useState<ShopItem[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   // Sample shop items
   const shopItems = {
@@ -96,7 +98,6 @@ const Shop: React.FC = () => {
 
   const handlePurchase = async (item: ShopItem) => {
     if (userCoins < item.price) {
-      alert('Nicht genügend Coins!');
       return;
     }
 
@@ -116,30 +117,65 @@ const Shop: React.FC = () => {
         });
         const data = await res.json();
         if (res.ok && data.success) {
-          setUserCoins(prev => prev - item.price);
+          const newCoins = userCoins - item.price;
+          setUserCoins(newCoins);
           setNameShopItems(prev => prev.map(i => i.id === item.id ? { ...i, owned: true } : i));
-          alert(`${item.name} erfolgreich gekauft!`);
+
+          // Event für Header-Update dispatchen
+          window.dispatchEvent(new CustomEvent('coinsUpdated', {
+            detail: {
+              coinsEarned: -item.price, // Negative Zahl für Ausgaben
+              currentCoins: newCoins,
+              source: 'shop'
+            }
+          }));
+
         } else {
-          alert(data.error || 'Kauf fehlgeschlagen!');
+          console.error('Kauf fehlgeschlagen:', data.error);
         }
       } else {
         // Simulierter Kauf für Avatare/Themes
-        setUserCoins(prev => prev - item.price);
+        const newCoins = userCoins - item.price;
+        setUserCoins(newCoins);
         const category = activeTab;
-        shopItems[category] = shopItems[category].map(shopItem => 
+        shopItems[category] = shopItems[category].map(shopItem =>
           shopItem.id === item.id ? { ...shopItem, owned: true } : shopItem
         );
-        alert(`${item.name} erfolgreich gekauft!`);
+
+        // Event für Header-Update dispatchen
+        window.dispatchEvent(new CustomEvent('coinsUpdated', {
+          detail: {
+            coinsEarned: -item.price, // Negative Zahl für Ausgaben
+            currentCoins: newCoins,
+            source: 'shop'
+          }
+        }));
+
       }
     } catch (error) {
       console.error('Fehler beim Kauf:', error);
-      alert('Kauf fehlgeschlagen!');
     }
   };
 
   const renderTabContent = () => {
-    const items = shopItems[activeTab];
-    
+    let items = shopItems[activeTab];
+
+    // Filter nach Suchbegriff
+    if (searchTerm) {
+      items = items.filter(item =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Sortierung nach Preis
+    items = [...items].sort((a, b) => {
+      if (sortOrder === 'asc') {
+        return a.price - b.price;
+      } else {
+        return b.price - a.price;
+      }
+    });
+
     return (
       <div className={styles.itemGrid}>
         {items.map((item) => (
@@ -176,21 +212,46 @@ const Shop: React.FC = () => {
     <>
       <Header />
       <div className={styles.shopContainer}>
-          <h1 className={styles.shopTitle}>Game Shop</h1>
+        <h1 className={styles.shopTitle}>Game Shop</h1>
 
         <div className={styles.tabNavigation}>
-                    <button
+          <button
             className={`${styles.tab} ${activeTab === 'themes' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('themes')}
           >
-             Themes
+            Themes
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'names' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('names')}
           >
-             Namen
+            Namen
           </button>
+        </div>
+
+        {/* Filter- und Sortier-Leiste */}
+        <div className={styles.filterBar}>
+          <div className={styles.searchContainer}>
+            <input
+              type="text"
+              placeholder={`${activeTab === 'names' ? 'Farben' : 'Themes'} suchen...`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={styles.searchInput}
+            />
+          </div>
+
+          <div className={styles.sortContainer}>
+            <label className={styles.sortLabel}>Sortieren:</label>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+              className={styles.sortSelect}
+            >
+              <option value="asc">Preis: Niedrig → Hoch</option>
+              <option value="desc">Preis: Hoch → Niedrig</option>
+            </select>
+          </div>
         </div>
 
         <div className={styles.tabContent}>
