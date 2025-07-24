@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from '../css/Profile.module.css';
 import Header from './Header';
+import '../css/usernameColors.css';
 
 interface UserProfile {
     id: number;
@@ -10,6 +11,7 @@ interface UserProfile {
     level: number;
     xp: number;
     coins: number;
+    nameColor?: string;
     stats: {
         totalStocksBought: number;
         totalStocksSelled: number;
@@ -28,6 +30,39 @@ const Profile: React.FC = () => {
 
     const token = localStorage.getItem('token');
 
+    // Funktion zum Ermitteln der CSS-Klasse für Namensfarben
+    const getNameColorClass = (nameColor: string | undefined): string => {
+        if (!nameColor) return '';
+
+        const colorMapping: { [key: string]: string } = {
+            'red': 'username-red',
+            'blue': 'username-blue',
+            'green': 'username-green',
+            'yellow': 'username-yellow',
+            'orange': 'username-orange',
+            'purple': 'username-purple',
+            'pink': 'username-pink',
+            'cyan': 'username-cyan',
+            'lime': 'username-lime',
+            'teal': 'username-teal',
+            'neon': 'username-neon',
+            'silber': 'username-silber',
+            'gold': 'username-gold',
+            'diamond': 'username-diamond',
+            'ruby': 'username-ruby',
+            'emerald': 'username-emerald',
+            'sapphire': 'username-sapphire',
+            'amethyst': 'username-amethyst',
+            'topaz': 'username-topaz',
+            'obsidian': 'username-obsidian',
+            'rainbow': 'username-rainbow',
+            'plasma': 'username-plasma',
+            'cosmic': 'username-cosmic'
+        };
+
+        return colorMapping[nameColor] || '';
+    };
+
     useEffect(() => {
         if (!token || !userId) {
             setError('Nicht angemeldet oder keine User-ID');
@@ -35,30 +70,57 @@ const Profile: React.FC = () => {
             return;
         }
 
-        // Lade User-Profil vom Backend
-        fetch(`http://localhost:3000/api/users/${userId}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-            .then(res => {
-                if (!res.ok) {
+        // Lade User-Profil und Namensfarbe
+        const fetchProfileWithColor = async () => {
+            try {
+                // Erste Anfrage: User-Profil laden
+                const profileResponse = await fetch(`http://localhost:3000/api/users/${userId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (!profileResponse.ok) {
                     throw new Error('Profil nicht gefunden');
                 }
-                return res.json();
-            })
-            .then((data: UserProfile) => {
-                setProfile(data);
+
+                const profileData: UserProfile = await profileResponse.json();
+
+                // Zweite Anfrage: Namensfarbe laden
+                try {
+                    const colorsResponse = await fetch('http://localhost:3000/api/user-name/all-users-colors', {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+
+                    if (colorsResponse.ok) {
+                        const colorsData = await colorsResponse.json();
+
+                        // Finde die Namensfarbe für diesen User
+                        const userColorData = colorsData.find((user: any) =>
+                            user.username === profileData.name
+                        );
+
+                        if (userColorData && userColorData.nameColor) {
+                            profileData.nameColor = userColorData.nameColor;
+                        }
+                    }
+                } catch (colorError) {
+                    console.log('Namensfarbe konnte nicht geladen werden:', colorError);
+                    // Profil trotzdem anzeigen, nur ohne Farbe
+                }
+
+                setProfile(profileData);
                 setLoading(false);
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Fehler beim Laden des Profils:', err);
                 setError('Profil konnte nicht geladen werden');
                 setLoading(false);
-            });
-    }, [userId, token]);
+            }
+        };
 
-    const calculateNextLevelXP = (currentLevel: number): number => {
-        return currentLevel * 100; // Beispiel: Level 1 = 100 XP, Level 2 = 200 XP
-    };
+        fetchProfileWithColor();
+    }, [userId, token]);
 
     const calculateLevelProgress = (xp: number, level: number): number => {
         const currentLevelXP = (level - 1) * 100;
@@ -91,7 +153,6 @@ const Profile: React.FC = () => {
         );
     }
 
-    const nextLevelXP = calculateNextLevelXP(profile.level);
     const levelProgress = calculateLevelProgress(profile.xp, profile.level);
 
     return (
@@ -102,7 +163,12 @@ const Profile: React.FC = () => {
                 <button onClick={() => navigate('/friends')} className={styles.backButton}>
                     ← Zurück
                 </button>
-                <h1>Profil von {profile.name}</h1>
+                <h1>
+                    Profil von{' '}
+                    <span className={getNameColorClass(profile.nameColor)}>
+                        {profile.name}
+                    </span>
+                </h1>
             </div>
 
             <div className={styles.profileContent}>
@@ -118,7 +184,11 @@ const Profile: React.FC = () => {
                         )}
                     </div>
                     <div className={styles.userInfo}>
-                        <h2>{profile.name}</h2>
+                        <h2>
+                            <span className={getNameColorClass(profile.nameColor)}>
+                                {profile.name}
+                            </span>
+                        </h2>
                         <div className={styles.levelInfo}>
                             <span className={styles.level}>Level {profile.level}</span>
                             <div className={styles.xpBar}>
