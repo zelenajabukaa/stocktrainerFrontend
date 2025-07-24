@@ -368,6 +368,49 @@ const Game: React.FC = () => {
   };
 
 
+  // Coins nach Spielende vergeben
+  const awardCoinsForGame = async (percentageChange: number) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch('http://localhost:3000/api/coins/award-coins', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          percentageChange: percentageChange
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(`💰 Coins erhalten:`, data);
+
+        // Event für andere Komponenten (z.B. Header) dispatchen
+        window.dispatchEvent(new CustomEvent('coinsUpdated', {
+          detail: {
+            coinsEarned: data.coinsEarned,
+            currentCoins: data.currentCoins,
+            percentageChange: percentageChange
+          }
+        }));
+
+        // Optional: Erfolg-Notification anzeigen
+        if (data.coinsEarned > 0) {
+          // Du könntest hier eine Toast-Notification oder ähnliches anzeigen
+          console.log(`🎉 ${data.coinsEarned} Coins erhalten für ${percentageChange.toFixed(2)}% Gewinn!`);
+        }
+      } else {
+        console.error('Fehler beim Vergeben der Coins:', await response.text());
+      }
+    } catch (error) {
+      console.error('Coins Award Error:', error);
+    }
+  };
+
 
   // In deiner handleCapitalSubmit Funktion
   const handleCapitalSubmit = () => {
@@ -413,6 +456,9 @@ const Game: React.FC = () => {
         });
 
         updatePercentageProfit(percentageChange);
+
+        // Coins vergeben basierend auf percentageChange
+        awardCoinsForGame(percentageChange);
 
         setGameFinished(true);
         setShowFinishPopup(true);
