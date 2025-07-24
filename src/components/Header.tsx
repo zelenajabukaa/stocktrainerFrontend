@@ -82,6 +82,26 @@ const Header: React.FC = () => {
     fetchUserProfileAndXP();
   }, [userId]);
 
+  // Event-Listener für Coins-Updates aus dem Game
+  useEffect(() => {
+    const handleCoinsUpdate = (event: CustomEvent) => {
+      const { currentCoins } = event.detail;
+      if (currentCoins !== undefined) {
+        setUser(prev => ({
+          ...prev,
+          ingameCurrency: currentCoins
+        }));
+        console.log(`💰 Header: Coins aktualisiert auf ${currentCoins}`);
+      }
+    };
+
+    window.addEventListener('coinsUpdated', handleCoinsUpdate as EventListener);
+
+    return () => {
+      window.removeEventListener('coinsUpdated', handleCoinsUpdate as EventListener);
+    };
+  }, []);
+
   function calculateLevel(xp: number) {
     const xpTable = [
       { level: 1, xp: 100 }, { level: 2, xp: 300 }, { level: 3, xp: 500 },
@@ -160,7 +180,7 @@ const Header: React.FC = () => {
   return (
     <header className={styles.headerBar}>
       <div className={styles.leftInfo}>
-        <div 
+        <div
           className={styles.ingameCurrency}
           onClick={() => navigate('/shop')}
           style={{ cursor: 'pointer' }}
@@ -213,7 +233,7 @@ const Header: React.FC = () => {
             <button className={styles.menuItem} onClick={() => navigate('/user/avatar')}>
               Avatar ändern
             </button>
-              <button className={styles.menuItem} onClick={() => navigate('/friends')}>
+            <button className={styles.menuItem} onClick={() => navigate('/friends')}>
               Freunde
             </button>
             <button className={styles.menuItem} onClick={() => navigate('/informations')}>
