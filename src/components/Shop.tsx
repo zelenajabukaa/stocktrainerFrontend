@@ -4,17 +4,6 @@ import Header from './Header';
 import styles from '../css/Shop.module.css';
 import coin from '../assets/coin.png';
 
-// Import avatar images
-import avatar1 from '../../public/avatar/avatar1.png';
-import avatar2 from '../../public/avatar/avatar2.png';
-import avatar3 from '../../public/avatar/avatar3.png';
-import avatar4 from '../../public/avatar/avatar4.png';
-import avatar5 from '../../public/avatar/avatar5.png';
-import avatar6 from '../../public/avatar/avatar6.png';
-import avatar7 from '../../public/avatar/avatar7.png';
-import avatar8 from '../../public/avatar/avatar8.png';
-import avatar9 from '../../public/avatar/avatar9.png';
-
 interface ShopItem {
   id: number;
   name: string;
@@ -26,26 +15,12 @@ interface ShopItem {
 
 const Shop: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'avatars' | 'themes' | 'names'>('avatars');
+  const [activeTab, setActiveTab] = useState<'themes' | 'names'>('themes');
   const [userCoins, setUserCoins] = useState(0);
-  const [ownedItems, setOwnedItems] = useState<number[]>([]);
   const [nameShopItems, setNameShopItems] = useState<ShopItem[]>([]);
-
-  const avatarImages = [
-    avatar1, avatar2, avatar3, avatar4, avatar5,
-    avatar6, avatar7, avatar8, avatar9,
-  ];
 
   // Sample shop items
   const shopItems = {
-    avatars: [
-      { id: 1, name: 'Mystischer Magier', price: 150, owned: false, preview: avatar1, description: 'Ein mächtiger Zauberer mit geheimnisvoller Aura' },
-      { id: 2, name: 'Cyber Krieger', price: 200, owned: false, preview: avatar2, description: 'Futuristischer Kämpfer aus der digitalen Zukunft' },
-      { id: 3, name: 'Waldläufer', price: 120, owned: false, preview: avatar3, description: 'Erfahrener Bogenschütze der tiefen Wälder' },
-      { id: 4, name: 'Königlicher Ritter', price: 300, owned: false, preview: avatar4, description: 'Edler Beschützer des Königreichs' },
-      { id: 5, name: 'Ninja Schatten', price: 250, owned: false, preview: avatar5, description: 'Meister der Stealth und Geschwindigkeit' },
-      { id: 6, name: 'Piratenkäptn', price: 180, owned: false, preview: avatar6, description: 'Legendärer Seefahrer der sieben Meere' },
-    ] as ShopItem[],
     themes: [
       { id: 101, name: 'Dunkles Theme', price: 100, owned: false, description: 'Elegante dunkle Oberfläche für deine Augen' },
       { id: 102, name: 'Neon Glow', price: 150, owned: false, description: 'Futuristisches Neon-Design mit Glow-Effekten' },
@@ -59,6 +34,7 @@ const Shop: React.FC = () => {
   useEffect(() => {
     fetchUserData();
     fetchNames();
+
   }, []);
 
   // Hole Namen und Preise aus der Datenbank
@@ -92,7 +68,6 @@ const Shop: React.FC = () => {
           description: '',
         };
       });
-      setOwnedItems(items.filter(i => i.owned).map(i => i.id));
       setNameShopItems(items);
     } catch (err) {
       console.error('Fehler beim Laden der Namen:', err);
@@ -142,7 +117,6 @@ const Shop: React.FC = () => {
         const data = await res.json();
         if (res.ok && data.success) {
           setUserCoins(prev => prev - item.price);
-          setOwnedItems(prev => [...prev, item.id]);
           setNameShopItems(prev => prev.map(i => i.id === item.id ? { ...i, owned: true } : i));
           alert(`${item.name} erfolgreich gekauft!`);
         } else {
@@ -151,7 +125,6 @@ const Shop: React.FC = () => {
       } else {
         // Simulierter Kauf für Avatare/Themes
         setUserCoins(prev => prev - item.price);
-        setOwnedItems(prev => [...prev, item.id]);
         const category = activeTab;
         shopItems[category] = shopItems[category].map(shopItem => 
           shopItem.id === item.id ? { ...shopItem, owned: true } : shopItem
@@ -206,13 +179,7 @@ const Shop: React.FC = () => {
           <h1 className={styles.shopTitle}>Game Shop</h1>
 
         <div className={styles.tabNavigation}>
-          <button
-            className={`${styles.tab} ${activeTab === 'avatars' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('avatars')}
-          >
-             Avatare
-          </button>
-          <button
+                    <button
             className={`${styles.tab} ${activeTab === 'themes' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('themes')}
           >
