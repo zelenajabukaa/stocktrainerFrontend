@@ -318,3 +318,57 @@
 	  gap: 15px;
 	}
  }
+
+ /* NameColorSelector.module.css */
+
+.section {
+	padding: 2rem;
+	background-color: #1e1e1e;
+	border-radius: 12px;
+	color: #ffffff;
+ }
+ 
+ .sectionTitle {
+	font-size: 1.8rem;
+	margin-bottom: 1.2rem;
+	color: #f0f0f0;
+ }
+ 
+ .infoText {
+	font-size: 1rem;
+	color: #aaaaaa;
+ }
+ 
+ .nameColorList {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.8rem;
+	margin-top: 1rem;
+ }
+ 
+ .nameColorBtn,
+ .selectedNameColorBtn {
+	padding: 0.6rem 1.2rem;
+	border: none;
+	border-radius: 8px;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+ }
+ 
+ .nameColorBtn {
+	background-color: #444;
+	color: white;
+ }
+ 
+ .nameColorBtn:hover {
+	background-color: #666;
+ }
+ 
+ .selectedNameColorBtn {
+	background-color: #008cff;
+	color: white;
+	font-weight: bold;
+	cursor: default;
+ }
+ 

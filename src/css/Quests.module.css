@@ -277,3 +277,20 @@ body {
 .questsContainer {
   overflow: visible !important;
 }
+
+.toggleButton {
+  background-color: #0040d6;
+  color: #ffffff;
+  padding: 0.6rem 1.4rem;
+  border: 2px solid #0040d6;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.toggleButton:hover {
+  background-color: #0095ff;
+  border-color: #0095ff;
+}
