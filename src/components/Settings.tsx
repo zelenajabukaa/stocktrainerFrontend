@@ -35,7 +35,8 @@ const Settings: React.FC = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  // Load user profile
+  // Load user profile & user names
+  const [userNames, setUserNames] = useState<Array<{ name_id: number; name: string; selected: boolean }>>([]);
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -65,7 +66,62 @@ const Settings: React.FC = () => {
       .catch(() => {
         setError('Fehler beim Laden des Profils');
       });
+
+    // Hole freigeschaltete Namenfarben
+    const fetchUserNames = async () => {
+      try {
+        const res = await fetch('http://localhost:3000/api/me/names', {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const userNameRows = await res.json(); // [{name_id, bought, selected}]
+        // Hole die Namen selbst
+        const resNames = await fetch('http://localhost:3000/api/names', {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const nameRows = await resNames.json(); // [{id, name, coins}]
+        // Mappen
+        const unlocked = userNameRows.filter((n: any) => n.bought).map((n: any) => ({
+          name_id: n.name_id,
+          name: nameRows.find((row: any) => row.id === n.name_id)?.name ?? '',
+          selected: !!n.selected,
+        }));
+        setUserNames(unlocked);
+      } catch (err) {
+        setError('Fehler beim Laden der Namenfarben');
+      }
+    };
+    fetchUserNames();
   }, [navigate]);
+  // Namefarbe auswählen
+  const handleSelectNameColor = async (name_id: number) => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const res = await fetch('http://localhost:3000/api/select-name', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name_id }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setUserNames(prev => prev.map(n => ({ ...n, selected: n.name_id === name_id })));
+        setMessage('Namefarbe erfolgreich ausgewählt');
+      } else {
+        setError(data.error || 'Fehler beim Auswählen der Namefarbe');
+      }
+    } catch (err) {
+      setError('Serverfehler beim Auswählen der Namefarbe');
+    }
+  };
 
   // Clear messages after 5 seconds
   useEffect(() => {
@@ -258,6 +314,56 @@ const Settings: React.FC = () => {
               {isUpdatingUsername ? 'Wird aktualisiert...' : 'Benutzername aktualisieren'}
             </button>
           </form>
+        </div>
+
+        {/* Namefarben Einstellungen */}
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>Namenfarbe auswählen</h2>
+          {userNames.length === 0 ? (
+            <p className={styles.infoText}>Du hast noch keine Namenfarbe freigeschaltet.</p>
+          ) : (
+            <div className={styles.nameColorList}>
+              <button
+                className={userNames.every(n => !n.selected) ? styles.selectedNameColorBtn : styles.nameColorBtn}
+                onClick={async () => {
+                  // Backend: Alle selected auf 0 setzen
+                  const token = localStorage.getItem('token');
+                  if (!token) return;
+                  try {
+                    const res = await fetch('http://localhost:3000/api/deselect-name', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                      },
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                      setUserNames(prev => prev.map(n => ({ ...n, selected: false })));
+                      setMessage('Keine Namenfarbe ausgewählt');
+                    } else {
+                      setError(data.error || 'Fehler beim Entfernen der Namenfarbe');
+                    }
+                  } catch (err) {
+                    setError('Serverfehler beim Entfernen der Namenfarbe');
+                  }
+                }}
+                disabled={userNames.every(n => !n.selected)}
+              >
+                Keine Farbe {userNames.every(n => !n.selected) ? '(aktiv)' : ''}
+              </button>
+              {userNames.map((n) => (
+                <button
+                  key={n.name_id}
+                  className={n.selected ? styles.selectedNameColorBtn : styles.nameColorBtn}
+                  onClick={() => handleSelectNameColor(n.name_id)}
+                  disabled={n.selected}
+                >
+                  {n.name} {n.selected ? '(aktiv)' : ''}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Password Update Section */}
