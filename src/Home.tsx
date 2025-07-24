@@ -217,11 +217,30 @@ const Home: React.FC = () => {
           <div
             className={
               'username ' +
-              (nameColor === 'neon' ? 'username-neon' :
-                nameColor === 'silber' ? 'username-silber' :
-                nameColor === 'gold' ? 'username-gold' :
-                nameColor === 'diamond' ? 'username-diamond' :
-                '')
+              (nameColor === 'red' ? 'username-red' :
+                nameColor === 'blue' ? 'username-blue' :
+                  nameColor === 'green' ? 'username-green' :
+                    nameColor === 'yellow' ? 'username-yellow' :
+                      nameColor === 'orange' ? 'username-orange' :
+                        nameColor === 'purple' ? 'username-purple' :
+                          nameColor === 'pink' ? 'username-pink' :
+                            nameColor === 'cyan' ? 'username-cyan' :
+                              nameColor === 'lime' ? 'username-lime' :
+                                nameColor === 'teal' ? 'username-teal' :
+                                  nameColor === 'neon' ? 'username-neon' :
+                                    nameColor === 'silber' ? 'username-silber' :
+                                      nameColor === 'gold' ? 'username-gold' :
+                                        nameColor === 'diamond' ? 'username-diamond' :
+                                          nameColor === 'ruby' ? 'username-ruby' :
+                                            nameColor === 'emerald' ? 'username-emerald' :
+                                              nameColor === 'sapphire' ? 'username-sapphire' :
+                                                nameColor === 'amethyst' ? 'username-amethyst' :
+                                                  nameColor === 'topaz' ? 'username-topaz' :
+                                                    nameColor === 'obsidian' ? 'username-obsidian' :
+                                                      nameColor === 'rainbow' ? 'username-rainbow' :
+                                                        nameColor === 'plasma' ? 'username-plasma' :
+                                                          nameColor === 'cosmic' ? 'username-cosmic' :
+                                                            '')
             }
           >
             {username}

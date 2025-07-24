@@ -1,27 +1,426 @@
+/* Standard Farben */
+.username-red {
+  color: #ff4444;
+  text-shadow: 0 0 8px #ff4444, 0 0 16px rgba(255, 68, 68, 0.5);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
 
+.username-blue {
+  color: #4488ff;
+  text-shadow: 0 0 8px #4488ff, 0 0 16px rgba(68, 136, 255, 0.5);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.username-green {
+  color: #44ff44;
+  text-shadow: 0 0 8px #44ff44, 0 0 16px rgba(68, 255, 68, 0.5);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.username-yellow {
+  color: #ffff44;
+  text-shadow: 0 0 8px #ffff44, 0 0 16px rgba(255, 255, 68, 0.5);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.username-orange {
+  color: #ff8844;
+  text-shadow: 0 0 8px #ff8844, 0 0 16px rgba(255, 136, 68, 0.5);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.username-purple {
+  color: #8844ff;
+  text-shadow: 0 0 8px #8844ff, 0 0 16px rgba(136, 68, 255, 0.5);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.username-pink {
+  color: #ff44ff;
+  text-shadow: 0 0 8px #ff44ff, 0 0 16px rgba(255, 68, 255, 0.5);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.username-cyan {
+  color: #44ffff;
+  text-shadow: 0 0 8px #44ffff, 0 0 16px rgba(68, 255, 255, 0.5);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.username-lime {
+  color: #88ff44;
+  text-shadow: 0 0 8px #88ff44, 0 0 16px rgba(136, 255, 68, 0.5);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+.username-teal {
+  color: #44ff88;
+  text-shadow: 0 0 8px #44ff88, 0 0 16px rgba(68, 255, 136, 0.5);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+/* Premium Farben */
 .username-neon {
   color: #39ff14;
-  text-shadow: 0 0 8px #39ff14, 0 0 16px #00e6ff;
+  text-shadow: 0 0 8px #39ff14, 0 0 16px #00e6ff, 0 0 24px rgba(57, 255, 20, 0.3);
   font-weight: 700;
+  animation: neonPulse 2s infinite alternate;
+  transition: all 0.3s ease;
 }
-
 
 .username-silber {
-  color: #bdbdbd;
-  text-shadow: 0 0 6px #e0e0e0;
+  color: #c0c0c0;
+  text-shadow: 0 0 8px #e8e8e8, 0 0 16px rgba(224, 224, 224, 0.6);
   font-weight: 700;
+  background: linear-gradient(45deg, #c0c0c0, #e8e8e8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.3s ease;
 }
-
 
 .username-gold {
   color: #ffd700;
-  text-shadow: 0 0 8px #ffd700;
+  text-shadow: 0 0 8px #ffd700, 0 0 16px #ffed4e, 0 0 24px rgba(255, 215, 0, 0.4);
   font-weight: 700;
+  background: linear-gradient(45deg, #ffd700, #ffed4e, #fff200);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: goldShimmer 3s infinite;
+  transition: all 0.3s ease;
 }
 
-
 .username-diamond {
-  color: #0ff;
-  text-shadow: 0 0 12px #b9f2ff;
+  color: #b9f2ff;
+  text-shadow: 0 0 8px #0ff, 0 0 16px #b9f2ff, 0 0 24px #87ceeb, 0 0 32px rgba(185, 242, 255, 0.5);
   font-weight: 700;
+  background: linear-gradient(45deg, #0ff, #b9f2ff, #87ceeb, #add8e6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: diamondSparkle 2.5s infinite;
+  transition: all 0.3s ease;
+}
+
+/* Edelstein Farben */
+.username-ruby {
+  color: #e0115f;
+  text-shadow: 0 0 8px #e0115f, 0 0 16px #ff1493, 0 0 24px #dc143c, 0 0 32px rgba(224, 17, 95, 0.6);
+  font-weight: 700;
+  background: linear-gradient(45deg, #8b0000, #e0115f, #ff1493, #dc143c);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rubyGlow 2.8s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.username-emerald {
+  color: #50c878;
+  text-shadow: 0 0 8px #50c878, 0 0 16px #00ff7f, 0 0 24px #32cd32, 0 0 32px rgba(80, 200, 120, 0.6);
+  font-weight: 700;
+  background: linear-gradient(45deg, #006400, #50c878, #00ff7f, #32cd32);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: emeraldPulse 2.5s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.username-sapphire {
+  color: #0f52ba;
+  text-shadow: 0 0 8px #0f52ba, 0 0 16px #4169e1, 0 0 24px #1e90ff, 0 0 32px rgba(15, 82, 186, 0.6);
+  font-weight: 700;
+  background: linear-gradient(45deg, #000080, #0f52ba, #4169e1, #1e90ff);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: sapphireWave 3s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.username-amethyst {
+  color: #9966cc;
+  text-shadow: 0 0 8px #9966cc, 0 0 16px #ba55d3, 0 0 24px #dda0dd, 0 0 32px rgba(153, 102, 204, 0.6);
+  font-weight: 700;
+  background: linear-gradient(45deg, #4b0082, #9966cc, #ba55d3, #dda0dd);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: amethystShimmer 2.7s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.username-topaz {
+  color: #ffc87c;
+  text-shadow: 0 0 8px #ffc87c, 0 0 16px #ffb347, 0 0 24px #ff8c00, 0 0 32px rgba(255, 200, 124, 0.6);
+  font-weight: 700;
+  background: linear-gradient(45deg, #ff8c00, #ffc87c, #ffb347, #ffd700);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: topazGleam 2.3s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.username-obsidian {
+  color: #36454f;
+  text-shadow: 0 0 8px #36454f, 0 0 16px #2f4f4f, 0 0 24px #708090, 0 0 32px rgba(54, 69, 79, 0.8);
+  font-weight: 700;
+  background: linear-gradient(45deg, #000000, #36454f, #2f4f4f, #708090);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: obsidianDark 3.5s ease-in-out infinite;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(54, 69, 79, 0.3);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+/* Legendary Farben */
+.username-rainbow {
+  font-weight: 700;
+  background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #80ff00, #00ff00, #00ff80, #00ffff, #0080ff, #0000ff, #8000ff, #ff00ff, #ff0080);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbowFlow 3s linear infinite;
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.username-plasma {
+  color: #ff00ff;
+  text-shadow: 0 0 8px #ff00ff, 0 0 16px #8000ff, 0 0 24px #0080ff, 0 0 32px rgba(255, 0, 255, 0.6);
+  font-weight: 700;
+  background: linear-gradient(45deg, #ff00ff, #8000ff, #0080ff, #00ffff);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: plasmaFlow 2s linear infinite;
+  transition: all 0.3s ease;
+}
+
+.username-cosmic {
+  color: #4a0080;
+  text-shadow: 0 0 8px #4a0080, 0 0 16px #8000ff, 0 0 24px #b300ff, 0 0 32px #e600ff, 0 0 40px rgba(74, 0, 128, 0.7);
+  font-weight: 700;
+  background: linear-gradient(45deg, #000033, #4a0080, #8000ff, #b300ff, #e600ff);
+  background-size: 500% 500%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: cosmicPulse 4s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+/* Hover-Effekte */
+.username-neon:hover,
+.username-silber:hover,
+.username-gold:hover,
+.username-diamond:hover,
+.username-ruby:hover,
+.username-emerald:hover,
+.username-sapphire:hover,
+.username-amethyst:hover,
+.username-topaz:hover,
+.username-obsidian:hover,
+.username-rainbow:hover,
+.username-plasma:hover,
+.username-cosmic:hover {
+  transform: scale(1.05);
+  filter: brightness(1.2);
+}
+
+/* Standard Farben Hover */
+.username-red:hover,
+.username-blue:hover,
+.username-green:hover,
+.username-yellow:hover,
+.username-orange:hover,
+.username-purple:hover,
+.username-pink:hover,
+.username-cyan:hover,
+.username-lime:hover,
+.username-teal:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+/* Animationen */
+@keyframes neonPulse {
+  0% {
+    text-shadow: 0 0 8px #39ff14, 0 0 16px #00e6ff, 0 0 24px rgba(57, 255, 20, 0.3);
+  }
+
+  100% {
+    text-shadow: 0 0 12px #39ff14, 0 0 24px #00e6ff, 0 0 36px rgba(57, 255, 20, 0.6);
+  }
+}
+
+@keyframes goldShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes diamondSparkle {
+
+  0%,
+  100% {
+    text-shadow: 0 0 8px #0ff, 0 0 16px #b9f2ff, 0 0 24px #87ceeb;
+  }
+
+  50% {
+    text-shadow: 0 0 12px #0ff, 0 0 24px #b9f2ff, 0 0 36px #87ceeb, 0 0 48px rgba(185, 242, 255, 0.8);
+  }
+}
+
+@keyframes rainbowFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 400% 50%;
+  }
+}
+
+@keyframes plasmaFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 300% 50%;
+  }
+}
+
+@keyframes cosmicPulse {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+    text-shadow: 0 0 8px #4a0080, 0 0 16px #8000ff, 0 0 24px #b300ff;
+  }
+
+  50% {
+    background-position: 500% 50%;
+    text-shadow: 0 0 12px #4a0080, 0 0 24px #8000ff, 0 0 36px #b300ff, 0 0 48px #e600ff;
+  }
+}
+
+/* Edelstein Animationen */
+@keyframes rubyGlow {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+    text-shadow: 0 0 8px #e0115f, 0 0 16px #ff1493, 0 0 24px #dc143c;
+  }
+
+  50% {
+    background-position: 300% 50%;
+    text-shadow: 0 0 12px #e0115f, 0 0 24px #ff1493, 0 0 36px #dc143c, 0 0 48px rgba(224, 17, 95, 0.8);
+  }
+}
+
+@keyframes emeraldPulse {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+    text-shadow: 0 0 8px #50c878, 0 0 16px #00ff7f, 0 0 24px #32cd32;
+  }
+
+  50% {
+    background-position: 300% 50%;
+    text-shadow: 0 0 12px #50c878, 0 0 24px #00ff7f, 0 0 36px #32cd32, 0 0 48px rgba(80, 200, 120, 0.8);
+  }
+}
+
+@keyframes sapphireWave {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+    text-shadow: 0 0 8px #0f52ba, 0 0 16px #4169e1, 0 0 24px #1e90ff;
+  }
+
+  50% {
+    background-position: 300% 50%;
+    text-shadow: 0 0 12px #0f52ba, 0 0 24px #4169e1, 0 0 36px #1e90ff, 0 0 48px rgba(15, 82, 186, 0.8);
+  }
+}
+
+@keyframes amethystShimmer {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+    text-shadow: 0 0 8px #9966cc, 0 0 16px #ba55d3, 0 0 24px #dda0dd;
+  }
+
+  50% {
+    background-position: 300% 50%;
+    text-shadow: 0 0 12px #9966cc, 0 0 24px #ba55d3, 0 0 36px #dda0dd, 0 0 48px rgba(153, 102, 204, 0.8);
+  }
+}
+
+@keyframes topazGleam {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+    text-shadow: 0 0 8px #ffc87c, 0 0 16px #ffb347, 0 0 24px #ff8c00;
+  }
+
+  50% {
+    background-position: 300% 50%;
+    text-shadow: 0 0 12px #ffc87c, 0 0 24px #ffb347, 0 0 36px #ff8c00, 0 0 48px rgba(255, 200, 124, 0.8);
+  }
+}
+
+@keyframes obsidianDark {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+    text-shadow: 0 0 8px #36454f, 0 0 16px #2f4f4f, 0 0 24px #708090;
+    border-color: rgba(54, 69, 79, 0.3);
+  }
+
+  50% {
+    background-position: 300% 50%;
+    text-shadow: 0 0 12px #36454f, 0 0 24px #2f4f4f, 0 0 36px #708090, 0 0 48px rgba(54, 69, 79, 0.9);
+    border-color: rgba(54, 69, 79, 0.6);
+  }
 }
