@@ -1,0 +1,27 @@
+
+.username-neon {
+  color: #39ff14;
+  text-shadow: 0 0 8px #39ff14, 0 0 16px #00e6ff;
+  font-weight: 700;
+}
+
+
+.username-silber {
+  color: #bdbdbd;
+  text-shadow: 0 0 6px #e0e0e0;
+  font-weight: 700;
+}
+
+
+.username-gold {
+  color: #ffd700;
+  text-shadow: 0 0 8px #ffd700;
+  font-weight: 700;
+}
+
+
+.username-diamond {
+  color: #0ff;
+  text-shadow: 0 0 12px #b9f2ff;
+  font-weight: 700;
+}
