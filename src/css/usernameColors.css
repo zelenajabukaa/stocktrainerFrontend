@@ -14,8 +14,8 @@
 }
 
 .username-green {
-  color: #44ff44;
-  text-shadow: 0 0 8px #44ff44, 0 0 16px rgba(68, 255, 68, 0.5);
+  color: #00ff00;
+  text-shadow: 0 0 8px #00ff00, 0 0 16px rgba(0, 255, 0, 0.5);
   font-weight: 700;
   transition: all 0.3s ease;
 }
@@ -71,11 +71,17 @@
 
 /* Premium Farben */
 .username-neon {
-  color: #39ff14;
-  text-shadow: 0 0 8px #39ff14, 0 0 16px #00e6ff, 0 0 24px rgba(57, 255, 20, 0.3);
+  color: #ffffff;
+  text-shadow:
+    0 0 8px #ffffff,
+    0 0 16px #ffffff,
+    0 0 24px #ffffff,
+    0 0 32px rgba(255, 255, 255, 0.8),
+    0 0 40px rgba(255, 255, 255, 0.6);
   font-weight: 700;
-  animation: neonPulse 2s infinite alternate;
+  animation: neonWhitePulse 2s infinite alternate;
   transition: all 0.3s ease;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
 }
 
 .username-silber {
@@ -180,19 +186,22 @@
 }
 
 .username-obsidian {
-  color: #36454f;
-  text-shadow: 0 0 8px #36454f, 0 0 16px #2f4f4f, 0 0 24px #708090, 0 0 32px rgba(54, 69, 79, 0.8);
+  color: #483d8b;
+  text-shadow:
+    0 0 8px #483d8b,
+    0 0 16px #2f2f4f,
+    0 0 24px #1e1e3f,
+    0 0 32px rgba(72, 61, 139, 0.8),
+    0 0 40px rgba(47, 47, 79, 0.5);
   font-weight: 700;
-  background: linear-gradient(45deg, #000000, #36454f, #2f4f4f, #708090);
-  background-size: 300% 300%;
+  background: linear-gradient(45deg, #1a1a2e, #483d8b, #2f2f4f, #6a5acd, #191970);
+  background-size: 400% 400%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: obsidianDark 3.5s ease-in-out infinite;
+  animation: obsidianFlow 3.5s ease-in-out infinite;
   transition: all 0.3s ease;
-  border: 1px solid rgba(54, 69, 79, 0.3);
-  padding: 2px 4px;
-  border-radius: 3px;
+  filter: drop-shadow(0 0 3px rgba(72, 61, 139, 0.4));
 }
 
 /* Legendary Farben */
@@ -268,13 +277,23 @@
 }
 
 /* Animationen */
-@keyframes neonPulse {
+@keyframes neonWhitePulse {
   0% {
-    text-shadow: 0 0 8px #39ff14, 0 0 16px #00e6ff, 0 0 24px rgba(57, 255, 20, 0.3);
+    text-shadow:
+      0 0 8px #ffffff,
+      0 0 16px #ffffff,
+      0 0 24px #ffffff,
+      0 0 32px rgba(255, 255, 255, 0.8),
+      0 0 40px rgba(255, 255, 255, 0.6);
   }
 
   100% {
-    text-shadow: 0 0 12px #39ff14, 0 0 24px #00e6ff, 0 0 36px rgba(57, 255, 20, 0.6);
+    text-shadow:
+      0 0 12px #ffffff,
+      0 0 20px #ffffff,
+      0 0 32px #ffffff,
+      0 0 48px rgba(255, 255, 255, 0.9),
+      0 0 64px rgba(255, 255, 255, 0.7);
   }
 }
 
@@ -409,18 +428,46 @@
   }
 }
 
-@keyframes obsidianDark {
+@keyframes obsidianFlow {
 
   0%,
   100% {
     background-position: 0% 50%;
-    text-shadow: 0 0 8px #36454f, 0 0 16px #2f4f4f, 0 0 24px #708090;
-    border-color: rgba(54, 69, 79, 0.3);
+    text-shadow:
+      0 0 8px #483d8b,
+      0 0 16px #2f2f4f,
+      0 0 24px #1e1e3f;
+    filter: drop-shadow(0 0 3px rgba(72, 61, 139, 0.4));
+  }
+
+  25% {
+    background-position: 25% 75%;
+    text-shadow:
+      0 0 10px #483d8b,
+      0 0 20px #2f2f4f,
+      0 0 30px #1e1e3f,
+      0 0 40px rgba(72, 61, 139, 0.6);
+    filter: drop-shadow(0 0 5px rgba(106, 90, 205, 0.5));
   }
 
   50% {
-    background-position: 300% 50%;
-    text-shadow: 0 0 12px #36454f, 0 0 24px #2f4f4f, 0 0 36px #708090, 0 0 48px rgba(54, 69, 79, 0.9);
-    border-color: rgba(54, 69, 79, 0.6);
+    background-position: 100% 50%;
+    text-shadow:
+      0 0 12px #483d8b,
+      0 0 24px #2f2f4f,
+      0 0 36px #1e1e3f,
+      0 0 48px rgba(72, 61, 139, 0.8),
+      0 0 60px rgba(106, 90, 205, 0.4);
+    filter: drop-shadow(0 0 8px rgba(106, 90, 205, 0.7));
+  }
+
+  75% {
+    background-position: 75% 25%;
+    text-shadow:
+      0 0 10px #483d8b,
+      0 0 20px #2f2f4f,
+      0 0 30px #1e1e3f,
+      0 0 40px rgba(72, 61, 139, 0.6);
+    filter: drop-shadow(0 0 5px rgba(25, 25, 112, 0.5));
   }
 }
