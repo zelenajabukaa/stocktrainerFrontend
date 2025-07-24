@@ -152,38 +152,26 @@ const Shop: React.FC = () => {
     <>
       <Header />
       <div className={styles.shopContainer}>
-        <div className={styles.shopHeader}>
-          <button 
-            className={styles.backBtn}
-            onClick={() => navigate('/home')}
-          >
-            ← Zurück
-          </button>
           <h1 className={styles.shopTitle}>Game Shop</h1>
-          <div className={styles.userCoins}>
-            <img src={coin} alt="Coins" />
-            <span>{userCoins}</span>
-          </div>
-        </div>
 
         <div className={styles.tabNavigation}>
           <button
             className={`${styles.tab} ${activeTab === 'avatars' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('avatars')}
           >
-            👤 Avatare
+             Avatare
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'themes' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('themes')}
           >
-            🎨 Themes
+             Themes
           </button>
           <button
             className={`${styles.tab} ${activeTab === 'names' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('names')}
           >
-            ✨ Namen
+             Namen
           </button>
         </div>
 
