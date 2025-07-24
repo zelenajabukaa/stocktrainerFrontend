@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Header from './components/Header';
 import { useNavigate } from 'react-router-dom';
 import './css/home.css';
+import './css/usernameColors.css';
 
 const Home: React.FC = () => {
   let username = "Username";
@@ -15,6 +16,42 @@ const Home: React.FC = () => {
   const level = 1;
   const ingameCurrency = 0;
   const navigate = useNavigate();
+
+  // NameColor State
+  const [nameColor, setNameColor] = useState<string | null>(null);
+  // Hole die ausgewählte Namenfarbe
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    fetch('http://localhost:3000/api/me/names', {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        // Finde die ausgewählte Namenfarbe
+        const selected = data.find((n: any) => n.selected);
+        if (selected) {
+          // Hole den Namen aus /api/names
+          fetch('http://localhost:3000/api/names', {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          })
+            .then(res => res.json())
+            .then(names => {
+              const nameObj = names.find((row: any) => row.id === selected.name_id);
+              if (nameObj) setNameColor(nameObj.name);
+              else setNameColor(null);
+            });
+        } else {
+          setNameColor(null);
+        }
+      });
+  }, []);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
@@ -177,7 +214,18 @@ const Home: React.FC = () => {
       <div className="header-area">
         <div></div>
         <div className="center-col">
-          <div className="username">{username}</div>
+          <div
+            className={
+              'username ' +
+              (nameColor === 'neon' ? 'username-neon' :
+                nameColor === 'silber' ? 'username-silber' :
+                nameColor === 'gold' ? 'username-gold' :
+                nameColor === 'diamond' ? 'username-diamond' :
+                '')
+            }
+          >
+            {username}
+          </div>
           <button className="friends-btn" onClick={() => navigate('/leaderboard')}>Leaderboard</button>
         </div>
       </div>
