@@ -17,11 +17,11 @@ const Successes: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const successCategories = [
-    { key: 'activity', label: 'Aktivität', image: '/successes/activity.png', desc: 'Schließe allgemeine Sachen ab, wie das Einloggen, das Ansehen von Seiten oder das Erkunden von Funktionen.' },
-    { key: 'buy', label: 'Kaufen', image: '/successes/buy.png', desc: 'Verdiene Erfolge durch den Kauf von Aktien und den Ausbau deines Portfolios.' },
-    { key: 'diversify', label: 'Diversifizieren', image: '/successes/diversify.png', desc: 'Schalte Belohnungen frei, indem du in verschiedene Branchen oder Unternehmen investierst.' },
-    { key: 'sell', label: 'Verkaufen', image: '/successes/sell.png', desc: 'Erreiche Meilensteine durch das Verkaufen von Aktien und das Realisieren von Gewinnen (oder Verlusten).' },
-    { key: 'special', label: 'Spezial', image: '/successes/special.png', desc: 'Erreiche einzigartige Herausforderungen oder seltene In-Game-Aktionen – nur für die engagiertesten Trader!' },
+    { key: 'activity', label: 'Aktivität', image: '/successes/activity.png', desc: 'Schliesse folgende anzahl von Trades aus.' },
+    { key: 'buy', label: 'Kaufen', image: '/successes/buy.png', desc: 'Kaufe bestimmte anzahl von Aktien.' },
+    { key: 'diversify', label: 'Diversifizieren', image: '/successes/diversify.png', desc: 'Gleichzeitiger Besitz von Aktien einer vorgegebenen Anzahl verschiedener Aktiengesellschaften sicherstellen. Bezug des Besitzzeitpunkts auf denselben Zeitpunkt erforderlich.' },
+    { key: 'sell', label: 'Verkaufen', image: '/successes/sell.png', desc: 'Verkaufe bestimmte anzahl von Aktien.' },
+    { key: 'special', label: 'Spezial', image: '/successes/special.png', desc: 'Erzielung eines vorgegebenen prozentualen Gewinns innerhalb eines Kalenderjahres.' },
   ];
 
   useEffect(() => {
