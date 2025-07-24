@@ -88,6 +88,7 @@ const Successes: React.FC = () => {
                 (!isUnlocked ? ' ' + styles.successCardLocked : '') +
                 (isComplete ? ' ' + styles.successCardComplete : '')
               }
+              style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', height: '100%' }}
             >
               <span
                 style={{
@@ -137,7 +138,7 @@ const Successes: React.FC = () => {
                 </span>
               </div>
 
-              <span className={styles.successDesc}>{cat.desc}</span>
+              <span className={styles.successDesc} style={{ marginTop: 'auto', marginBottom: 'auto', display: 'block' }}>{cat.desc}</span>
 
               {!isUnlocked && (
                 <span className={styles.lockedText}>Locked</span>
