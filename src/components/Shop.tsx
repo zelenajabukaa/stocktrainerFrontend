@@ -29,6 +29,7 @@ const Shop: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'avatars' | 'themes' | 'names'>('avatars');
   const [userCoins, setUserCoins] = useState(0);
   const [ownedItems, setOwnedItems] = useState<number[]>([]);
+  const [nameShopItems, setNameShopItems] = useState<ShopItem[]>([]);
 
   const avatarImages = [
     avatar1, avatar2, avatar3, avatar4, avatar5,
@@ -52,18 +53,51 @@ const Shop: React.FC = () => {
       { id: 104, name: 'Königsblau', price: 120, owned: false, description: 'Majestätisches blaues Design für wahre Könige' },
       { id: 105, name: 'Sunset Orange', price: 90, owned: false, description: 'Warme Sonnenuntergangs-Farben' },
     ] as ShopItem[],
-    names: [
-      { id: 201, name: 'Goldener Titel', price: 500, owned: false, description: 'Dein Name wird in goldenem Glanz erstrahlen' },
-      { id: 202, name: 'Regenbogen-Effekt', price: 350, owned: false, description: 'Bunter Regenbogen-Farbverlauf für deinen Namen' },
-      { id: 203, name: 'Funkel-Animation', price: 400, owned: false, description: 'Dein Name funkelt wie die Sterne' },
-      { id: 204, name: 'Schatten-Effekt', price: 200, owned: false, description: 'Mysteriöser Schatten hinter deinem Namen' },
-      { id: 205, name: 'Flammen-Design', price: 300, owned: false, description: 'Feurige Flammen umhüllen deinen Namen' },
-    ] as ShopItem[],
+    names: nameShopItems,
   };
 
   useEffect(() => {
     fetchUserData();
+    fetchNames();
   }, []);
+
+  // Hole Namen und Preise aus der Datenbank
+  const fetchNames = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const res = await fetch('http://localhost:3000/api/names', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json(); // [{id, name, coins}]
+      // Hole gekaufte Namen
+      const resOwned = await fetch('http://localhost:3000/api/me/names', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const ownedData = await resOwned.json(); // [{name_id, bought, selected}]
+      // Mappe zu ShopItem, owned = bought==1
+      const items: ShopItem[] = data.map((n: any) => {
+        const userName = ownedData.find((u: any) => u.name_id === n.id);
+        return {
+          id: n.id,
+          name: n.name,
+          price: n.coins,
+          owned: userName ? !!userName.bought : false,
+          description: '',
+        };
+      });
+      setOwnedItems(items.filter(i => i.owned).map(i => i.id));
+      setNameShopItems(items);
+    } catch (err) {
+      console.error('Fehler beim Laden der Namen:', err);
+    }
+  };
 
   const fetchUserData = async () => {
     const token = localStorage.getItem('token');
@@ -95,18 +129,35 @@ const Shop: React.FC = () => {
     if (!token) return;
 
     try {
-      // Hier würdest du normalerweise eine API-Anfrage an deinen Server senden
-      // Für jetzt simulieren wir den Kauf
-      setUserCoins(prev => prev - item.price);
-      setOwnedItems(prev => [...prev, item.id]);
-      
-      // Update the item as owned
-      const category = activeTab;
-      shopItems[category] = shopItems[category].map(shopItem => 
-        shopItem.id === item.id ? { ...shopItem, owned: true } : shopItem
-      );
-
-      alert(`${item.name} erfolgreich gekauft!`);
+      if (activeTab === 'names') {
+        // Kaufe Name über API
+        const res = await fetch('http://localhost:3000/api/buy-name', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ name_id: item.id }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          setUserCoins(prev => prev - item.price);
+          setOwnedItems(prev => [...prev, item.id]);
+          setNameShopItems(prev => prev.map(i => i.id === item.id ? { ...i, owned: true } : i));
+          alert(`${item.name} erfolgreich gekauft!`);
+        } else {
+          alert(data.error || 'Kauf fehlgeschlagen!');
+        }
+      } else {
+        // Simulierter Kauf für Avatare/Themes
+        setUserCoins(prev => prev - item.price);
+        setOwnedItems(prev => [...prev, item.id]);
+        const category = activeTab;
+        shopItems[category] = shopItems[category].map(shopItem => 
+          shopItem.id === item.id ? { ...shopItem, owned: true } : shopItem
+        );
+        alert(`${item.name} erfolgreich gekauft!`);
+      }
     } catch (error) {
       console.error('Fehler beim Kauf:', error);
       alert('Kauf fehlgeschlagen!');
