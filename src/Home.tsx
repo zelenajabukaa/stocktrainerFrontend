@@ -19,37 +19,80 @@ const Home: React.FC = () => {
 
   // NameColor State
   const [nameColor, setNameColor] = useState<string | null>(null);
-  // Hole die ausgewählte Namenfarbe
+
+  // Funktion für die Username-Color-Klasse (gleiche Logik wie im Leaderboard)
+  const getNameColorClass = (color: string | null): string => {
+    if (!color) return '';
+
+    const colorMap: { [key: string]: string } = {
+      'red': 'username-red',
+      'blue': 'username-blue',
+      'green': 'username-green',
+      'yellow': 'username-yellow',
+      'orange': 'username-orange',
+      'purple': 'username-purple',
+      'pink': 'username-pink',
+      'cyan': 'username-cyan',
+      'lime': 'username-lime',
+      'teal': 'username-teal',
+      'neon': 'username-neon',
+      'silber': 'username-silber',
+      'gold': 'username-gold',
+      'diamond': 'username-diamond',
+      'ruby': 'username-ruby',
+      'emerald': 'username-emerald',
+      'sapphire': 'username-sapphire',
+      'amethyst': 'username-amethyst',
+      'topaz': 'username-topaz',
+      'obsidian': 'username-obsidian',
+      'rainbow': 'username-rainbow',
+      'plasma': 'username-plasma',
+      'cosmic': 'username-cosmic'
+    };
+
+    const cssClass = colorMap[color] || '';
+    return cssClass;
+  };
+
+  // Hole die ausgewählte Namenfarbe (gleiche Logik wie im Leaderboard)
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
-    fetch('http://localhost:3000/api/me/names', {
+
+    // Verwende die gleiche bewährte Logik wie im Leaderboard
+    fetch('http://localhost:3000/api/user-name/all-users-colors', {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     })
-      .then(res => res.json())
-      .then(data => {
-        // Finde die ausgewählte Namenfarbe
-        const selected = data.find((n: any) => n.selected);
-        if (selected) {
-          // Hole den Namen aus /api/names
-          fetch('http://localhost:3000/api/names', {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          })
-            .then(res => res.json())
-            .then(names => {
-              const nameObj = names.find((row: any) => row.id === selected.name_id);
-              if (nameObj) setNameColor(nameObj.name);
-              else setNameColor(null);
-            });
+      .then(res => {
+        return res.json();
+      })
+      .then(colorsData => {
+
+        // Finde den aktuellen User (gleiche Logik wie im Leaderboard)
+        const userData = localStorage.getItem('user');
+        if (userData) {
+          const userObj = JSON.parse(userData);
+
+          const userColor = colorsData.find((c: any) => c.username === userObj.username);
+
+          if (userColor?.nameColor) {
+            console.log('Setting nameColor to:', userColor.nameColor);
+            setNameColor(userColor.nameColor);
+          } else {
+            console.log('❌ No color found for user:', userObj.username);
+            setNameColor(null);
+          }
         } else {
+          console.log('❌ No user data in localStorage');
           setNameColor(null);
         }
+      })
+      .catch(err => {
+        console.error('❌ Error fetching user colors:', err);
+        setNameColor(null);
       });
   }, []);
 
@@ -214,35 +257,7 @@ const Home: React.FC = () => {
       <div className="header-area">
         <div></div>
         <div className="center-col">
-          <div
-            className={
-              'username ' +
-              (nameColor === 'red' ? 'username-red' :
-                nameColor === 'blue' ? 'username-blue' :
-                  nameColor === 'green' ? 'username-green' :
-                    nameColor === 'yellow' ? 'username-yellow' :
-                      nameColor === 'orange' ? 'username-orange' :
-                        nameColor === 'purple' ? 'username-purple' :
-                          nameColor === 'pink' ? 'username-pink' :
-                            nameColor === 'cyan' ? 'username-cyan' :
-                              nameColor === 'lime' ? 'username-lime' :
-                                nameColor === 'teal' ? 'username-teal' :
-                                  nameColor === 'neon' ? 'username-neon' :
-                                    nameColor === 'silber' ? 'username-silber' :
-                                      nameColor === 'gold' ? 'username-gold' :
-                                        nameColor === 'diamond' ? 'username-diamond' :
-                                          nameColor === 'ruby' ? 'username-ruby' :
-                                            nameColor === 'emerald' ? 'username-emerald' :
-                                              nameColor === 'sapphire' ? 'username-sapphire' :
-                                                nameColor === 'amethyst' ? 'username-amethyst' :
-                                                  nameColor === 'topaz' ? 'username-topaz' :
-                                                    nameColor === 'obsidian' ? 'username-obsidian' :
-                                                      nameColor === 'rainbow' ? 'username-rainbow' :
-                                                        nameColor === 'plasma' ? 'username-plasma' :
-                                                          nameColor === 'cosmic' ? 'username-cosmic' :
-                                                            '')
-            }
-          >
+          <div className={`username ${getNameColorClass(nameColor)}`}>
             {username}
           </div>
           <button className="friends-btn" onClick={() => navigate('/leaderboard')}>Leaderboard</button>

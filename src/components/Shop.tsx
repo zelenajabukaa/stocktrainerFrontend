@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Header from './Header';
 import styles from '../css/Shop.module.css';
 import coin from '../assets/coin.png';
+// import { themeShopItems, ThemeItem, handleThemePurchase } from '../data/themes'; // Themes ausgelagert
 
 interface ShopItem {
   id: number;
@@ -14,24 +14,12 @@ interface ShopItem {
 }
 
 const Shop: React.FC = () => {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'themes' | 'names'>('themes');
   const [userCoins, setUserCoins] = useState(0);
   const [nameShopItems, setNameShopItems] = useState<ShopItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  // Sample shop items
-  const shopItems = {
-    themes: [
-      { id: 101, name: 'Dunkles Theme', price: 100, owned: false, description: 'Elegante dunkle Oberfläche für deine Augen' },
-      { id: 102, name: 'Neon Glow', price: 150, owned: false, description: 'Futuristisches Neon-Design mit Glow-Effekten' },
-      { id: 103, name: 'Naturgrün', price: 80, owned: false, description: 'Beruhigendes Grün-Theme inspiriert von der Natur' },
-      { id: 104, name: 'Königsblau', price: 120, owned: false, description: 'Majestätisches blaues Design für wahre Könige' },
-      { id: 105, name: 'Sunset Orange', price: 90, owned: false, description: 'Warme Sonnenuntergangs-Farben' },
-    ] as ShopItem[],
-    names: nameShopItems,
-  };
+  // Themes are now moved to src/data/themes.ts for future use
 
   useEffect(() => {
     fetchUserData();
@@ -105,42 +93,20 @@ const Shop: React.FC = () => {
     if (!token) return;
 
     try {
-      if (activeTab === 'names') {
-        // Kaufe Name über API
-        const res = await fetch('http://localhost:3000/api/buy-name', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ name_id: item.id }),
-        });
-        const data = await res.json();
-        if (res.ok && data.success) {
-          const newCoins = userCoins - item.price;
-          setUserCoins(newCoins);
-          setNameShopItems(prev => prev.map(i => i.id === item.id ? { ...i, owned: true } : i));
-
-          // Event für Header-Update dispatchen
-          window.dispatchEvent(new CustomEvent('coinsUpdated', {
-            detail: {
-              coinsEarned: -item.price, // Negative Zahl für Ausgaben
-              currentCoins: newCoins,
-              source: 'shop'
-            }
-          }));
-
-        } else {
-          console.error('Kauf fehlgeschlagen:', data.error);
-        }
-      } else {
-        // Simulierter Kauf für Avatare/Themes
+      // Kaufe Name über API
+      const res = await fetch('http://localhost:3000/api/buy-name', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name_id: item.id }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
         const newCoins = userCoins - item.price;
         setUserCoins(newCoins);
-        const category = activeTab;
-        shopItems[category] = shopItems[category].map(shopItem =>
-          shopItem.id === item.id ? { ...shopItem, owned: true } : shopItem
-        );
+        setNameShopItems(prev => prev.map(i => i.id === item.id ? { ...i, owned: true } : i));
 
         // Event für Header-Update dispatchen
         window.dispatchEvent(new CustomEvent('coinsUpdated', {
@@ -151,6 +117,8 @@ const Shop: React.FC = () => {
           }
         }));
 
+      } else {
+        console.error('Kauf fehlgeschlagen:', data.error);
       }
     } catch (error) {
       console.error('Fehler beim Kauf:', error);
@@ -158,7 +126,7 @@ const Shop: React.FC = () => {
   };
 
   const renderTabContent = () => {
-    let items = shopItems[activeTab];
+    let items = nameShopItems;
 
     // Filter nach Suchbegriff
     if (searchTerm) {
@@ -212,29 +180,17 @@ const Shop: React.FC = () => {
     <>
       <Header />
       <div className={styles.shopContainer}>
-        <h1 className={styles.shopTitle}>Game Shop</h1>
+        <h1 className={styles.shopTitle}>Name Shop</h1>
 
-        <div className={styles.tabNavigation}>
-          <button
-            className={`${styles.tab} ${activeTab === 'themes' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('themes')}
-          >
-            Themes
-          </button>
-          <button
-            className={`${styles.tab} ${activeTab === 'names' ? styles.activeTab : ''}`}
-            onClick={() => setActiveTab('names')}
-          >
-            Namen
-          </button>
-        </div>
+        {/* Removed tab navigation - only names now */}
+        {/* Themes moved to src/data/themes.ts for future use */}
 
         {/* Filter- und Sortier-Leiste */}
         <div className={styles.filterBar}>
           <div className={styles.searchContainer}>
             <input
               type="text"
-              placeholder={`${activeTab === 'names' ? 'Farben' : 'Themes'} suchen...`}
+              placeholder="Farben suchen..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className={styles.searchInput}

@@ -1,51 +1,79 @@
 /* Standard Farben */
 .username-red {
-  color: #ff4444;
-  text-shadow: 0 0 8px #ff4444, 0 0 16px rgba(255, 68, 68, 0.5);
+  color: #ff4444 !important;
+  text-shadow: 0 0 8px #ff4444, 0 0 16px rgba(255, 68, 68, 0.5) !important;
   font-weight: 700;
   transition: all 0.3s ease;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: #ff4444 !important;
+  background-clip: initial !important;
 }
 
 .username-blue {
-  color: #4488ff;
-  text-shadow: 0 0 8px #4488ff, 0 0 16px rgba(68, 136, 255, 0.5);
+  color: #4488ff !important;
+  text-shadow: 0 0 8px #4488ff, 0 0 16px rgba(68, 136, 255, 0.5) !important;
   font-weight: 700;
   transition: all 0.3s ease;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: #4488ff !important;
+  background-clip: initial !important;
 }
 
 .username-green {
-  color: #00ff00;
-  text-shadow: 0 0 8px #00ff00, 0 0 16px rgba(0, 255, 0, 0.5);
+  color: #00ff00 !important;
+  text-shadow: 0 0 8px #00ff00, 0 0 16px rgba(0, 255, 0, 0.5) !important;
   font-weight: 700;
   transition: all 0.3s ease;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: #00ff00 !important;
+  background-clip: initial !important;
 }
 
 .username-yellow {
-  color: #ffff44;
-  text-shadow: 0 0 8px #ffff44, 0 0 16px rgba(255, 255, 68, 0.5);
+  color: #ffff44 !important;
+  text-shadow: 0 0 8px #ffff44, 0 0 16px rgba(255, 255, 68, 0.5) !important;
   font-weight: 700;
   transition: all 0.3s ease;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: #ffff44 !important;
+  background-clip: initial !important;
 }
 
 .username-orange {
-  color: #ff8844;
-  text-shadow: 0 0 8px #ff8844, 0 0 16px rgba(255, 136, 68, 0.5);
+  color: #ff8844 !important;
+  text-shadow: 0 0 8px #ff8844, 0 0 16px rgba(255, 136, 68, 0.5) !important;
   font-weight: 700;
   transition: all 0.3s ease;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: #ff8844 !important;
+  background-clip: initial !important;
 }
 
 .username-purple {
-  color: #8844ff;
-  text-shadow: 0 0 8px #8844ff, 0 0 16px rgba(136, 68, 255, 0.5);
+  color: #8844ff !important;
+  text-shadow: 0 0 8px #8844ff, 0 0 16px rgba(136, 68, 255, 0.5) !important;
   font-weight: 700;
   transition: all 0.3s ease;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: #8844ff !important;
+  background-clip: initial !important;
 }
 
 .username-pink {
-  color: #ff44ff;
-  text-shadow: 0 0 8px #ff44ff, 0 0 16px rgba(255, 68, 255, 0.5);
+  color: #ff44ff !important;
+  text-shadow: 0 0 8px #ff44ff, 0 0 16px rgba(255, 68, 255, 0.5) !important;
   font-weight: 700;
   transition: all 0.3s ease;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  -webkit-text-fill-color: #ff44ff !important;
+  background-clip: initial !important;
 }
 
 .username-cyan {
