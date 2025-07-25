@@ -9,7 +9,6 @@ import type { StockDataPoint, GroupedStockData } from './utils/csvParser';
 import type { StockInfo } from './utils/stockLoader';
 import styles from './Game.module.css';
 import Header from './components/Header';
-import PurchaseSuccessEffect from './components/PurchaseSuccessEffect';
 
 interface StockHolding {
   symbol: string;
@@ -147,10 +146,10 @@ const Game: React.FC = () => {
     // Grundbonus: 500€ pro Level
     const levelBonus = userLevel * 500;
 
-    // 5-Level-Bonus: 1000€ alle 5 Level
+    // 5 LevelBonus: 1000€ alle 5 Level
     const fiveLevelBonus = Math.floor(userLevel / 5) * 1000;
 
-    // 10-Level-Bonus: 5000€ alle 10 Level
+    // 10 LevelBonus: 5000€ alle 10 Level
     const tenLevelBonus = Math.floor(userLevel / 10) * 5000;
 
     return baseCapital + levelBonus + fiveLevelBonus + tenLevelBonus;
@@ -170,7 +169,7 @@ const Game: React.FC = () => {
       if (response.ok) {
         const stats = await response.json();
         setPercentageProfit(stats.percentageProfit);
-        setMaxWeekTrades(stats.weekTrades || 0);  // Lade den Rekord
+        setMaxWeekTrades(stats.weekTrades || 0);
         setTotalStocksBought(stats.totalStocksBought);
         setTotalStocksSelled(stats.totalStocksSelled);
         setHoldShares(stats.holdShares);
@@ -193,7 +192,6 @@ const Game: React.FC = () => {
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json());
 
-      // Frontend-Logik: Nur senden wenn höher als aktueller Wert
       if (percentageProfit === null || newPercentage > percentageProfit) {
         await fetch('http://localhost:3000/api/stats', {
           method: 'PUT',
@@ -210,7 +208,6 @@ const Game: React.FC = () => {
           })
         });
 
-        // Lokalen State aktualisieren
         setPercentageProfit(newPercentage);
       }
     } catch (error) {
@@ -223,7 +220,6 @@ const Game: React.FC = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      // Aktuellen DB-Wert lesen
       const currentStats = await fetch('http://localhost:3000/api/stats', {
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json());
@@ -232,7 +228,6 @@ const Game: React.FC = () => {
 
       console.log(`🔍 DB weekTrades: ${currentDbWeekTrades}, Current week: ${newWeekTrades}`);
 
-      // NUR updaten wenn die aktuelle Woche höher ist als der DB-Rekord
       if (newWeekTrades > currentDbWeekTrades) {
         await fetch('http://localhost:3000/api/stats', {
           method: 'PUT',
@@ -241,7 +236,7 @@ const Game: React.FC = () => {
             'Authorization': `Bearer ${token}`
           },
           body: JSON.stringify({
-            weekTrades: newWeekTrades,  // Neuer Rekord!
+            weekTrades: newWeekTrades,
             totalStocksBought: currentStats.totalStocksBought,
             totalStocksSelled: currentStats.totalStocksSelled,
             holdShares: currentStats.holdShares,
@@ -266,7 +261,7 @@ const Game: React.FC = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      // Aktuellen DB-Wert lesen
+      // Aktuellen DBwert lesen
       const currentStats = await fetch('http://localhost:3000/api/stats', {
         headers: { 'Authorization': `Bearer ${token}` }
       }).then(res => res.json());
@@ -275,7 +270,7 @@ const Game: React.FC = () => {
 
       console.log(`🔍 DB holdShares: ${currentDbHoldShares}, Neue holdShares: ${newHoldShares}`);
 
-      // Nur speichern wenn höher als DB-Wert
+      // Nur speichern wenn höher als DBwert
       if (newHoldShares > currentDbHoldShares) {
         await fetch('http://localhost:3000/api/stats', {
           method: 'PUT',
@@ -292,11 +287,11 @@ const Game: React.FC = () => {
           })
         });
 
-        console.log(`✅ Hold Shares aktualisiert: ${currentDbHoldShares} -> ${newHoldShares}`);
+        console.log(`Hold Shares aktualisiert: ${currentDbHoldShares} -> ${newHoldShares}`);
         setHoldShares(newHoldShares);
       } else {
-        console.log(`⏭️ Hold Shares NICHT aktualisiert: ${newHoldShares} <= ${currentDbHoldShares}`);
-        // Lokalen State mit höherem DB-Wert synchronisieren
+        console.log(`Hold Shares NICHT aktualisiert: ${newHoldShares} <= ${currentDbHoldShares}`);
+
         setHoldShares(Math.max(currentDbHoldShares, newHoldShares));
       }
 
@@ -306,7 +301,6 @@ const Game: React.FC = () => {
   };
 
 
-  // Separate Update-Funktionen für totalStocksBought und totalStocksSelled
   const updateTotalStocksBought = async (newTotal: number) => {
     try {
       const token = localStorage.getItem('token');
@@ -389,7 +383,6 @@ const Game: React.FC = () => {
         const data = await response.json();
         console.log(`💰 Coins erhalten:`, data);
 
-        // Event für andere Komponenten (z.B. Header) dispatchen
         window.dispatchEvent(new CustomEvent('coinsUpdated', {
           detail: {
             coinsEarned: data.coinsEarned,
@@ -398,9 +391,8 @@ const Game: React.FC = () => {
           }
         }));
 
-        // Optional: Erfolg-Notification anzeigen
         if (data.coinsEarned > 0) {
-          // Du könntest hier eine Toast-Notification oder ähnliches anzeigen
+
           console.log(`🎉 ${data.coinsEarned} Coins erhalten für ${percentageChange.toFixed(2)}% Gewinn!`);
         }
       } else {
@@ -411,8 +403,6 @@ const Game: React.FC = () => {
     }
   };
 
-
-  // In deiner handleCapitalSubmit Funktion
   const handleCapitalSubmit = () => {
     const amount = parseFloat(tempCapitalInput);
     const maxCapital = getMaxStartingCapital(userLevel);
@@ -433,12 +423,10 @@ const Game: React.FC = () => {
     setTempCapitalInput('');
   };
 
-  // useEffect für Stats laden
   useEffect(() => {
     loadUserStats();
   }, []);
 
-  // useEffect für Finish-Überprüfung
   useEffect(() => {
     const checkFinish = () => {
       const currentOffset = yearlyWeekOffset;
@@ -457,7 +445,7 @@ const Game: React.FC = () => {
 
         updatePercentageProfit(percentageChange);
 
-        // Coins vergeben basierend auf percentageChange
+        // Coins gebem basierend auf percentageChange
         awardCoinsForGame(percentageChange);
 
         setGameFinished(true);
@@ -553,7 +541,6 @@ const Game: React.FC = () => {
     loadSelectedStockData();
   }, [selectedStock, availableStocks]);
 
-  // Helper Functions
   // Aktueller Preis aus den angezeigten Daten
   const getCurrentStockPrice = (): number => {
     const displayData = getShiftedData();
@@ -570,16 +557,13 @@ const Game: React.FC = () => {
     return stockHoldings.find(holding => holding.symbol === selectedStock);
   };
 
-  // Funktion: Überprüfe ob Trading in der aktuellen Woche erlaubt ist
   const isTradingAllowed = (): boolean => {
 
-    // Verwende den aktuellen Offset basierend auf viewMode
     const currentOffset = yearlyWeekOffset;
     if (currentOffset < firstTradingWeek) {
       setFirstTradingWeek(currentOffset);
     }
 
-    // ✅ KORREKT: Wenn schon gehandelt wurde, nur in der ersten Trading-Woche oder SPÄTER erlaubt
     return currentOffset <= firstTradingWeek;
   };
 
@@ -622,9 +606,8 @@ const Game: React.FC = () => {
   };
 
 
-  // Synchrone Shift-Handler - beide Modi werden gleichzeitig erhöht
   const handleShiftForward = (): void => {
-    if (gameFinished) return; // Verhindere weitere Shifts nach Finish
+    if (gameFinished) return;
 
     const maxMonthlyOffset = Math.min(52, Math.floor(stockData.length / 7) - 4);
     const maxYearlyOffset = Math.min(52, Math.floor(stockData.length / 7) - 52);
@@ -643,7 +626,6 @@ const Game: React.FC = () => {
   };
 
 
-  // useEffect für Monthly Offset
   useEffect(() => {
     if (!stockData || stockData.length === 0) return;
 
@@ -653,7 +635,7 @@ const Game: React.FC = () => {
     }
   }, [stockData, monthlyWeekOffset]);
 
-  // useEffect für Yearly Offset
+
   useEffect(() => {
     if (!stockData || stockData.length === 0) return;
 
@@ -664,7 +646,6 @@ const Game: React.FC = () => {
   }, [stockData, yearlyWeekOffset]);
 
 
-  // KORRIGIERTE calculateTotalValue Funktion
   const calculateTotalValue = (): number => {
     let totalValue = currentBalance;
 
@@ -674,11 +655,8 @@ const Game: React.FC = () => {
         let currentPrice = 0;
 
         if (holding.symbol === selectedStock) {
-          // Für die aktuell ausgewählte Aktie verwenden wir den aktuellen Preis
           currentPrice = getCurrentStockPrice();
         } else {
-          // Für andere Aktien verwenden wir den Durchschnittspreis (vereinfacht)
-          // In einer echten App würdest du hier die aktuellen Preise aller Aktien laden
           currentPrice = holding.averagePrice;
         }
 
@@ -719,7 +697,6 @@ const Game: React.FC = () => {
     setTempShareAmount('');
   };
 
-  // NEU: Max-Button Handler
   const handleMaxBuy = (): void => {
     const maxShares = getMaxBuyableShares();
     setTempShareAmount(maxShares.toString());
@@ -761,13 +738,12 @@ const Game: React.FC = () => {
     if (shares > 0 && totalCost <= currentBalance) {
       setCurrentBalance(prev => prev - totalCost);
 
-      // ALLE Stats-Updates INNERHALB des Trading-Blocks
       const newTotalBought = (totalStocksBought || 0) + shares;
       setTotalStocksBought(newTotalBought);
       console.log("TOTALE AKTIEN GERADE NACH KAUF: ", newTotalBought);
       await updateTotalStocksBought(newTotalBought);
 
-      // Week Trades Logic
+      // Week Trades Logik
       if (yearlyWeekOffset === lastTradingWeek) {
         const newCurrentWeekTrades = currentWeekTrades + shares;
         setCurrentWeekTrades(newCurrentWeekTrades);
@@ -813,7 +789,7 @@ const Game: React.FC = () => {
     setShowBuyPopup(false);
     setTempShareAmount('');
 
-    // Event für Quest-System: Jetzt direkt nach Stats-Update dispatchen
+
     window.dispatchEvent(new CustomEvent('statsUpdated'));
   };
 
@@ -833,7 +809,7 @@ const Game: React.FC = () => {
 
     const newTotalSelled = (totalStocksSelled || 0) + shares;
     setTotalStocksSelled(newTotalSelled);
-    await updateTotalStocksSelled(newTotalSelled); // Sofort in DB speichern
+    await updateTotalStocksSelled(newTotalSelled);
 
     if (shares > 0 && currentHolding && shares <= currentHolding.shares) {
       setCurrentBalance(prev => prev + totalRevenue);
@@ -856,7 +832,7 @@ const Game: React.FC = () => {
     setShowSellPopup(false);
     setTempShareAmount('');
 
-    // Event für Quest-System: Jetzt direkt nach Stats-Update dispatchen
+
     window.dispatchEvent(new CustomEvent('statsUpdated'));
   };
 
@@ -865,7 +841,7 @@ const Game: React.FC = () => {
     return availableStocks.find(s => s.symbol === selectedStock);
   };
 
-  // Berechnungen für Popups
+
   const calculateBuyTotal = (): number => {
     const shares = parseInt(tempShareAmount) || 0;
     const subtotal = shares * getCurrentStockPrice();
@@ -905,7 +881,7 @@ const Game: React.FC = () => {
     return holding ? holding.shares : 0;
   };
 
-  // Loading und Error States bleiben gleich...
+
   if (loading) {
     return (
       <div className={styles.gameContainer}>
@@ -927,7 +903,7 @@ const Game: React.FC = () => {
   const currentHolding = getCurrentStockHolding();
   const displayData = getShiftedData();
 
-  // Hilfsfunktion für Logo-Dateinamen
+
   const getLogoFilename = (stockInfo: StockInfo | undefined): string => {
     if (!stockInfo) return 'default.png';
     // Sonderfälle für Logo-Mapping
@@ -953,23 +929,21 @@ const Game: React.FC = () => {
   return (
     <div style={{ position: 'relative', width: '100vw', minHeight: '80vh', marginTop: '78px' }}>
       <Header />
-      {/* Hintergrund-Overlay entfernt, da der Hintergrund jetzt über body und Container geregelt wird */}
+
       <div className={styles.gameContainer} style={{ position: 'relative', zIndex: 1 }}>
-        {/* Startkapital Popup bleibt gleich... */}
+
         {showCapitalPopup && (
           <div className={styles.popupOverlay}>
             <div className={styles.popup}>
               <h2>Startkapital festlegen</h2>
               <p>Wie viel Geld möchtest du für das Trading verwenden?</p>
 
-              {/* Erweiterte Level Info mit Breakdown */}
+
               <div className={styles.levelCapitalInfo}>
                 <div className={styles.levelDisplay}>
-                  <span className={styles.levelLabel}>Dein Level:</span>
+                  <span className={styles.levelLabel}>Dein Level: </span>
                   <span className={styles.levelValue}>{userLevel}</span>
                 </div>
-
-                {/* Detaillierte Kapital-Aufschlüsselung */}
                 <div className={styles.capitalBreakdown}>
                   <div className={styles.breakdownItem}>
                     <span>Grundkapital:</span>
@@ -998,18 +972,24 @@ const Game: React.FC = () => {
                 </div>
               </div>
 
-              <input
-                type="number"
-                value={tempCapitalInput}
-                onChange={(e) => setTempCapitalInput(e.target.value)}
-                placeholder={`z.B. ${Math.min(25000, maxStartingCapital)}`}
-                className={styles.popupInput}
-                min="1"
-                max={maxStartingCapital}
-                step="0.01"
-              />
-
-              {/* Validierungs-Hinweis */}
+              <div className={styles.inputWithMaxButton}>
+                <input
+                  type="number"
+                  value={tempCapitalInput}
+                  onChange={(e) => setTempCapitalInput(e.target.value)}
+                  placeholder={`z.B. ${Math.min(25000, maxStartingCapital)}`}
+                  className={styles.popupInput}
+                  min="1"
+                  max={maxStartingCapital}
+                  step="0.01"
+                />
+                <button
+                  onClick={() => setTempCapitalInput(maxStartingCapital.toString())}
+                  className={styles.maxButton}
+                >
+                  Max ({maxStartingCapital.toLocaleString()}€)
+                </button>
+              </div>
               {tempCapitalInput && parseFloat(tempCapitalInput) > maxStartingCapital && (
                 <div className={styles.validationError}>
                   ⚠️ Betrag überschreitet das maximale Startkapital von {maxStartingCapital.toLocaleString()}€
@@ -1043,7 +1023,7 @@ const Game: React.FC = () => {
         )}
 
 
-        {/* NEU: Company Info Button */}
+        {/*Company Info Button */}
         <div className={styles.companyInfoButtonContainer}>
           <button
             onClick={handleCompanyInfoToggle}
@@ -1057,7 +1037,7 @@ const Game: React.FC = () => {
           </button>
         </div>
 
-        {/* NEU: Company Info Panel */}
+        {/*Company Info Panel */}
         <CompanyInfo
           isOpen={showCompanyInfo}
           onToggle={handleCompanyInfoToggle}
@@ -1066,7 +1046,7 @@ const Game: React.FC = () => {
         />
 
 
-        {/* ERWEITERTE Buy Popup mit Max-Button */}
+        {/*Buy Popup mit Max-Button */}
         {showBuyPopup && (
           <div className={styles.popupOverlay}>
             <div className={styles.popup}>
@@ -1127,7 +1107,7 @@ const Game: React.FC = () => {
           </div>
         )}
 
-        {/* ERWEITERTE Sell Popup mit Max-Button */}
+        {/*Sell Popup mit Max-Button */}
         {showSellPopup && (
           <div className={styles.popupOverlay}>
             <div className={styles.popup}>
@@ -1213,7 +1193,7 @@ const Game: React.FC = () => {
               />
             </header>
 
-            {/* Erweiterte Navigation Container */}
+            {/*Navigation Container */}
             <div className={styles.navigationContainer}>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <button
@@ -1228,8 +1208,7 @@ const Game: React.FC = () => {
                 >
                   Letztes Jahr
                 </button>
-
-                {/* Erweiterte Shift-Controls mit Finish-Button */}
+                {/*Controls mit Finish-Button */}
                 <div className={styles.shiftControls}>
                   <button
                     className={styles.shiftButton}
@@ -1245,8 +1224,6 @@ const Game: React.FC = () => {
                     </span>
 
                   </div>
-
-                  {/* Bedingter Button mit korrekter 52-Wochen-Logik */}
                   {(yearlyWeekOffset <= -52) ? (
                     <button
                       className={styles.finishButton}
@@ -1276,11 +1253,8 @@ const Game: React.FC = () => {
                 <span className={styles.balanceValue}>{currentBalance.toFixed(2)}€</span>
               </div>
             </div>
-
-
-            {/* Rest der Komponente bleibt gleich... */}
             <StockChart
-              data={displayData}  // ✅ Richtig
+              data={displayData}
               stockColor={currentStockInfo?.color || '#2563eb'}
             />
             <div className={styles.tradingPanel}>
@@ -1300,8 +1274,6 @@ const Game: React.FC = () => {
                   <span className={styles.positionValue}>{startCapital.toFixed(2)}€</span>
                 </div>
               </div>
-
-              {/* ✅ FESTE HÖHE für Trading-Info - verhindert Layout-Sprung */}
               <div className={styles.tradingInfoContainer}>
                 {isTradingAllowed() ? (
                   <div className={styles.tradingInfo}>
@@ -1335,8 +1307,6 @@ const Game: React.FC = () => {
                 )}
               </div>
             </div>
-
-            {/* Stats bleiben unverändert... */}
             <div className={styles.stats}>
               <div className={styles.statItem}>
                 <span className={styles.statLabel}>Datenpunkte im Zeitraum:</span>
@@ -1379,7 +1349,6 @@ const Game: React.FC = () => {
           </main>
         </div>
       </div>
-      {/* ✅ NEU: Finish-Popup */}
       {showFinishPopup && finalResults && (
         <div className={styles.popupOverlay}>
           <div className={styles.finishPopup}>

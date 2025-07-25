@@ -1,4 +1,3 @@
-
 /* Neon Glassmorphism Design für stocktrainerFrontend Game.module.css */
 
 /* Grundfarben und Shadow-Variablen */
@@ -8,7 +7,7 @@ body {
   --neon-main: #2a4aff;
   --neon-accent: #55b6ff;
   --neon-bg: #181f34;
-  --neon-panel: rgba(24,31,52,0.88);
+  --neon-panel: rgba(24, 31, 52, 0.88);
   --neon-shadow: 0 0 40px #2a4affbb, 0 0 12px #55b6ff99;
   --neon-border: #2a4aff55;
   --neon-card-radius: 22px;
@@ -28,11 +27,19 @@ body {
   max-width: 1400px;
   margin: 0 auto;
   padding: 10px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;}
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
 
 /* Glassmorphism Panels */
-.resultCard, .popup, .tradingPanel, .companyInfoContainer,
-.calculationInfo, .feeBreakdown, .chartContainer, .monthNavigator, .infoSection {
+.resultCard,
+.popup,
+.tradingPanel,
+.companyInfoContainer,
+.calculationInfo,
+.feeBreakdown,
+.chartContainer,
+.monthNavigator,
+.infoSection {
   background: var(--neon-panel);
   border-radius: var(--neon-card-radius);
   box-shadow: var(--neon-shadow);
@@ -41,28 +48,43 @@ body {
 }
 
 /* Neon Glow für Cards/Stat Values */
-.finishTitle{
+.finishTitle {
   color: var(--text-accent);
   text-shadow: 0 0 8px var(--neon-main), 0 0 4px var(--neon-accent);
   font-weight: 700;
   font-size: 2.2rem;
 }
 
-.statLabel, .resultLabel, .finishSubtitle, .balanceLabel, .statValueNegative {
+.statLabel,
+.resultLabel,
+.finishSubtitle,
+.balanceLabel,
+.statValueNegative {
   color: var(--text-label);
   font-size: 1rem;
 }
 
-.statItem:hover, .resultCard:hover, .popup:hover {
+.statItem:hover,
+.resultCard:hover,
+.popup:hover {
   box-shadow: 0 0 48px var(--neon-accent), 0 0 16px var(--neon-main);
   border-color: var(--neon-accent);
 }
 
-.resultNegative { color: #dc2626; }
-.resultPositive { color: var(--text-accent); }
-.resultPercentage { font-size: 1.3rem; }
+.resultNegative {
+  color: #dc2626;
+}
 
-.finishPopup, .popup {
+.resultPositive {
+  color: var(--text-accent);
+}
+
+.resultPercentage {
+  font-size: 1.3rem;
+}
+
+.finishPopup,
+.popup {
   background: var(--neon-panel);
   border-radius: var(--neon-card-radius);
   box-shadow: 0 0 48px var(--neon-accent);
@@ -71,7 +93,12 @@ body {
 }
 
 /* Neon Buttons */
-.navButton, .finishButton, .popupButtonPrimary, .companyInfoButton, .buyButton, .sellButton {
+.navButton,
+.finishButton,
+.popupButtonPrimary,
+.companyInfoButton,
+.buyButton,
+.sellButton {
   background: linear-gradient(135deg, var(--neon-main) 0%, var(--neon-accent) 100%);
   color: #fff;
   font-weight: 700;
@@ -83,15 +110,21 @@ body {
   padding: 14px 26px;
   margin: 6px 0;
 }
-.navButton:hover, .finishButton:hover, .popupButtonPrimary:hover, .companyInfoButton:hover,
-.buyButton:hover, .sellButton:hover {
+
+.navButton:hover,
+.finishButton:hover,
+.popupButtonPrimary:hover,
+.companyInfoButton:hover,
+.buyButton:hover,
+.sellButton:hover {
   box-shadow: 0 0 28px var(--neon-main), 0 0 18px var(--neon-accent);
   background: linear-gradient(135deg, var(--neon-accent) 0%, #7edfff 100%);
   transform: translateY(-2px) scale(1.04);
 }
 
 /* Secondary Button */
-.popupButtonSecondary, .navButtonSecondary {
+.popupButtonSecondary,
+.navButtonSecondary {
   background: transparent;
   color: var(--text-label);
   border: 2px solid var(--neon-border);
@@ -100,14 +133,17 @@ body {
   padding: 14px 26px;
   transition: background 0.2s, border-color 0.2s;
 }
-.popupButtonSecondary:hover, .navButtonSecondary:hover {
-  background: rgba(42,74,255,0.08);
+
+.popupButtonSecondary:hover,
+.navButtonSecondary:hover {
+  background: rgba(42, 74, 255, 0.08);
   border-color: var(--neon-main);
 }
 
 /* Inputs & Validation */
-.popupInput, .searchInput {
-  background: rgba(24,31,52,1);
+.popupInput,
+.searchInput {
+  background: rgba(24, 31, 52, 1);
   color: var(--text-accent);
   border: 2px solid var(--neon-main);
   border-radius: 8px;
@@ -117,13 +153,16 @@ body {
   margin-bottom: 15px;
   transition: border-color 0.2s;
 }
-.popupInput:focus, .searchInput:focus {
+
+.popupInput:focus,
+.searchInput:focus {
   outline: none;
   border-color: var(--neon-accent);
   box-shadow: 0 0 12px var(--neon-accent);
 }
+
 .validationError {
-  background: rgba(220,38,38,0.14);
+  background: rgba(220, 38, 38, 0.14);
   color: #dc2626;
   border: 1.5px solid #dc2626;
   border-radius: 8px;
@@ -144,18 +183,22 @@ body {
   overflow-y: auto;
   border: 1.5px solid var(--neon-border);
 }
+
 .sidebarHeader {
   padding: 20px;
   border-bottom: 1.5px solid var(--neon-border);
   background: var(--neon-panel);
   border-radius: 22px 22px 0 0;
 }
-.stockItemActive, .sidebar .stockItemActive {
+
+.stockItemActive,
+.sidebar .stockItemActive {
   border: 2px solid var(--neon-accent);
   box-shadow: 0 0 12px var(--neon-main);
 }
+
 .stockItem:hover {
-  background: rgba(42,74,255,0.14);
+  background: rgba(42, 74, 255, 0.14);
   box-shadow: 0 0 8px var(--neon-main);
 }
 
@@ -165,6 +208,7 @@ body {
   display: flex;
   align-items: center;
 }
+
 .searchIcon {
   position: absolute;
   left: 16px;
@@ -172,6 +216,7 @@ body {
   font-size: 20px;
   pointer-events: none;
 }
+
 .clearButton {
   position: absolute;
   right: 8px;
@@ -183,6 +228,7 @@ body {
   border-radius: 50%;
   transition: background 0.2s;
 }
+
 .clearButton:hover {
   background: var(--neon-main);
   color: #fff;
@@ -191,14 +237,18 @@ body {
 /* Glassmorphism Popups */
 .popupOverlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(18,21,40,0.85);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(18, 21, 40, 0.85);
   backdrop-filter: blur(12px);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 .popup {
   background: var(--neon-panel);
   border-radius: var(--neon-card-radius);
@@ -210,9 +260,17 @@ body {
   width: 92%;
   padding: 34px;
 }
+
 @keyframes popupSlideIn {
-  from { opacity: 0; transform: translateY(-30px) scale(0.95); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .popup p {
@@ -220,6 +278,7 @@ body {
   text-align: center;
   margin-bottom: 18px;
 }
+
 .popupButtons {
   display: flex;
   gap: 14px;
@@ -228,7 +287,8 @@ body {
 }
 
 /* Neon Panel Cards */
-.chartContainer, .companyInfoContainer {
+.chartContainer,
+.companyInfoContainer {
   background: var(--neon-panel);
   border-radius: var(--neon-card-radius);
   box-shadow: var(--neon-shadow);
@@ -242,6 +302,7 @@ body {
   margin-bottom: 24px;
   justify-content: center;
 }
+
 .statItem {
   background: var(--neon-panel);
   border-radius: 18px;
@@ -251,6 +312,7 @@ body {
   border: 1.5px solid var(--neon-border);
   transition: box-shadow 0.2s;
 }
+
 .statItem:hover {
   box-shadow: 0 0 32px var(--neon-accent), 0 0 12px var(--neon-main);
 }
@@ -265,6 +327,7 @@ body {
   padding: 0px 8px;
   margin-bottom: 10px;
 }
+
 .appHeader h1 {
   font-size: 2.8rem;
   color: var(--text-accent);
@@ -282,6 +345,7 @@ body {
   margin-bottom: 0.05rem;
   padding-right: 1rem;
 }
+
 .balanceDisplay {
   display: flex;
   align-items: center;
@@ -292,8 +356,17 @@ body {
   box-shadow: 0 0 8px var(--neon-main);
   border: 1.5px solid var(--neon-border);
 }
-.balanceLabel { color: var(--text-label); font-size: 1rem; }
-.balanceValue { color: var(--text-accent); font-size: 1.3rem; font-weight: 700; }
+
+.balanceLabel {
+  color: var(--text-label);
+  font-size: 1rem;
+}
+
+.balanceValue {
+  color: var(--text-accent);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
 
 /* Neon Trading */
 .tradingButtons {
@@ -301,7 +374,9 @@ body {
   gap: 18px;
   padding-bottom: 1.2rem;
 }
-.buyButton, .sellButton {
+
+.buyButton,
+.sellButton {
   font-size: 1.1rem;
   font-weight: 700;
   border-radius: 12px;
@@ -310,16 +385,20 @@ body {
   padding: 14px 26px;
   margin: 0;
 }
+
 .buyButton {
   background: linear-gradient(135deg, #059669 0%, #55b6ff 100%);
 }
+
 .buyButton:hover {
   box-shadow: 0 0 28px #059669, 0 0 18px #55b6ff;
   background: linear-gradient(135deg, #55b6ff 0%, #059669 100%);
 }
+
 .sellButton {
   background: linear-gradient(135deg, #dc2626 0%, #55b6ff 100%);
 }
+
 .sellButton:hover {
   box-shadow: 0 0 28px #dc2626, 0 0 18px #55b6ff;
   background: linear-gradient(135deg, #55b6ff 0%, #dc2626 100%);
@@ -336,6 +415,7 @@ body {
   width: 95%;
   padding: 36px;
 }
+
 .finishHeader {
   background: linear-gradient(135deg, var(--neon-main) 0%, var(--neon-accent) 100%);
   color: white;
@@ -343,6 +423,7 @@ body {
   text-align: center;
   border-radius: var(--neon-card-radius) var(--neon-card-radius) 0 0;
 }
+
 .finishTitle {
   font-size: 2.6rem;
   font-weight: 700;
@@ -350,7 +431,13 @@ body {
   color: var(--text-accent);
   text-shadow: 0 0 16px var(--neon-main);
 }
-.finishSubtitle { font-size: 1.2rem; opacity: 0.85; color: #fff; }
+
+.finishSubtitle {
+  font-size: 1.2rem;
+  opacity: 0.85;
+  color: #fff;
+}
+
 .finishCloseButton {
   background: linear-gradient(135deg, var(--neon-main) 0%, var(--neon-accent) 100%);
   color: #fff;
@@ -363,6 +450,7 @@ body {
   box-shadow: 0 0 16px var(--neon-accent);
   transition: box-shadow 0.2s;
 }
+
 .finishCloseButton:hover {
   background: linear-gradient(135deg, var(--neon-accent) 0%, #7edfff 100%);
   box-shadow: 0 0 24px var(--neon-main);
@@ -370,32 +458,98 @@ body {
 
 /* Neon Glassmorphism Responsive */
 @media (max-width: 1024px) {
-  .gameContainer { padding: 18px; }
-  .gameLayout { flex-direction: column; }
-  .sidebar { width: 100%; max-height: 320px; }
-  .stats { flex-direction: column; gap: 18px; }
+  .gameContainer {
+    padding: 18px;
+  }
+
+  .gameLayout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    max-height: 320px;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 18px;
+  }
 }
+
 @media (max-width: 768px) {
-  .appHeader h1 { font-size: 2.2rem; }
-  .sidebar { max-height: 200px; }
-  .monthNavigator, .navigationContainer { flex-direction: column; gap: 16px; }
-  .monthNavigator { padding: 20px 14px; }
-  .balanceDisplay, .popup, .finishPopup { width: 98%; padding: 16px; }
-  .stats, .infoGrid { flex-direction: column; gap: 12px; }
+  .appHeader h1 {
+    font-size: 2.2rem;
+  }
+
+  .sidebar {
+    max-height: 200px;
+  }
+
+  .monthNavigator,
+  .navigationContainer {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .monthNavigator {
+    padding: 20px 14px;
+  }
+
+  .balanceDisplay,
+  .popup,
+  .finishPopup {
+    width: 98%;
+    padding: 16px;
+  }
+
+  .stats,
+  .infoGrid {
+    flex-direction: column;
+    gap: 12px;
+  }
 }
+
 @media (max-width: 480px) {
-  .gameContainer { padding: 8px; }
-  .appHeader { padding: 12px; }
-  .appHeader h1 { font-size: 1.6rem; }
-  .finishPopup, .popup { padding: 10px; }
+  .gameContainer {
+    padding: 8px;
+  }
+
+  .appHeader {
+    padding: 12px;
+  }
+
+  .appHeader h1 {
+    font-size: 1.6rem;
+  }
+
+  .finishPopup,
+  .popup {
+    padding: 10px;
+  }
 }
 
 /* Animationen */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.gameContainer > * { animation: fadeIn 0.6s ease-out; }
+
+.gameContainer>* {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.levelLabel,
+.levelValue {
+  color: black;
+}
 
 .maxCapitalValue {
   font-size: 16px;

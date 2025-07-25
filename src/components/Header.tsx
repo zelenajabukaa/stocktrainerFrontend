@@ -56,7 +56,7 @@ const Header: React.FC = () => {
           }));
         }
       } catch (err) {
-        console.error('❌ Fehler beim Laden des Profils:', err);
+        console.error('Fehler beim Laden des Profils:', err);
       }
 
       // 2. XP holen und Level ggf. aktualisieren
@@ -76,7 +76,7 @@ const Header: React.FC = () => {
           }));
         }
       } catch (err) {
-        console.error('❌ Fehler beim Laden der XP:', err);
+        console.error('Fehler beim Laden der XP:', err);
       }
     }
     fetchUserProfileAndXP();
@@ -85,10 +85,10 @@ const Header: React.FC = () => {
   // Event-Listener für Coins-Updates aus dem Game
   useEffect(() => {
     const handleCoinsUpdate = (event: any) => {
-      console.log('💰 Header: Coins-Update Event erhalten:', event.detail);
+      console.log('Header: Coins-Update Event erhalten:', event.detail);
       const { currentCoins } = event.detail;
       if (currentCoins !== undefined) {
-        console.log(`💰 Header: Coins werden aktualisiert von ${user.ingameCurrency} auf ${currentCoins}`);
+        console.log(`Header: Coins werden aktualisiert von ${user.ingameCurrency} auf ${currentCoins}`);
         setUser(prev => ({
           ...prev,
           ingameCurrency: currentCoins
@@ -110,22 +110,22 @@ const Header: React.FC = () => {
                   ...prev,
                   ingameCurrency: profileData.user.ingameCurrency ?? currentCoins
                 }));
-                console.log('💰 Header: Profil neu geladen, Coins:', profileData.user.ingameCurrency);
+                console.log('Header: Profil neu geladen, Coins:', profileData.user.ingameCurrency);
               }
             })
-            .catch(err => console.error('❌ Fehler beim Neu-Laden des Profils:', err));
+            .catch(err => console.error('Fehler beim Neu-Laden des Profils:', err));
         }
       }
     };
 
     // Event Listener hinzufügen
     window.addEventListener('coinsUpdated', handleCoinsUpdate);
-    console.log('💰 Header: Event-Listener für coinsUpdated hinzugefügt');
+    console.log('Header: Event-Listener für coinsUpdated hinzugefügt');
 
     // Cleanup beim Unmount
     return () => {
       window.removeEventListener('coinsUpdated', handleCoinsUpdate);
-      console.log('💰 Header: Event-Listener entfernt');
+      console.log('Header: Event-Listener entfernt');
     };
   }, []); // Leere Dependency-Array für einmalige Registrierung
 
@@ -163,7 +163,7 @@ const Header: React.FC = () => {
         setUserAvatars(Array.isArray(data) ? data : []);
       })
       .catch(() => {
-        console.error('❌ Fehler beim Laden der Avatare');
+        console.error('Fehler beim Laden der Avatare');
         setUserAvatars([]);
       });
   }, [userId]);
