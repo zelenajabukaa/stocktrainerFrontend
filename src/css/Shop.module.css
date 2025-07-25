@@ -730,7 +730,7 @@
 	transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 	backdrop-filter: blur(20px) saturate(180%);
 	min-width: 180px;
-	box-shadow: 
+	box-shadow:
 		0 4px 16px rgba(0, 0, 0, 0.1),
 		inset 0 1px 0 rgba(255, 255, 255, 0.1);
 	appearance: none;
@@ -753,7 +753,7 @@
 	border-color: rgba(139, 159, 223, 0.4);
 	background: rgba(30, 41, 59, 0.98);
 	transform: translateY(-1px);
-	box-shadow: 
+	box-shadow:
 		0 6px 20px rgba(0, 0, 0, 0.12),
 		inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
@@ -834,10 +834,11 @@
 	flex: 1;
 	max-width: 350px;
 	position: relative;
-	z-index: 5; /* Unter der Tab-Navigation aber über dem Content */
- }
- 
- .searchInput {
+	z-index: 5;
+	/* Unter der Tab-Navigation aber über dem Content */
+}
+
+.searchInput {
 	width: 100%;
 	padding: 0.875rem 3rem 0.875rem 1.25rem;
 	background: rgba(248, 250, 252, 0.05);
@@ -851,30 +852,30 @@
 	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 	position: relative;
 	z-index: 1;
- }
- 
- .searchInput::placeholder {
+}
+
+.searchInput::placeholder {
 	color: rgba(139, 159, 223, 0.5);
 	font-style: italic;
 	transition: opacity 0.3s ease;
- }
- 
- .searchInput:focus::placeholder {
+}
+
+.searchInput:focus::placeholder {
 	opacity: 0.5;
- }
- 
- .searchInput:focus {
+}
+
+.searchInput:focus {
 	outline: none;
 	border-color: rgba(59, 130, 246, 0.5);
 	background: rgba(248, 250, 252, 0.08);
-	box-shadow: 
-	  0 0 0 3px rgba(59, 130, 246, 0.15),
-	  inset 0 1px 3px rgba(0, 0, 0, 0.1);
+	box-shadow:
+		0 0 0 3px rgba(59, 130, 246, 0.15),
+		inset 0 1px 3px rgba(0, 0, 0, 0.1);
 	transform: translateY(-1px);
- }
- 
- /* Such-Icon mit Animation */
- .searchContainer::after {
+}
+
+/* Such-Icon mit Animation */
+.searchContainer::after {
 	content: '🔍';
 	position: absolute;
 	right: 1rem;
@@ -885,42 +886,42 @@
 	pointer-events: none;
 	transition: all 0.3s ease;
 	z-index: 2;
- }
- 
- .searchInput:focus + .searchContainer::after,
- .searchInput:not(:placeholder-shown) + .searchContainer::after {
+}
+
+.searchInput:focus+.searchContainer::after,
+.searchInput:not(:placeholder-shown)+.searchContainer::after {
 	color: rgba(59, 130, 246, 0.6);
 	transform: translateY(-50%) scale(1.1);
- }
- 
- /* === Z-INDEX HIERARCHIE === */
- .shopContainer {
+}
+
+/* === Z-INDEX HIERARCHIE === */
+.shopContainer {
 	position: relative;
 	z-index: 1;
- }
- 
- .shopHeader {
+}
+
+.shopHeader {
 	z-index: 10;
- }
- 
- .tabNavigation {
+}
+
+.tabNavigation {
 	z-index: 8;
- }
- 
- .filterBar {
+}
+
+.filterBar {
 	z-index: 7;
- }
- 
- .tabContent {
+}
+
+.tabContent {
 	z-index: 5;
- }
- 
- .shopItem {
+}
+
+.shopItem {
 	z-index: 1;
- }
- 
- /* Clear Button für Suchfeld */
- .searchClear {
+}
+
+/* Clear Button für Suchfeld */
+.searchClear {
 	position: absolute;
 	right: 2.5rem;
 	top: 50%;
@@ -932,85 +933,97 @@
 	z-index: 3;
 	opacity: 0;
 	transition: all 0.3s ease;
- }
- 
- .searchInput:not(:placeholder-shown) ~ .searchClear {
-	opacity: 1;
- }
- 
- .searchClear:hover {
-	color: rgba(59, 130, 246, 0.8);
- }
- 
- /* Responsive Anpassungen */
- @media (max-width: 768px) {
-	.searchContainer {
-	  max-width: none;
-	  margin-bottom: 0.5rem;
-	}
-	
-	.searchInput {
-	  padding: 0.75rem 2.5rem 0.75rem 1rem;
-	}
-	
-	.searchContainer::after {
-	  right: 0.75rem;
-	}
-	
-	.searchClear {
-	  right: 2.25rem;
-	}
- }
+}
 
- /* === VERBESSERTES SUCHFELD MIT KONSISTENTEM DESIGN === */
-.filterBar {
-	max-width: 1200px; /* Gleiche Breite wie der Tab-Content */
-	margin: 0 auto 2.5rem;
-	width: calc(100% - 4rem); /* Abstand zu den Seiten */
- }
- 
- .searchContainer {
-	max-width: 400px; /* Etwas schmaler als zuvor */
-	width: 100%;
- }
- 
- .searchInput {
-	background: rgba(15, 23, 42, 0.7); /* Dunklerer Hintergrund wie die Shop-Items */
-	border: 1px solid rgba(59, 130, 246, 0.3); /* Blauer Rand wie aktive Tabs */
-	color: #e2e8f0;
- }
- 
- .searchInput:focus {
-	border-color: rgba(59, 130, 246, 0.6); /* Intensiveres Blau */
-	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* Blauer Glow */
- }
- 
- /* Angepasstes Such-Icon mit dem Blauton */
- .searchContainer::after {
-	color: rgba(59, 130, 246, 0.6); /* Blau statt Grau */
-	right: 1.25rem;
- }
- 
- .searchInput:focus + .searchContainer::after,
- .searchInput:not(:placeholder-shown) + .searchContainer::after {
-	color: rgba(96, 165, 250, 0.9); /* Helleres Blau bei Aktivität */
- }
- 
- /* === KONSISTENTE FARBPALETTE === */
- /* Nutzt die gleichen Blautöne wie der Rest der UI */
- .searchInput::placeholder {
-	color: rgba(148, 163, 184, 0.6); /* Passend zu den inaktiven Tab-Texten */
- }
- 
- /* Responsive Anpassungen */
- @media (max-width: 1200px) {
-	.filterBar {
-	  width: calc(100% - 2rem); /* Weniger Abstand auf kleineren Screens */
-	}
- }
- 
- @media (max-width: 768px) {
+.searchInput:not(:placeholder-shown)~.searchClear {
+	opacity: 1;
+}
+
+.searchClear:hover {
+	color: rgba(59, 130, 246, 0.8);
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 768px) {
 	.searchContainer {
-	  max-width: 100%; /* Volle Breite auf Mobil */
+		max-width: none;
+		margin-bottom: 0.5rem;
 	}
- }
+
+	.searchInput {
+		padding: 0.75rem 2.5rem 0.75rem 1rem;
+	}
+
+	.searchContainer::after {
+		right: 0.75rem;
+	}
+
+	.searchClear {
+		right: 2.25rem;
+	}
+}
+
+/* === VERBESSERTES SUCHFELD MIT KONSISTENTEM DESIGN === */
+.filterBar {
+	max-width: 1200px;
+	/* Gleiche Breite wie der Tab-Content */
+	margin: 0 auto 2.5rem;
+	width: calc(100% - 4rem);
+	/* Abstand zu den Seiten */
+}
+
+.searchContainer {
+	max-width: 400px;
+	/* Etwas schmaler als zuvor */
+	width: 100%;
+}
+
+.searchInput {
+	background: rgba(15, 23, 42, 0.7);
+	/* Dunklerer Hintergrund wie die Shop-Items */
+	border: 1px solid rgba(59, 130, 246, 0.3);
+	/* Blauer Rand wie aktive Tabs */
+	color: #e2e8f0;
+}
+
+.searchInput:focus {
+	border-color: rgba(59, 130, 246, 0.6);
+	/* Intensiveres Blau */
+	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+	/* Blauer Glow */
+}
+
+/* Angepasstes Such-Icon mit dem Blauton */
+.searchContainer::after {
+	color: rgba(59, 130, 246, 0.6);
+	/* Blau statt Grau */
+	right: 1.25rem;
+}
+
+.searchInput:focus+.searchContainer::after,
+.searchInput:not(:placeholder-shown)+.searchContainer::after {
+	color: rgba(96, 165, 250, 0.9);
+	/* Helleres Blau bei Aktivität */
+}
+
+/* === KONSISTENTE FARBPALETTE === */
+/* Nutzt die gleichen Blautöne wie der Rest der UI */
+.searchInput::placeholder {
+	color: rgba(148, 163, 184, 0.6);
+	/* Passend zu den inaktiven Tab-Texten */
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 1200px) {
+	.filterBar {
+		width: calc(100% - 2rem);
+		/* Weniger Abstand auf kleineren Screens */
+	}
+}
+
+@media (max-width: 768px) {
+	.searchContainer {
+		max-width: 100%;
+		/* Volle Breite auf Mobil */
+	}
+}
